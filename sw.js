@@ -1,11 +1,16 @@
-const CACHE_NAME = 'anzarg-studio-v8';
+const CACHE_NAME = 'anzarg-studio-v9';
 
-const STATIC_ASSETS = [
+// Core essential local assets jo app chalane ke liye zaroori hain
+const LOCAL_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png',
+  './icon-512.png'
+];
+
+// External CDN dependencies
+const EXTERNAL_ASSETS = [
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest',
   'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
@@ -14,10 +19,24 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('Pre-cache warning:', err);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Step 1: Local assets ko guaranteed add karein
+      await cache.addAll(LOCAL_ASSETS).catch((err) => {
+        console.warn('Local assets cache error:', err);
       });
+
+      // Step 2: External CDNs ko gracefully cache karein (agar network issue ho toh fail na ho)
+      for (const url of EXTERNAL_ASSETS) {
+        try {
+          const req = new Request(url, { mode: 'cors' });
+          const res = await fetch(req);
+          if (res && (res.status === 200 || res.type === 'opaque')) {
+            await cache.put(req, res);
+          }
+        } catch (e) {
+          console.warn('External asset caching warning for:', url);
+        }
+      }
     })
   );
   self.skipWaiting();
@@ -47,9 +66,9 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
-        // Cache-First strategy: Offline par turant load ho
+        // Cache-First with Background Update Strategy
         fetch(event.request)
           .then((networkResponse) => {
             if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -62,6 +81,7 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
+      // Network se fetch karein aur runtime par dynamic cache karein (Fonts & Icons included)
       return fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -72,10 +92,11 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          // Navigation requests par index.html fallback
+        .catch(async () => {
+          // Offline navigation fallback
           if (event.request.mode === 'navigate') {
-            return caches.match('./') || caches.match('./index.html');
+            const fallback = await caches.match('./', { ignoreSearch: true }) || await caches.match('./index.html', { ignoreSearch: true });
+            if (fallback) return fallback;
           }
         });
     })

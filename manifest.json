@@ -3,12 +3,24 @@
   "short_name": "ANZARG",
   "id": "/",
   "description": "Professional Mobile Code Editor and Web Developer Studio",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
   "orientation": "any",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
+  "categories": [
+    "developer",
+    "productivity",
+    "utilities"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",

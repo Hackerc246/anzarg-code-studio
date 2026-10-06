@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v7';
+const CACHE_NAME = 'anzarg-studio-v8';
 
 const STATIC_ASSETS = [
   './',

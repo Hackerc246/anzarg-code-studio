@@ -1078,7 +1078,7 @@
       const btnCancel = document.getElementById('btnPwaCancel');
       const btnConfirm = document.getElementById('btnPwaConfirm');
 
-      // Guard 1: Agar application standalone mode me open hai (already installed)
+      // Guard 1: Standalone check
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       if (isStandalone) {
         if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
@@ -1087,7 +1087,7 @@
         return;
       }
 
-      // Guard 2: Modern Android Chrome Installed App Check
+      // Guard 2: Installed check
       if ('getInstalledRelatedApps' in navigator) {
         navigator.getInstalledRelatedApps().then(apps => {
           if (apps && apps.length > 0) {
@@ -1106,14 +1106,14 @@
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
       });
 
-      // Requirement: Website open hone ke 2.5 second baad popup open ho
+      // Show modal after 2.5 seconds
       setTimeout(() => {
         if (modal && installCancelCount < 2) {
           modal.classList.remove('hidden');
         }
       }, 2500);
 
-      // Cancel handling (1st Cancel -> 2.5s baad wapas, 2nd Cancel -> band)
+      // Cancel handling
       if (btnCancel && modal) {
         btnCancel.addEventListener('click', () => {
           modal.classList.add('hidden');
@@ -1129,22 +1129,18 @@
         });
       }
 
-      // Install button action
+      // Single install action (No overlapping duplicate toasts)
       if (btnConfirm && modal) {
         btnConfirm.addEventListener('click', async () => {
           modal.classList.add('hidden');
           if (deferredInstallPrompt) {
             deferredInstallPrompt.prompt();
-            const choiceResult = await deferredInstallPrompt.userChoice;
-            if (choiceResult.outcome === 'accepted') {
-              triggerToast("Installing ANZARG Studio...");
-            }
+            await deferredInstallPrompt.userChoice;
             deferredInstallPrompt = null;
           }
         });
       }
 
-      // Manual clicks from Header or Drawer
       const openModalDirect = () => {
         if (deferredInstallPrompt && modal) {
           modal.classList.remove('hidden');
@@ -1161,12 +1157,13 @@
         });
       }
 
+      // Single Professional Notification on complete install
       window.addEventListener('appinstalled', () => {
         if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
         if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
         if (modal) modal.classList.add('hidden');
         deferredInstallPrompt = null;
-        triggerToast("ANZARG Studio Ready Offline!");
+        triggerToast("ANZARG Studio Installed Successfully");
       });
     }
 

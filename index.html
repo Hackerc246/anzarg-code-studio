@@ -1070,62 +1070,41 @@
       }
     }
 
-    function setupPwaInstallFlow() {
+        function setupPwaInstallFlow() {
       const headerInstallBtn = document.getElementById('btnHeaderInstall');
       const drawerInstallBtn = document.getElementById('dNavInstallApp');
-      const modal = document.getElementById('modalInstallPrompt');
-      const btnCancel = document.getElementById('btnPwaCancel');
-      const btnConfirm = document.getElementById('btnPwaConfirm');
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
 
-        headerInstallBtn.classList.remove('hidden');
-        drawerInstallBtn.classList.remove('hidden');
-
-        const hasPrompted = sessionStorage.getItem('anzarg_pwa_prompted');
-        if (!hasPrompted) {
-          setTimeout(() => {
-            modal.classList.remove('hidden');
-            sessionStorage.setItem('anzarg_pwa_prompted', 'true');
-          }, 2000);
-        }
+        if (headerInstallBtn) headerInstallBtn.classList.remove('hidden');
+        if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
       });
 
-      const showPrompt = () => {
-        if (deferredInstallPrompt) {
-          modal.classList.remove('hidden');
-        } else {
-          triggerToast("App is ready or already installed");
+      const triggerInstall = async () => {
+        if (!deferredInstallPrompt) {
+          triggerToast("Application is ready or installed");
+          return;
         }
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
       };
 
-      headerInstallBtn.addEventListener('click', showPrompt);
-      drawerInstallBtn.addEventListener('click', () => {
-        closeDrawerPanel();
-        showPrompt();
-      });
-
-      btnCancel.addEventListener('click', () => modal.classList.add('hidden'));
-
-      btnConfirm.addEventListener('click', async () => {
-        modal.classList.add('hidden');
-        if (deferredInstallPrompt) {
-          deferredInstallPrompt.prompt();
-          const { outcome } = await deferredInstallPrompt.userChoice;
-          if (outcome === 'accepted') {
-            triggerToast("Installing ANZARG Code Studio...");
-          }
-          deferredInstallPrompt = null;
-        }
-      });
+      if (headerInstallBtn) headerInstallBtn.addEventListener('click', triggerInstall);
+      if (drawerInstallBtn) {
+        drawerInstallBtn.addEventListener('click', () => {
+          closeDrawerPanel();
+          triggerInstall();
+        });
+      }
 
       window.addEventListener('appinstalled', () => {
-        headerInstallBtn.classList.add('hidden');
-        drawerInstallBtn.classList.add('hidden');
-        modal.classList.add('hidden');
-        triggerToast("App Installed Successfully!");
+        if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
+        if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
+        deferredInstallPrompt = null;
+        triggerToast("ANZARG Studio Ready Offline!");
       });
     }
 

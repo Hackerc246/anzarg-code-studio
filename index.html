@@ -1057,7 +1057,7 @@
     let currentSearchMatches = [];
     let currentMatchPointer = -1;
 
-        // Intelligent Guarded PWA Installation Engine
+    // Intelligent Guarded PWA Installation Engine
     let deferredInstallPrompt = null;
     let installCancelCount = 0;
 
@@ -1104,17 +1104,16 @@
 
         if (headerInstallBtn) headerInstallBtn.classList.remove('hidden');
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
+      });
 
-              });
-
-      // Requirement 1: Website open hone ke 2.5 second baad popup open ho
+      // Requirement: Website open hone ke 2.5 second baad popup open ho
       setTimeout(() => {
         if (modal && installCancelCount < 2) {
           modal.classList.remove('hidden');
         }
       }, 2500);
 
-      // Requirement 3: Cancel handling (1st Cancel -> 2.5s baad wapas, 2nd Cancel -> band)
+      // Cancel handling (1st Cancel -> 2.5s baad wapas, 2nd Cancel -> band)
       if (btnCancel && modal) {
         btnCancel.addEventListener('click', () => {
           modal.classList.add('hidden');
@@ -1136,7 +1135,10 @@
           modal.classList.add('hidden');
           if (deferredInstallPrompt) {
             deferredInstallPrompt.prompt();
-            await deferredInstallPrompt.userChoice;
+            const choiceResult = await deferredInstallPrompt.userChoice;
+            if (choiceResult.outcome === 'accepted') {
+              triggerToast("Installing ANZARG Studio...");
+            }
             deferredInstallPrompt = null;
           }
         });
@@ -1570,7 +1572,7 @@
           updateLineNumbers();
           markActiveModified();
           recordHistory();
-          triggerToast("Replaced 1 match", "success");
+          triggerToast("Replaced 1 match");
         }
         currentSearchMatches = calculateMatches();
         if (currentSearchMatches.length > 0) {

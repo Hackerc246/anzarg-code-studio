@@ -1070,9 +1070,46 @@
       }
     }
 
-        function setupPwaInstallFlow() {
+            // Intelligent Guarded PWA Installation Engine
+    let deferredInstallPrompt = null;
+    let installCancelCount = 0; // Resets automatically on every page refresh
+
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('ANZARG SW Registered:', reg.scope))
+            .catch(err => console.log('ANZARG SW Failed:', err));
+        });
+      }
+    }
+
+    function setupPwaInstallFlow() {
       const headerInstallBtn = document.getElementById('btnHeaderInstall');
       const drawerInstallBtn = document.getElementById('dNavInstallApp');
+      const modal = document.getElementById('modalInstallPrompt');
+      const btnCancel = document.getElementById('btnPwaCancel');
+      const btnConfirm = document.getElementById('btnPwaConfirm');
+
+      // Guard 1: Agar application standalone mode me open hai (already installed)
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone) {
+        if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
+        if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
+        if (modal) modal.classList.add('hidden');
+        return;
+      }
+
+      // Guard 2: Modern Android Chrome Installed App Check
+      if ('getInstalledRelatedApps' in navigator) {
+        navigator.getInstalledRelatedApps().then(apps => {
+          if (apps && apps.length > 0) {
+            if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
+            if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
+            if (modal) modal.classList.add('hidden');
+          }
+        }).catch(() => {});
+      }
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -1080,29 +1117,64 @@
 
         if (headerInstallBtn) headerInstallBtn.classList.remove('hidden');
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
+
+        // Requirement 1: Website open hone ke 2.5 second baad popup open ho
+        setTimeout(() => {
+          if (deferredInstallPrompt && modal && installCancelCount < 2) {
+            modal.classList.remove('hidden');
+          }
+        }, 2500);
       });
 
-      const triggerInstall = async () => {
-        if (!deferredInstallPrompt) {
-          triggerToast("Application is ready or installed");
-          return;
+      // Requirement 3: Cancel handling (1st Cancel -> 2.5s baad wapas, 2nd Cancel -> band)
+      if (btnCancel && modal) {
+        btnCancel.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          installCancelCount++;
+
+          if (installCancelCount === 1) {
+            setTimeout(() => {
+              if (deferredInstallPrompt && installCancelCount < 2) {
+                modal.classList.remove('hidden');
+              }
+            }, 2500);
+          }
+        });
+      }
+
+      // Install button action
+      if (btnConfirm && modal) {
+        btnConfirm.addEventListener('click', async () => {
+          modal.classList.add('hidden');
+          if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+          }
+        });
+      }
+
+      // Manual clicks from Header or Drawer
+      const openModalDirect = () => {
+        if (deferredInstallPrompt && modal) {
+          modal.classList.remove('hidden');
+        } else {
+          triggerToast("Application is ready or already installed");
         }
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
       };
 
-      if (headerInstallBtn) headerInstallBtn.addEventListener('click', triggerInstall);
+      if (headerInstallBtn) headerInstallBtn.addEventListener('click', openModalDirect);
       if (drawerInstallBtn) {
         drawerInstallBtn.addEventListener('click', () => {
           closeDrawerPanel();
-          triggerInstall();
+          openModalDirect();
         });
       }
 
       window.addEventListener('appinstalled', () => {
         if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
         if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
+        if (modal) modal.classList.add('hidden');
         deferredInstallPrompt = null;
         triggerToast("ANZARG Studio Ready Offline!");
       });

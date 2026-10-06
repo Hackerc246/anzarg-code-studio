@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v2';
+const CACHE_NAME = 'anzarg-studio-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

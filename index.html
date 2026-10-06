@@ -1,0 +1,2518 @@
+<!--
+===================================================================================
+  ANZARG CODE STUDIO - PROFESSIONAL MOBILE CODE EDITOR
+  Copyright (c) 2026 ANZARG (All Rights Reserved)
+  Developed by: AnzarG
+  
+  LEGAL COPYRIGHT WARNING & PROPRIETARY NOTICE:
+  This source code, user interface, architecture, design assets, and workflows 
+  are protected by national and international copyright laws and treaties. 
+  Unauthorized copying, reverse-engineering, decompilation, redistribution, 
+  re-publishing on Google Play Store, Cloudflare, GitHub, or any public repository 
+  without explicit prior written consent from the copyright owner is strictly prohibited.
+  Violators will face immediate DMCA takedown actions and civil legal liability.
+===================================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="ANZARG CODE STUDIO - Professional offline mobile code editor and web developer companion.">
+  <title>ANZARG CODE STUDIO</title>
+
+  <!-- PWA & App Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-512.png">
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Google Font: Roboto Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons Library -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- JSZip Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --bg-base: #0d1117;
+      --surface: #161b22;
+      --surface-border: #30363d;
+      --editor-bg: #090d13;
+      --accent: #00f2fe;
+      --accent-secondary: #10b981;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --editor-text: #e6edf3;
+      --editor-highlight: #b4d5fe;
+      
+      --gutter-bg: #11161f;
+      --gutter-text: #7d8799;
+      --gutter-border: #21262d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    ::selection {
+      background-color: #b4d5fe !important;
+      color: #111111 !important;
+    }
+    ::-moz-selection {
+      background-color: #b4d5fe !important;
+      color: #111111 !important;
+    }
+
+    main#editorContainer {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: row;
+      min-height: 0;
+      min-width: 0;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background-color: var(--editor-bg);
+      overflow: hidden;
+    }
+
+    #lineNumbersGutter {
+      width: 48px;
+      height: 100%;
+      background-color: var(--gutter-bg);
+      border-right: 1px solid var(--gutter-border);
+      color: var(--gutter-text);
+      font-family: 'Roboto Mono', 'Droid Sans Mono', monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      padding: 10px 8px 10px 0;
+      text-align: right;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      white-space: pre;
+    }
+
+    textarea#codeTextarea {
+      flex: 1 1 0%;
+      height: 100% !important;
+      width: 100% !important;
+      min-height: 0;
+      min-width: 0;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 10px 12px;
+      font-family: 'Roboto Mono', 'Droid Sans Mono', monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      background-color: var(--editor-bg);
+      color: var(--editor-text);
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      tab-size: 4;
+      caret-color: var(--accent);
+      display: block;
+    }
+
+    textarea#codeTextarea::selection {
+      background-color: #b4d5fe !important;
+      color: #111111 !important;
+    }
+
+    .quickedit-nav-btn {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quickedit-nav-btn:active {
+      color: #00f2fe;
+      background-color: rgba(255, 255, 255, 0.08);
+      transform: scale(0.92);
+    }
+
+    body.theme-cyberpunk {
+      --bg-base: #10002b;
+      --surface: #240046;
+      --surface-border: #7b2cbf;
+      --editor-bg: #090014;
+      --accent: #ff007f;
+      --accent-secondary: #00f2fe;
+      --text-main: #ff9e00;
+      --text-muted: #c77dff;
+      --editor-text: #ffe5ec;
+      --gutter-bg: #180033;
+      --gutter-text: #b580ff;
+      --gutter-border: #5a189a;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .drawer-anim {
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .spinner-ring {
+      display: inline-block;
+      width: 38px;
+      height: 38px;
+      border: 3.5px solid rgba(16, 185, 129, 0.2);
+      border-radius: 50%;
+      border-top-color: #10b981;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* PWA Install Modal Glow */
+    .pwa-glow-card {
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm">
+    <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-2">
+      <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-white/10 active:scale-95 text-slate-300 hover:text-white transition">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+
+      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-white/5 active:scale-98 cursor-pointer overflow-hidden max-w-[190px] sm:max-w-xs transition" title="Tap to rename file">
+        <i data-lucide="code" class="w-4 h-4 text-[var(--accent)] shrink-0"></i>
+        <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)]">untitled.html</span>
+        <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-0.5">
+      <button id="btnHeaderInstall" title="Install Application" class="hidden p-2 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 active:scale-90 transition mr-1">
+        <i data-lucide="download" class="w-4 h-4"></i>
+      </button>
+      <button id="btnHeaderUndo" title="Undo" class="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white active:scale-90 transition">
+        <i data-lucide="undo-2" class="w-4 h-4"></i>
+      </button>
+      <button id="btnHeaderRedo" title="Redo" class="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white active:scale-90 transition">
+        <i data-lucide="redo-2" class="w-4 h-4"></i>
+      </button>
+      <button id="btnHeaderSave" title="Save File" class="p-2 rounded-lg hover:bg-white/10 text-emerald-400 hover:text-emerald-300 active:scale-90 transition">
+        <i data-lucide="save" class="w-4 h-4"></i>
+      </button>
+      <button id="btnHeaderSearch" title="Search & Replace" class="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white active:scale-90 transition">
+        <i data-lucide="search" class="w-4 h-4"></i>
+      </button>
+      <button id="btnHeaderRun" title="Live Preview" class="p-2 rounded-lg hover:bg-white/10 text-cyan-400 hover:text-cyan-300 active:scale-90 transition">
+        <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
+      </button>
+
+      <!-- 3-Dots Menu -->
+      <div class="relative">
+        <button id="btnHeaderMore" aria-label="More Menu" class="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white active:scale-90 transition">
+          <i data-lucide="more-vertical" class="w-4 h-4"></i>
+        </button>
+
+        <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-60 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
+          <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i>
+            <span>Save As...</span>
+          </button>
+          <button id="optExportSingleZip" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-400"></i>
+            <span>Export Active Tab as (.ZIP)</span>
+          </button>
+          <button id="optGoToLine" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-400"></i>
+            <span>Go to Line</span>
+          </button>
+          <button id="optEncoding" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="binary" class="w-4 h-4 text-amber-400"></i>
+            <span>Encoding</span>
+          </button>
+          <button id="optWordWrap" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between text-slate-200">
+            <span class="flex items-center space-x-2.5">
+              <i data-lucide="wrap-text" class="w-4 h-4 text-sky-400"></i>
+              <span>Word Wrap</span>
+            </span>
+            <input type="checkbox" id="checkWordWrapState" class="accent-cyan-400 rounded cursor-pointer pointer-events-none">
+          </button>
+          <button id="optReadOnly" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between text-slate-200">
+            <span class="flex items-center space-x-2.5">
+              <i data-lucide="lock" class="w-4 h-4 text-rose-400"></i>
+              <span>Read Only</span>
+            </span>
+            <input type="checkbox" id="checkReadOnlyState" class="accent-cyan-400 rounded cursor-pointer pointer-events-none">
+          </button>
+          <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+            <span>File Statistics</span>
+          </button>
+          <div class="h-px bg-[var(--surface-border)] my-1"></div>
+          <button id="optSettings" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+            <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+            <span>Editor Settings</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- QUICKEDIT COMPACT SEARCH BAR -->
+  <header id="quickSearchNavBar" class="hidden h-12 bg-slate-900 border-b border-emerald-500/40 flex items-center justify-between px-3 z-30 shrink-0 select-none shadow-md">
+    <div class="flex items-center space-x-2 flex-1 overflow-hidden mr-2">
+      <button id="btnQuickSearchExit" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white active:scale-95 transition">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-emerald-400"></i>
+      </button>
+      <span class="text-xs font-mono text-slate-300 truncate">
+        Search: "<span id="labelQuickSearchText" class="text-emerald-300 font-semibold"></span>"
+      </span>
+      <span id="labelQuickSearchCount" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">0/0</span>
+    </div>
+    <div class="flex items-center space-x-1">
+      <button id="btnQuickSearchPrev" title="Previous match" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
+        <i data-lucide="arrow-up" class="w-4 h-4"></i>
+      </button>
+      <button id="btnQuickSearchNext" title="Next match" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
+        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+      </button>
+      <button id="btnQuickSearchReopenModal" title="Edit Search" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- TAB STRIP -->
+  <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none">
+    <div id="tabStrip" class="flex-1 flex items-center space-x-1 overflow-x-auto no-scrollbar h-full py-1"></div>
+    <button id="btnTabPlus" title="Create New Tab" class="h-7 w-7 rounded-lg hover:bg-white/10 text-slate-400 hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
+      <i data-lucide="plus" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <!-- MAIN EDITOR AREA -->
+  <main id="editorContainer">
+    <div id="lineNumbersGutter">1</div>
+    <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
+
+    <!-- Floating Toast Message -->
+    <div id="appToast" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-medium shadow-2xl backdrop-blur-md pointer-events-none z-30 transition-all">
+      Toast notification
+    </div>
+  </main>
+
+  <!-- ACCESSORY SYMBOL KEYS BAR (Row 1) -->
+  <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20">
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">=</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&quot;</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&#39;</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">{</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">}</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">(</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">)</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">[</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">]</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">;</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">:</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">$</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">_</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">-</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">!</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">#</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">`</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">?</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">|</button>
+    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&amp;</button>
+    <button class="vkey px-3 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold rounded-lg active:scale-95 transition">Tab</button>
+    <button id="btnKeyCloseTag" title="Auto-close HTML tag" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;/&gt;</button>
+    <button id="btnKeyUnindent" title="Unindent" class="px-2.5 h-7 bg-white/5 hover:bg-white/15 text-slate-300 rounded-lg flex items-center justify-center active:scale-95 transition">
+      <i data-lucide="indent-decrease" class="w-3.5 h-3.5"></i>
+    </button>
+    <button id="btnKeyIndent" title="Indent" class="px-2.5 h-7 bg-white/5 hover:bg-white/15 text-slate-300 rounded-lg flex items-center justify-center active:scale-95 transition">
+      <i data-lucide="indent-increase" class="w-3.5 h-3.5"></i>
+    </button>
+    <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center active:scale-95 transition">
+      <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
+
+  <!-- QUICKEDIT NAVIGATION BAR (Row 2) -->
+  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20">
+    <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
+      <i data-lucide="undo-2" class="w-5 h-5"></i>
+    </button>
+    <button id="btnBottomRedo" title="Redo" class="quickedit-nav-btn">
+      <i data-lucide="redo-2" class="w-5 h-5"></i>
+    </button>
+    <button id="btnBottomSearch" title="Search" class="quickedit-nav-btn">
+      <i data-lucide="search" class="w-5 h-5"></i>
+    </button>
+    <button id="btnBottomSave" title="Save" class="quickedit-nav-btn text-emerald-400">
+      <i data-lucide="save" class="w-5 h-5"></i>
+    </button>
+    <button id="btnBottomRun" title="Live Preview" class="quickedit-nav-btn text-cyan-400">
+      <i data-lucide="play" class="w-5 h-5"></i>
+    </button>
+    <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-400">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+  </footer>
+
+  <!-- DRAWER -->
+  <div id="drawerOverlay" class="fixed inset-0 modal-backdrop z-40 hidden"></div>
+  <aside id="drawerNav" class="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--surface-border)] z-50 transform -translate-x-full drawer-anim flex flex-col shadow-2xl">
+    <div class="h-32 bg-gradient-to-br from-cyan-600 to-emerald-600 p-4 flex items-center space-x-3.5 text-white select-none relative overflow-hidden">
+      <div id="drawerLogoAvatar" class="w-14 h-14 rounded-2xl border-2 border-white/40 bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg">
+        <i data-lucide="terminal" class="w-7 h-7 text-white" id="drawerLogoFallback"></i>
+        <img id="drawerLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
+      </div>
+      <div class="overflow-hidden">
+        <span class="text-base font-bold tracking-tight block truncate uppercase">ANZARG CODE STUDIO</span>
+        <span class="block text-[10px] text-cyan-100 uppercase tracking-widest font-semibold">Pro Code Studio</span>
+        <p class="text-[11px] text-cyan-100/90 mt-0.5">100% Offline • Quick Precision</p>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto py-2.5 text-sm space-y-0.5">
+      <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-slate-500 uppercase">Storage & Files</div>
+      <button id="dNavNewFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="file-plus" class="w-4 h-4 text-cyan-400"></i>
+        <span>New File</span>
+      </button>
+      <button id="dNavOpenFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="folder-open" class="w-4 h-4 text-emerald-400"></i>
+        <span>Open File from Device</span>
+      </button>
+      <button id="dNavOpenZip" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="file-archive" class="w-4 h-4 text-amber-400"></i>
+        <span>Open Project (.ZIP Archive)</span>
+      </button>
+      <button id="dNavSaveFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="save" class="w-4 h-4 text-blue-400"></i>
+        <span>Save Active File</span>
+      </button>
+      <button id="dNavExportAll" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="archive" class="w-4 h-4 text-cyan-400"></i>
+        <span>Export all tabs & files</span>
+      </button>
+
+      <div class="h-px bg-[var(--surface-border)] my-2"></div>
+      <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-slate-500 uppercase">Preferences & App</div>
+
+      <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
+        <i data-lucide="download-cloud" class="w-4 h-4 text-cyan-400"></i>
+        <span class="font-semibold">Install App on Phone</span>
+      </button>
+
+      <button id="dNavSettings" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="sliders" class="w-4 h-4 text-purple-400"></i>
+        <span>Editor Settings</span>
+      </button>
+      <button id="dNavResetWorkspace" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+        <span>Clear saved files & app data</span>
+      </button>
+      <button id="dNavAbout" class="w-full px-4 py-2.5 flex items-center space-x-3 text-slate-200 hover:bg-white/5 active:bg-white/10">
+        <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
+        <span>About & Policy Details</span>
+      </button>
+    </div>
+
+    <!-- Hidden Native Inputs -->
+    <input type="file" id="fallbackFileInput" class="hidden" accept=".html,.htm,.css,.js,.json,.txt,.md,.py">
+    <input type="file" id="fallbackZipInput" class="hidden" accept=".zip,application/zip,application/x-zip-compressed">
+
+    <div class="p-3 border-t border-[var(--surface-border)] text-center text-xs text-slate-400 flex items-center justify-center space-x-1.5">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span>Smooth Native Android Select</span>
+    </div>
+  </aside>
+
+  <!-- QUICKEDIT STYLE RESTORING PREVIOUS SESSION SPINNER -->
+  <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
+      <div class="spinner-ring shrink-0"></div>
+      <div>
+        <p class="text-sm font-semibold text-slate-800">Restoring previous session...</p>
+        <p class="text-xs text-slate-500">Please wait...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA INSTALL POPUP (SEVAK AI STYLE) -->
+  <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-slate-800 pwa-glow-card relative border border-white/60">
+      <div class="flex items-center space-x-3.5 mb-3">
+        <img src="./icon-192.png" alt="App Icon" class="w-14 h-14 rounded-2xl shadow-md border border-slate-100 object-cover">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 leading-tight">ANZARG CODE STUDIO</h3>
+          <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-emerald-600 mt-0.5">
+            <span>Offline Support</span>
+            <span>•</span>
+            <span>Instant Load</span>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-slate-600 mb-6 leading-relaxed">
+        Bina browser kholiye direct code likhne, offline project run karne aur lightning-fast workflow ke liye app install karein!
+      </p>
+      <div class="flex items-center space-x-3">
+        <button id="btnPwaCancel" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+          Baad Mein
+        </button>
+        <button id="btnPwaConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center space-x-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Install Karein</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICKEDIT STYLE "DO YOU WANT TO EXIT NOW?" MODAL -->
+  <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center text-slate-800">
+      <div class="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-emerald-500 flex items-center justify-center">
+        <span class="text-emerald-500 text-2xl font-bold font-mono">?</span>
+      </div>
+      <h3 class="text-base font-bold text-slate-800 mb-2">Do you want to exit now?</h3>
+      <p class="text-xs text-slate-500 mb-6">Your work is persistently saved in internal database.</p>
+      <div class="flex items-center justify-between space-x-3">
+        <button id="btnExitLater" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl uppercase transition">
+          Later
+        </button>
+        <button id="btnExitConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl uppercase transition shadow-md">
+          Exit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET CONFIRMATION MODAL -->
+  <div id="modalResetConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center text-slate-200">
+      <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-400"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-100 mb-1.5">Reset Workspace?</h3>
+      <p class="text-xs text-slate-400 mb-5 leading-relaxed">This will permanently clear your saved workspace data.</p>
+      <div class="flex items-center space-x-2.5">
+        <button id="btnCancelResetConfirm" class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs rounded-xl transition">
+          Cancel
+        </button>
+        <button id="btnOkResetConfirm" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition shadow-md">
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVED SUCCESSFULLY POPUP -->
+  <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-full border-2 border-emerald-500 flex items-center justify-center">
+        <i data-lucide="check" class="w-8 h-8 text-emerald-500 stroke-[2.5]"></i>
+      </div>
+      <p class="text-base font-semibold text-slate-800 mb-6">Saved Successfully.</p>
+      <button id="btnSavedSuccessDone" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl tracking-wider uppercase transition shadow-md">
+        DONE
+      </button>
+    </div>
+  </div>
+
+  <!-- ABOUT & DETAILS POLICY MODAL (PLAY STORE READY) -->
+  <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-100">ANZARG CODE STUDIO</h3>
+            <span class="text-[10px] text-cyan-400 font-mono">v5.0 Professional Edition</span>
+          </div>
+        </div>
+        <button id="btnCloseAbout" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 leading-relaxed text-slate-300">
+        <div>
+          <h4 class="font-bold text-cyan-300 text-[11px] uppercase tracking-wider mb-1">Service & Capabilities</h4>
+          <p class="text-[11px] text-slate-400">ANZARG CODE STUDIO is a lightweight, ad-free mobile coding studio built for professional client-side programming, rapid web previewing, and zero-distraction offline engineering.</p>
+        </div>
+
+        <div class="p-2.5 bg-white/5 rounded-xl border border-[var(--surface-border)] text-[11px] space-y-1">
+          <div class="flex justify-between"><span class="text-slate-400">Owner & Author:</span><span class="text-slate-200 font-semibold">AnzarG</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Persistence:</span><span class="text-cyan-400 font-mono">Local IndexedDB v3</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Platform:</span><span class="text-slate-200">100% Offline Progressive Web App</span></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-emerald-400 text-[11px] uppercase tracking-wider mb-1">Privacy & Data Safety Policy</h4>
+          <p class="text-[11px] text-slate-400">This application operates purely locally on device storage. It does not collect, sell, or transmit any code, personal data, or session cookies to external servers. Your files remain 100% private to your device.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-amber-400 text-[11px] uppercase tracking-wider mb-1">Backup Recommendation</h4>
+          <p class="text-[11px] text-slate-400">Workspaces are kept in device sandbox storage. Clearing your browser data will delete unbacked-up files. Use <strong>"Export all tabs & files"</strong> frequently.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-cyan-300 text-[11px] uppercase tracking-wider mb-1">Keyboard & Touch Shortcuts</h4>
+          <div class="grid grid-cols-2 gap-1.5 text-[10px] font-mono mt-1">
+            <div class="p-1.5 bg-white/5 rounded border border-white/5"><span class="text-cyan-400">Tab:</span> 4 Spaces indent</div>
+            <div class="p-1.5 bg-white/5 rounded border border-white/5"><span class="text-cyan-400">&lt;/&gt;:</span> Auto Tag Closer</div>
+            <div class="p-1.5 bg-white/5 rounded border border-white/5"><span class="text-cyan-400">Save:</span> Direct Local Overwrite</div>
+            <div class="p-1.5 bg-white/5 rounded border border-white/5"><span class="text-cyan-400">Exit:</span> Clean Back Intercept</div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-[var(--surface-border)] text-center text-[10px] text-slate-500 font-mono">
+          © 2026 ANZARG CODE STUDIO. All Rights Reserved.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH MODAL POPUP -->
+  <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl text-slate-800">
+      <h2 class="text-xl font-bold text-emerald-600 mb-4">Search</h2>
+
+      <label class="block text-xs font-semibold text-slate-600 mb-1">Search text:</label>
+      <input type="text" id="inputModalFind" placeholder="Text to search..." class="w-full px-3 py-2 text-sm border border-emerald-500/60 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-slate-900 bg-white">
+
+      <label class="block text-xs font-semibold text-slate-600 mb-1">Replace with:</label>
+      <input type="text" id="inputModalReplace" placeholder="Replace with..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-slate-900 bg-white">
+
+      <div class="space-y-2 mb-6 text-xs text-slate-700">
+        <label class="flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="checkModalCase" class="w-4 h-4 accent-emerald-600 rounded">
+          <span>Case sensitive</span>
+        </label>
+        <label class="flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="checkModalRegex" class="w-4 h-4 accent-emerald-600 rounded">
+          <span>Regular expression</span>
+        </label>
+        <label class="flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="checkModalWrap" checked class="w-4 h-4 accent-emerald-600 rounded">
+          <span>Wrap around</span>
+        </label>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 text-xs font-bold text-emerald-600">
+        <button id="btnModalClose" class="px-2 py-1.5 hover:text-slate-500 text-slate-400">CLOSE</button>
+        <button id="btnModalReplaceAll" class="px-2 py-1.5 hover:text-emerald-700">REPLACE ALL</button>
+        <button id="btnModalReplace" class="px-2 py-1.5 hover:text-emerald-700">REPLACE</button>
+        <button id="btnModalSearch" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 shadow-sm">SEARCH</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div id="modalRename" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+      <h3 class="text-sm font-semibold text-slate-200 mb-2 flex items-center space-x-2">
+        <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i>
+        <span>Rename Active File</span>
+      </h3>
+      <input type="text" id="inputRenameName" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-white font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <div class="flex justify-end space-x-2 text-xs">
+        <button id="btnCancelRename" class="px-3 py-1.5 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        <button id="btnConfirmRename" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium">Rename</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New File Modal -->
+  <div id="modalNewFile" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+      <h3 class="text-sm font-semibold text-slate-200 mb-2 flex items-center space-x-2">
+        <i data-lucide="file-plus" class="w-4 h-4 text-emerald-400"></i>
+        <span>Create New File</span>
+      </h3>
+      <input type="text" id="inputNewFileName" placeholder="filename.html" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-white font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <div class="flex justify-end space-x-2 text-xs">
+        <button id="btnCancelNewFile" class="px-3 py-1.5 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        <button id="btnConfirmNewFile" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Go To Line Modal -->
+  <div id="modalGoToLine" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+      <h3 class="text-sm font-semibold text-slate-200 mb-1 flex items-center space-x-2">
+        <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-400"></i>
+        <span>Go to Line</span>
+      </h3>
+      <p id="labelGoToHint" class="text-[11px] text-slate-400 mb-3">Line (1 - 100):</p>
+      <input type="number" id="inputGoToLineNumber" min="1" class="w-full px-3 py-2 text-sm bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-white font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <div class="flex justify-end space-x-2 text-xs">
+        <button id="btnCancelGoTo" class="px-3 py-1.5 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        <button id="btnConfirmGoTo" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium">Jump</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encoding Modal -->
+  <div id="modalEncoding" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+      <h3 class="text-sm font-semibold text-slate-200 mb-3 flex items-center space-x-2">
+        <i data-lucide="binary" class="w-4 h-4 text-amber-400"></i>
+        <span>Select File Encoding</span>
+      </h3>
+      <div class="space-y-2 text-xs">
+        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+          <span class="text-slate-200 font-mono">UTF-8 (Default)</span>
+          <input type="radio" name="encChoice" value="UTF-8" checked class="accent-cyan-400">
+        </label>
+        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+          <span class="text-slate-200 font-mono">Windows-1252 (ANSI)</span>
+          <input type="radio" name="encChoice" value="windows-1252" class="accent-cyan-400">
+        </label>
+        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+          <span class="text-slate-200 font-mono">ISO-8859-1 (Latin-1)</span>
+          <input type="radio" name="encChoice" value="ISO-8859-1" class="accent-cyan-400">
+        </label>
+      </div>
+      <div class="mt-4 flex justify-end space-x-2 text-xs">
+        <button id="btnCancelEncoding" class="px-3 py-1.5 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        <button id="btnConfirmEncoding" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Statistics Modal -->
+  <div id="modalStats" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
+      <h3 class="text-sm font-semibold text-slate-200 mb-3 flex items-center space-x-2">
+        <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+        <span>File Statistics</span>
+      </h3>
+      <div class="space-y-2 bg-[var(--editor-bg)] p-3 rounded-xl border border-[var(--surface-border)] font-mono text-slate-300">
+        <div class="flex justify-between"><span>File:</span><span id="statFileName" class="text-cyan-400 truncate max-w-[140px]">-</span></div>
+        <div class="flex justify-between"><span>Total Lines:</span><span id="statLines" class="text-emerald-400">-</span></div>
+        <div class="flex justify-between"><span>Word Count:</span><span id="statWords" class="text-amber-400">-</span></div>
+        <div class="flex justify-between"><span>Characters:</span><span id="statChars" class="text-sky-400">-</span></div>
+        <div class="flex justify-between"><span>File Size:</span><span id="statSize" class="text-purple-400">-</span></div>
+      </div>
+      <div class="mt-4 text-right">
+        <button id="btnCloseStats" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Picker Modal -->
+  <div id="modalColor" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
+      <h3 class="text-sm font-semibold text-slate-200 mb-2 flex items-center space-x-2">
+        <i data-lucide="palette" class="w-4 h-4 text-amber-400"></i>
+        <span>Color Picker</span>
+      </h3>
+      <div class="space-y-3">
+        <div class="grid grid-cols-6 gap-2" id="colorPaletteGrid">
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#ef4444" data-color="#ef4444"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#f97316" data-color="#f97316"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#eab308" data-color="#eab308"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#10b981" data-color="#10b981"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#06b6d4" data-color="#06b6d4"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#3b82f6" data-color="#3b82f6"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#8b5cf6" data-color="#8b5cf6"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#ec4899" data-color="#ec4899"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#ffffff" data-color="#ffffff"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#94a3b8" data-color="#94a3b8"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#334155" data-color="#334155"></div>
+          <div class="h-8 rounded-lg cursor-pointer border border-white/20 active:scale-90 transition" style="background:#0f172a" data-color="#0f172a"></div>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="color" id="nativeColorPicker" value="#00f2fe" class="w-9 h-9 rounded-lg border-0 bg-transparent cursor-pointer">
+          <input type="text" id="inputHexVal" value="#00f2fe" class="flex-1 px-3 py-1.5 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-white font-mono focus:outline-none focus:border-amber-400">
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end space-x-2">
+        <button id="btnCancelColor" class="px-3 py-1.5 text-slate-400 hover:text-white rounded-lg">Cancel</button>
+        <button id="btnInsertColor" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium">Insert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
+        <h3 class="text-sm font-bold text-slate-200 flex items-center space-x-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+          <span>Editor Preferences</span>
+        </h3>
+        <button id="btnCloseSettings" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-3 bg-white/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0">
+              <i data-lucide="camera" class="w-6 h-6 text-cyan-400" id="settingLogoFallback"></i>
+              <img id="settingLogoImg" class="w-full h-full object-cover hidden" alt="Avatar">
+            </div>
+            <div>
+              <div class="font-bold text-slate-200">Studio Logo / Photo</div>
+              <div class="text-[10px] text-slate-400">Upload, Crop & Save</div>
+            </div>
+          </div>
+          <button id="btnTriggerPhotoUpload" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+            Upload
+          </button>
+        </div>
+        <input type="file" id="inputProfileFile" accept="image/*" class="hidden">
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Editor Theme</div>
+            <div class="text-[11px] text-slate-400">Dark Slate / Cyberpunk Neon</div>
+          </div>
+          <select id="settingSelectTheme" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2 py-1 text-slate-200 focus:outline-none">
+            <option value="material-darker">Dark Slate</option>
+            <option value="cyberpunk">Cyberpunk Neon</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Font Size</div>
+            <div class="text-[11px] text-slate-400">11px to 22px (Default: 13px)</div>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <button id="btnSettingFontDec" class="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-slate-200 font-bold active:scale-90 transition">-</button>
+            <span id="labelSettingFontSize" class="w-10 text-center font-mono font-medium text-cyan-400">13px</span>
+            <button id="btnSettingFontInc" class="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-slate-200 font-bold active:scale-90 transition">+</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Line Numbers</div>
+            <div class="text-[11px] text-slate-400">Left gutter numbering</div>
+          </div>
+          <input type="checkbox" id="settingCheckLines" checked class="accent-cyan-400 rounded cursor-pointer">
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Mini Accessory Bar</div>
+            <div class="text-[11px] text-slate-400">Top virtual symbol keys row</div>
+          </div>
+          <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-400 rounded cursor-pointer">
+        </div>
+      </div>
+
+      <div class="mt-5 pt-3 border-t border-[var(--surface-border)] text-right">
+        <button id="btnDoneSettings" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium active:scale-95 transition">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NATIVE CANVAS CROP & EDIT STUDIO MODAL -->
+  <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-slate-200">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
+        <h3 class="text-sm font-bold text-cyan-400 flex items-center space-x-1.5">
+          <i data-lucide="crop" class="w-4 h-4"></i>
+          <span>Crop & Adjust Photo</span>
+        </h3>
+        <button id="btnCropCancelTop" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="w-full h-64 bg-black/60 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] touch-none">
+        <canvas id="cropCanvas" width="300" height="300" class="cursor-grab active:cursor-grabbing"></canvas>
+      </div>
+
+      <div class="flex items-center justify-between mt-3 px-1">
+        <div class="flex items-center space-x-1.5">
+          <button id="btnCropZoomOut" title="Zoom Out" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+            <i data-lucide="zoom-out" class="w-4 h-4"></i>
+          </button>
+          <button id="btnCropZoomIn" title="Zoom In" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i>
+          </button>
+          <button id="btnCropRotate" title="Rotate 90deg" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <button id="btnCropReupload" class="px-2.5 py-1.5 bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-semibold rounded-lg flex items-center space-x-1 active:scale-95 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Re-upload</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 mt-4 pt-3 border-t border-[var(--surface-border)]">
+        <button id="btnCropCancel" class="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs rounded-xl transition">
+          Cancel
+        </button>
+        <button id="btnCropApply" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition active:scale-95">
+          Apply & Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE RUNNER MODAL -->
+  <div id="modalLivePreview" class="hidden fixed inset-0 bg-black/85 flex flex-col z-50">
+    <div class="h-12 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-3 shrink-0">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="globe" class="w-4 h-4 text-emerald-400"></i>
+        <span class="text-xs font-bold text-slate-200">Live HTML/Web Runner</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="btnPreviewConsoleToggle" title="Toggle Console" class="px-2.5 py-1 text-[11px] bg-white/10 hover:bg-white/20 text-slate-300 rounded-lg flex items-center space-x-1">
+          <i data-lucide="terminal" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Console</span>
+        </button>
+        <button id="btnPreviewRefresh" title="Reload Preview" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-300">
+          <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+        </button>
+        <button id="btnPreviewClose" title="Close Preview" class="p-1.5 hover:bg-white/10 rounded-lg text-rose-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-white relative flex flex-col overflow-hidden">
+      <iframe id="liveFrame" sandbox="allow-scripts allow-modals" class="w-full flex-1 border-none"></iframe>
+
+      <div id="previewConsoleTray" class="hidden h-40 bg-slate-950 border-t border-slate-800 flex flex-col text-xs font-mono select-text">
+        <div class="h-7 bg-slate-900 px-3 flex items-center justify-between text-[11px] text-slate-400">
+          <span>JavaScript Console Logs</span>
+          <button id="btnClearConsoleLogs" class="hover:text-white">Clear</button>
+        </div>
+        <div id="consoleLogsBox" class="flex-1 overflow-y-auto p-2 space-y-1 text-slate-300">
+          <div class="text-slate-500 italic">No console logs...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Database Engine
+    const DB_NAME = 'ANZARG_STUDIO_DB';
+    const DB_VER = 3;
+    let idb = null;
+
+    function initIndexedDB() {
+      return new Promise((resolve) => {
+        const req = indexedDB.open(DB_NAME, DB_VER);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('store')) {
+            db.createObjectStore('store', { keyPath: 'key' });
+          }
+        };
+        req.onsuccess = (e) => {
+          idb = e.target.result;
+          resolve(idb);
+        };
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    async function storeSave(key, value) {
+      if (!idb) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
+        return;
+      }
+      return new Promise((resolve) => {
+        try {
+          const tx = idb.transaction('store', 'readwrite');
+          tx.objectStore('store').put({ key, value });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch(e) { resolve(false); }
+      });
+    }
+
+    async function storeGet(key) {
+      if (!idb) {
+        try {
+          const data = localStorage.getItem(key);
+          return data ? JSON.parse(data) : null;
+        } catch(e) { return null; }
+      }
+      return new Promise((resolve) => {
+        try {
+          const tx = idb.transaction('store', 'readonly');
+          const req = tx.objectStore('store').get(key);
+          req.onsuccess = () => resolve(req.result ? req.result.value : null);
+          req.onerror = () => resolve(null);
+        } catch(e) { resolve(null); }
+      });
+    }
+
+    async function storeClearAll() {
+      if (idb) {
+        await new Promise((resolve) => {
+          try {
+            const tx = idb.transaction('store', 'readwrite');
+            tx.objectStore('store').clear();
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          } catch(e) { resolve(false); }
+        });
+      }
+      try { localStorage.clear(); } catch(e){}
+    }
+
+    function createFreshBlankTab(customName = 'untitled.html', customContent = '') {
+      return {
+        id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        name: customName,
+        content: customContent,
+        isModified: false,
+        fileHandle: null,
+        isNewFile: true
+      };
+    }
+
+    let fileTabs = [];
+    let activeFileId = null;
+    let autoDebounceTimer = null;
+    let textarea = null;
+    let gutter = null;
+
+    const historyStack = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 200;
+
+    let userSettings = {
+      theme: 'material-darker',
+      fontSize: 13,
+      lineNumbers: true,
+      wordWrap: false,
+      miniBar: true
+    };
+
+    let currentSearchQuery = "";
+    let currentSearchMatches = [];
+    let currentMatchPointer = -1;
+
+    // Service Worker & PWA Handler
+    let deferredInstallPrompt = null;
+
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('ANZARG SW registered successfully:', reg.scope))
+            .catch(err => console.log('ANZARG SW registration failed:', err));
+        });
+      }
+    }
+
+    function setupPwaInstallFlow() {
+      const headerInstallBtn = document.getElementById('btnHeaderInstall');
+      const drawerInstallBtn = document.getElementById('dNavInstallApp');
+      const modal = document.getElementById('modalInstallPrompt');
+      const btnCancel = document.getElementById('btnPwaCancel');
+      const btnConfirm = document.getElementById('btnPwaConfirm');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+
+        headerInstallBtn.classList.remove('hidden');
+        drawerInstallBtn.classList.remove('hidden');
+
+        const hasPrompted = sessionStorage.getItem('anzarg_pwa_prompted');
+        if (!hasPrompted) {
+          setTimeout(() => {
+            modal.classList.remove('hidden');
+            sessionStorage.setItem('anzarg_pwa_prompted', 'true');
+          }, 2000);
+        }
+      });
+
+      const showPrompt = () => {
+        if (deferredInstallPrompt) {
+          modal.classList.remove('hidden');
+        } else {
+          triggerToast("App is ready or already installed");
+        }
+      };
+
+      headerInstallBtn.addEventListener('click', showPrompt);
+      drawerInstallBtn.addEventListener('click', () => {
+        closeDrawerPanel();
+        showPrompt();
+      });
+
+      btnCancel.addEventListener('click', () => modal.classList.add('hidden'));
+
+      btnConfirm.addEventListener('click', async () => {
+        modal.classList.add('hidden');
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            triggerToast("Installing ANZARG Code Studio...");
+          }
+          deferredInstallPrompt = null;
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        headerInstallBtn.classList.add('hidden');
+        drawerInstallBtn.classList.add('hidden');
+        modal.classList.add('hidden');
+        triggerToast("App Installed Successfully!");
+      });
+    }
+
+    function triggerToast(text) {
+      const toast = document.getElementById('appToast');
+      toast.textContent = text;
+      toast.classList.remove('hidden');
+      clearTimeout(window._tTimer);
+      window._tTimer = setTimeout(() => toast.classList.add('hidden'), 2200);
+    }
+
+    function recordHistory() {
+      const val = textarea.value;
+      const selStart = textarea.selectionStart;
+      const selEnd = textarea.selectionEnd;
+
+      if (historyIndex >= 0 && historyStack[historyIndex] && historyStack[historyIndex].val === val) {
+        return;
+      }
+
+      if (historyIndex < historyStack.length - 1) {
+        historyStack.splice(historyIndex + 1);
+      }
+
+      historyStack.push({ val, selStart, selEnd });
+      if (historyStack.length > MAX_HISTORY) {
+        historyStack.shift();
+      } else {
+        historyIndex++;
+      }
+    }
+
+    function performUndo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        const state = historyStack[historyIndex];
+        textarea.value = state.val;
+        textarea.setSelectionRange(state.selStart, state.selEnd);
+        updateLineNumbers();
+        markActiveModified();
+      }
+    }
+
+    function performRedo() {
+      if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        const state = historyStack[historyIndex];
+        textarea.value = state.val;
+        textarea.setSelectionRange(state.selStart, state.selEnd);
+        updateLineNumbers();
+        markActiveModified();
+      }
+    }
+
+    let lastRenderedLinesCount = 0;
+    function updateLineNumbers() {
+      if (!userSettings.lineNumbers) return;
+      const lines = textarea.value.split('\n').length;
+
+      if (lines > 9999) {
+        gutter.style.width = '68px';
+      } else if (lines > 999) {
+        gutter.style.width = '58px';
+      } else if (lines > 99) {
+        gutter.style.width = '48px';
+      } else {
+        gutter.style.width = '40px';
+      }
+
+      if (lastRenderedLinesCount === lines) return;
+      lastRenderedLinesCount = lines;
+
+      let numbersStr = '';
+      for (let i = 1; i <= lines; i++) {
+        numbersStr += i + '\n';
+      }
+      gutter.textContent = numbersStr;
+    }
+
+    function markActiveModified() {
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      if (cur) {
+        cur.content = textarea.value;
+        cur.isModified = true;
+        document.getElementById('dotUnsaved').classList.remove('hidden');
+        scheduleAutoSave();
+      }
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(autoDebounceTimer);
+      autoDebounceTimer = setTimeout(async () => {
+        if (textarea && activeFileId) {
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          if (cur) cur.content = textarea.value;
+        }
+        const serializedTabs = fileTabs.map(t => ({
+          id: t.id,
+          name: t.name,
+          content: t.content,
+          isModified: t.isModified,
+          isNewFile: t.isNewFile
+        }));
+        await storeSave('workspace_tabs', serializedTabs);
+        await storeSave('workspace_active_id', activeFileId);
+        await storeSave('workspace_settings', userSettings);
+      }, 300);
+    }
+
+    function initNativeEditor() {
+      textarea = document.getElementById('codeTextarea');
+      gutter = document.getElementById('lineNumbersGutter');
+
+      textarea.addEventListener('scroll', () => {
+        gutter.scrollTop = textarea.scrollTop;
+      });
+
+      let lineDebounce = null;
+      let historyTimer = null;
+      textarea.addEventListener('input', () => {
+        markActiveModified();
+
+        clearTimeout(lineDebounce);
+        lineDebounce = setTimeout(updateLineNumbers, 80);
+
+        clearTimeout(historyTimer);
+        historyTimer = setTimeout(() => {
+          recordHistory();
+        }, 400);
+      });
+
+      textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          textarea.setRangeText("    ", start, end, "end");
+          updateLineNumbers();
+          markActiveModified();
+          recordHistory();
+        }
+      });
+
+      applySettingsStyles();
+    }
+
+    function renderTabStrip() {
+      const container = document.getElementById('tabStrip');
+      container.innerHTML = '';
+
+      fileTabs.forEach(tab => {
+        const isActive = tab.id === activeFileId;
+        const tabEl = document.createElement('div');
+        tabEl.className = `flex items-center space-x-1 px-3 py-1 text-xs rounded-xl cursor-pointer shrink-0 transition-all select-none ${
+          isActive
+            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-semibold shadow-xs'
+            : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+        }`;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = tab.name + (tab.isModified ? ' •' : '');
+        nameSpan.className = 'max-w-[130px] truncate';
+        tabEl.appendChild(nameSpan);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'ml-1 p-0.5 rounded-md hover:bg-white/20 text-slate-400 hover:text-white transition';
+        closeBtn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          handleCloseTab(tab.id);
+        };
+        tabEl.appendChild(closeBtn);
+
+        tabEl.onclick = () => handleSwitchTab(tab.id);
+        container.appendChild(tabEl);
+      });
+
+      const current = fileTabs.find(t => t.id === activeFileId);
+      if (current) {
+        document.getElementById('labelFileName').textContent = current.name;
+        document.getElementById('dotUnsaved').classList.toggle('hidden', !current.isModified);
+      }
+    }
+
+    function handleSwitchTab(id) {
+      if (activeFileId === id) return;
+
+      if (activeFileId && textarea) {
+        const prev = fileTabs.find(t => t.id === activeFileId);
+        if (prev) prev.content = textarea.value;
+      }
+
+      activeFileId = id;
+      const target = fileTabs.find(t => t.id === id);
+      if (target && textarea) {
+        textarea.value = target.content || '';
+        lastRenderedLinesCount = 0;
+        updateLineNumbers();
+        historyStack.length = 0;
+        historyIndex = -1;
+        recordHistory();
+      }
+      renderTabStrip();
+      scheduleAutoSave();
+    }
+
+    function handleCloseTab(id) {
+      if (fileTabs.length === 1) {
+        triggerToast("Keep at least one tab open");
+        return;
+      }
+      const idx = fileTabs.findIndex(t => t.id === id);
+      fileTabs = fileTabs.filter(t => t.id !== id);
+
+      if (activeFileId === id) {
+        const next = Math.max(0, idx - 1);
+        activeFileId = fileTabs[next].id;
+        const nextTab = fileTabs[next];
+        textarea.value = nextTab.content || '';
+        lastRenderedLinesCount = 0;
+        updateLineNumbers();
+      }
+      renderTabStrip();
+      scheduleAutoSave();
+    }
+
+    function insertTextAtCursor(text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      textarea.setRangeText(text, start, end, 'end');
+      textarea.focus();
+      updateLineNumbers();
+      markActiveModified();
+      recordHistory();
+    }
+
+    function setupAccessoryKeys() {
+      document.querySelectorAll('.vkey').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.textContent.trim();
+          if (val === 'Tab') {
+            insertTextAtCursor('    ');
+          } else {
+            insertTextAtCursor(val);
+          }
+        });
+      });
+
+      document.getElementById('btnKeyIndent').addEventListener('click', () => {
+        insertTextAtCursor('  ');
+      });
+
+      document.getElementById('btnKeyUnindent').addEventListener('click', () => {
+        const start = textarea.selectionStart;
+        const val = textarea.value;
+        if (val.substring(start - 2, start) === '  ') {
+          textarea.value = val.substring(0, start - 2) + val.substring(start);
+          textarea.setSelectionRange(start - 2, start - 2);
+          updateLineNumbers();
+          markActiveModified();
+        }
+      });
+
+      document.getElementById('btnKeyCloseTag').addEventListener('click', () => {
+        const cur = textarea.selectionStart;
+        const line = textarea.value.slice(0, cur);
+        const match = line.match(/<([a-zA-Z0-9\-]+)(?:\s+[^>]*)?$/);
+        if (match) {
+          const tag = match[1];
+          insertTextAtCursor(`></${tag}>`);
+          textarea.setSelectionRange(cur + 1, cur + 1);
+        } else {
+          insertTextAtCursor('</>');
+        }
+      });
+
+      document.getElementById('btnKeyColor').addEventListener('click', () => {
+        document.getElementById('modalColor').classList.remove('hidden');
+      });
+    }
+
+    function setupQuickEditSearch() {
+      const modal = document.getElementById('modalSearchQuickEdit');
+      const inputFind = document.getElementById('inputModalFind');
+      const inputReplace = document.getElementById('inputModalReplace');
+      const checkCase = document.getElementById('checkModalCase');
+      const checkRegex = document.getElementById('checkModalRegex');
+      const checkWrap = document.getElementById('checkModalWrap');
+
+      const mainHeader = document.getElementById('mainAppHeader');
+      const navBar = document.getElementById('quickSearchNavBar');
+      const labelText = document.getElementById('labelQuickSearchText');
+      const labelCount = document.getElementById('labelQuickSearchCount');
+
+      function calculateMatches() {
+        const q = inputFind.value;
+        if (!q) return [];
+        const text = textarea.value;
+        const matches = [];
+
+        try {
+          let flags = checkCase.checked ? 'g' : 'gi';
+          let pattern = checkRegex.checked ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          let re = new RegExp(pattern, flags);
+          let m;
+          while ((m = re.exec(text)) !== null) {
+            matches.push({ index: m.index, length: m[0].length });
+            if (m.index === re.lastIndex) re.lastIndex++;
+          }
+        } catch(e) {
+          return [];
+        }
+        return matches;
+      }
+
+      function highlightMatch(index) {
+        if (!currentSearchMatches.length || index < 0 || index >= currentSearchMatches.length) return;
+        currentMatchPointer = index;
+        const target = currentSearchMatches[currentMatchPointer];
+
+        textarea.focus();
+        textarea.setSelectionRange(target.index, target.index + target.length);
+
+        const beforeText = textarea.value.substring(0, target.index);
+        const lineNumber = beforeText.split('\n').length;
+        const lineHeight = userSettings.fontSize * 1.45;
+        const targetScroll = Math.max(0, (lineNumber * lineHeight) - (textarea.clientHeight / 2));
+        textarea.scrollTop = targetScroll;
+        gutter.scrollTop = targetScroll;
+
+        labelCount.textContent = `${currentMatchPointer + 1}/${currentSearchMatches.length}`;
+      }
+
+      function executeSearch() {
+        const q = inputFind.value.trim();
+        if (!q) {
+          triggerToast("Enter search text first");
+          return;
+        }
+
+        currentSearchQuery = q;
+        currentSearchMatches = calculateMatches();
+
+        if (currentSearchMatches.length === 0) {
+          triggerToast("Text not found!");
+          return;
+        }
+
+        modal.classList.add('hidden');
+        mainHeader.classList.add('hidden');
+        navBar.classList.remove('hidden');
+        labelText.textContent = q;
+
+        highlightMatch(0);
+      }
+
+      document.getElementById('btnModalSearch').addEventListener('click', executeSearch);
+
+      document.getElementById('btnQuickSearchNext').addEventListener('click', () => {
+        if (!currentSearchMatches.length) return;
+        let nextIdx = currentMatchPointer + 1;
+        if (nextIdx >= currentSearchMatches.length) {
+          if (checkWrap.checked) nextIdx = 0;
+          else { triggerToast("End of matches"); return; }
+        }
+        highlightMatch(nextIdx);
+      });
+
+      document.getElementById('btnQuickSearchPrev').addEventListener('click', () => {
+        if (!currentSearchMatches.length) return;
+        let prevIdx = currentMatchPointer - 1;
+        if (prevIdx < 0) {
+          if (checkWrap.checked) prevIdx = currentSearchMatches.length - 1;
+          else { triggerToast("Start of matches"); return; }
+        }
+        highlightMatch(prevIdx);
+      });
+
+      document.getElementById('btnQuickSearchExit').addEventListener('click', () => {
+        navBar.classList.add('hidden');
+        mainHeader.classList.remove('hidden');
+        currentSearchMatches = [];
+        currentMatchPointer = -1;
+      });
+
+      document.getElementById('btnQuickSearchReopenModal').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        inputFind.focus();
+      });
+
+      document.getElementById('btnModalReplace').addEventListener('click', () => {
+        const q = inputFind.value;
+        const rep = inputModalReplace.value;
+        if (!q) return;
+
+        const selStart = textarea.selectionStart;
+        const selEnd = textarea.selectionEnd;
+        const selText = textarea.value.substring(selStart, selEnd);
+
+        const match = checkCase.checked ? selText === q : selText.toLowerCase() === q.toLowerCase();
+        if (match) {
+          textarea.setRangeText(rep, selStart, selEnd, 'end');
+          updateLineNumbers();
+          markActiveModified();
+          recordHistory();
+          triggerToast("Replaced 1 match", "success");
+        }
+        currentSearchMatches = calculateMatches();
+        if (currentSearchMatches.length > 0) {
+          highlightMatch(0);
+        }
+      });
+
+      document.getElementById('btnModalReplaceAll').addEventListener('click', () => {
+        const q = inputFind.value;
+        const rep = inputModalReplace.value;
+        if (!q) {
+          triggerToast("Enter search text first");
+          return;
+        }
+
+        try {
+          let flags = checkCase.checked ? 'g' : 'gi';
+          let pattern = checkRegex.checked ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          let re = new RegExp(pattern, flags);
+          const count = (textarea.value.match(re) || []).length;
+
+          if (count > 0) {
+            textarea.value = textarea.value.replace(re, rep);
+            updateLineNumbers();
+            markActiveModified();
+            recordHistory();
+            modal.classList.add('hidden');
+            triggerToast(`Replaced all ${count} matches!`);
+          } else {
+            triggerToast("Text not found");
+          }
+        } catch(e) {
+          triggerToast("Invalid regex");
+        }
+      });
+
+      document.getElementById('btnModalClose').addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      const openSearch = () => {
+        modal.classList.remove('hidden');
+        inputFind.focus();
+      };
+      document.getElementById('btnHeaderSearch').addEventListener('click', openSearch);
+      document.getElementById('btnBottomSearch').addEventListener('click', openSearch);
+    }
+
+    function showSavedSuccessModal() {
+      const modal = document.getElementById('modalSavedSuccess');
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('btnSavedSuccessDone').addEventListener('click', () => {
+      document.getElementById('modalSavedSuccess').classList.add('hidden');
+    });
+
+    async function performDirectSave(forceSaveAs = false) {
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      if (!cur) return;
+
+      const content = textarea.value;
+      cur.content = content;
+
+      let cleanName = (cur.name || 'untitled.html').trim();
+      cleanName = cleanName.replace(/\.json$/i, '').replace(/\.txt$/i, '');
+      if (!cleanName.includes('.')) {
+        cleanName += '.html';
+      }
+      cur.name = cleanName;
+
+      if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
+        try {
+          const writable = await cur.fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          cur.isModified = false;
+          renderTabStrip();
+          showSavedSuccessModal();
+          return;
+        } catch(err) {
+          console.warn("Direct overwrite failed, asking storage picker:", err);
+        }
+      }
+
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: cleanName,
+            types: [{
+              description: 'Code Document',
+              accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt'] }
+            }]
+          });
+          cur.fileHandle = handle;
+          cur.name = handle.name;
+          cur.isNewFile = false;
+
+          const writable = await cur.fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          cur.isModified = false;
+          renderTabStrip();
+          showSavedSuccessModal();
+          return;
+        } catch(err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = cleanName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      cur.isModified = false;
+      cur.isNewFile = false;
+      renderTabStrip();
+      showSavedSuccessModal();
+    }
+
+    async function handleOpenFileNative() {
+      if ('showOpenFilePicker' in window) {
+        try {
+          const [handle] = await window.showOpenFilePicker({
+            multiple: false,
+            types: [{
+              description: 'Code Files',
+              accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'] }
+            }]
+          });
+          const file = await handle.getFile();
+          const text = await file.text();
+
+          const newTab = {
+            id: 'tab-' + Date.now(),
+            name: file.name,
+            content: text,
+            isModified: false,
+            fileHandle: handle,
+            isNewFile: false
+          };
+          fileTabs.push(newTab);
+          handleSwitchTab(newTab.id);
+          triggerToast(`Opened ${file.name}`);
+          return;
+        } catch(err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      document.getElementById('fallbackFileInput').click();
+    }
+
+    function triggerAppExitDialog() {
+      const exitModal = document.getElementById('modalExitConfirm');
+      exitModal.classList.remove('hidden');
+    }
+
+    function setupExitSystem() {
+      const exitModal = document.getElementById('modalExitConfirm');
+      const btnLater = document.getElementById('btnExitLater');
+      const btnExit = document.getElementById('btnExitConfirm');
+
+      btnLater.addEventListener('click', () => {
+        exitModal.classList.add('hidden');
+      });
+
+      btnExit.addEventListener('click', async () => {
+        exitModal.classList.add('hidden');
+        if (textarea && activeFileId) {
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          if (cur) cur.content = textarea.value;
+        }
+        await storeSave('workspace_tabs', fileTabs);
+        await storeSave('workspace_active_id', activeFileId);
+        window.location.href = "about:blank";
+      });
+
+      window.history.pushState({ page: 'editor' }, '');
+      window.addEventListener('popstate', (e) => {
+        window.history.pushState({ page: 'editor' }, '');
+
+        const openModals = [
+          'modalInstallPrompt',
+          'modalAboutSection',
+          'modalResetConfirm',
+          'modalCropStudio',
+          'modalSettings',
+          'modalSearchQuickEdit',
+          'modalSavedSuccess',
+          'modalLivePreview',
+          'modalRename',
+          'modalNewFile',
+          'modalGoToLine',
+          'modalEncoding',
+          'modalStats',
+          'modalColor'
+        ];
+
+        let closedAny = false;
+        for (let mId of openModals) {
+          const el = document.getElementById(mId);
+          if (el && !el.classList.contains('hidden')) {
+            el.classList.add('hidden');
+            closedAny = true;
+            break;
+          }
+        }
+
+        const drawer = document.getElementById('drawerNav');
+        if (!drawer.classList.contains('-translate-x-full')) {
+          closeDrawerPanel();
+          closedAny = true;
+        }
+
+        if (!closedAny) {
+          triggerAppExitDialog();
+        }
+      });
+    }
+
+    let cropImg = new Image();
+    let cropScale = 1;
+    let cropRotation = 0;
+    let cropOffsetX = 0;
+    let cropOffsetY = 0;
+    let isDraggingCrop = false;
+    let dragStartX = 0, dragStartY = 0;
+
+    function applyLogoToUI(dataUrl) {
+      if (!dataUrl) return;
+      const dImg = document.getElementById('drawerLogoImg');
+      const dFallback = document.getElementById('drawerLogoFallback');
+      dImg.src = dataUrl;
+      dImg.classList.remove('hidden');
+      dFallback.classList.add('hidden');
+
+      const sImg = document.getElementById('settingLogoImg');
+      const sFallback = document.getElementById('settingLogoFallback');
+      sImg.src = dataUrl;
+      sImg.classList.remove('hidden');
+      sFallback.classList.add('hidden');
+    }
+
+    function setupLogoCropperStudio() {
+      const fileInput = document.getElementById('inputProfileFile');
+      const cropModal = document.getElementById('modalCropStudio');
+      const canvas = document.getElementById('cropCanvas');
+      const ctx = canvas.getContext('2d');
+
+      document.getElementById('btnTriggerPhotoUpload').addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          cropImg = new Image();
+          cropImg.onload = () => {
+            cropScale = Math.max(canvas.width / cropImg.width, canvas.height / cropImg.height);
+            cropRotation = 0;
+            cropOffsetX = 0;
+            cropOffsetY = 0;
+            cropModal.classList.remove('hidden');
+            renderCropCanvas();
+          };
+          cropImg.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function renderCropCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(canvas.width / 2 + cropOffsetX, canvas.height / 2 + cropOffsetY);
+        ctx.rotate((cropRotation * Math.PI) / 180);
+        ctx.scale(cropScale, cropScale);
+        ctx.drawImage(cropImg, -cropImg.width / 2, -cropImg.height / 2);
+        ctx.restore();
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, 120, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, 120, 0, Math.PI * 2);
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#00f2fe';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      canvas.addEventListener('pointerdown', (e) => {
+        isDraggingCrop = true;
+        dragStartX = e.clientX - cropOffsetX;
+        dragStartY = e.clientY - cropOffsetY;
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (!isDraggingCrop) return;
+        cropOffsetX = e.clientX - dragStartX;
+        cropOffsetY = e.clientY - dragStartY;
+        renderCropCanvas();
+      });
+      window.addEventListener('pointerup', () => { isDraggingCrop = false; });
+
+      document.getElementById('btnCropZoomIn').addEventListener('click', () => {
+        cropScale *= 1.15;
+        renderCropCanvas();
+      });
+      document.getElementById('btnCropZoomOut').addEventListener('click', () => {
+        cropScale = Math.max(0.2, cropScale / 1.15);
+        renderCropCanvas();
+      });
+      document.getElementById('btnCropRotate').addEventListener('click', () => {
+        cropRotation = (cropRotation + 90) % 360;
+        renderCropCanvas();
+      });
+      document.getElementById('btnCropReupload').addEventListener('click', () => {
+        fileInput.value = '';
+        fileInput.click();
+      });
+
+      const closeCrop = () => {
+        cropModal.classList.add('hidden');
+        fileInput.value = '';
+      };
+      document.getElementById('btnCropCancel').addEventListener('click', closeCrop);
+      document.getElementById('btnCropCancelTop').addEventListener('click', closeCrop);
+
+      document.getElementById('btnCropApply').addEventListener('click', async () => {
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = 240;
+        exportCanvas.height = 240;
+        const eCtx = exportCanvas.getContext('2d');
+
+        eCtx.save();
+        eCtx.translate(exportCanvas.width / 2 + cropOffsetX, exportCanvas.height / 2 + cropOffsetY);
+        eCtx.rotate((cropRotation * Math.PI) / 180);
+        eCtx.scale(cropScale, cropScale);
+        eCtx.drawImage(cropImg, -cropImg.width / 2, -cropImg.height / 2);
+        eCtx.restore();
+
+        const dataUrl = exportCanvas.toDataURL('image/png');
+        await storeSave('studio_custom_logo', dataUrl);
+        applyLogoToUI(dataUrl);
+
+        cropModal.classList.add('hidden');
+        triggerToast("Logo Saved Successfully!");
+      });
+    }
+
+    function setupZipImporter() {
+      const zipInput = document.getElementById('fallbackZipInput');
+
+      document.getElementById('dNavOpenZip').addEventListener('click', () => {
+        closeDrawerPanel();
+        zipInput.click();
+      });
+
+      zipInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!window.JSZip) {
+          triggerToast("ZIP Engine loading, try again...");
+          return;
+        }
+
+        try {
+          triggerToast("Extracting ZIP project...");
+          const zip = await JSZip.loadAsync(file);
+
+          const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md'];
+          const extractedFiles = [];
+
+          const fileKeys = Object.keys(zip.files).filter(fileName => {
+            const entry = zip.files[fileName];
+            if (entry.dir) return false;
+            if (fileName.includes('__MACOSX') || fileName.startsWith('.')) return false;
+            const lower = fileName.toLowerCase();
+            return validExts.some(ext => lower.endsWith(ext));
+          });
+
+          const targetFiles = fileKeys.slice(0, 4);
+
+          for (let name of targetFiles) {
+            const content = await zip.files[name].async("string");
+            const cleanShortName = name.split('/').pop() || name;
+            extractedFiles.push({
+              name: cleanShortName,
+              content: content
+            });
+          }
+
+          if (extractedFiles.length === 0) {
+            triggerToast("No supported code files found in ZIP!");
+            return;
+          }
+
+          fileTabs = [];
+          extractedFiles.forEach((f, idx) => {
+            fileTabs.push({
+              id: 'tab-' + Date.now() + '-' + idx,
+              name: f.name,
+              content: f.content,
+              isModified: false,
+              fileHandle: null,
+              isNewFile: false
+            });
+          });
+
+          activeFileId = fileTabs[0].id;
+          textarea.value = fileTabs[0].content;
+          lastRenderedLinesCount = 0;
+          updateLineNumbers();
+          renderTabStrip();
+          scheduleAutoSave();
+
+          triggerToast(`Loaded ${extractedFiles.length} file(s) from ZIP!`);
+        } catch(err) {
+          console.error("ZIP extract error:", err);
+          triggerToast("Failed to unpack ZIP archive");
+        } finally {
+          zipInput.value = '';
+        }
+      });
+    }
+
+    async function exportTabAsZip(singleTabOnly = false) {
+      if (!window.JSZip) {
+        triggerToast("Export library loading, try again...");
+        return;
+      }
+
+      if (textarea && activeFileId) {
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        if (cur) cur.content = textarea.value;
+      }
+
+      const zip = new JSZip();
+      const usedNames = new Set();
+
+      let tabsToExport = singleTabOnly 
+        ? [fileTabs.find(t => t.id === activeFileId)].filter(Boolean)
+        : fileTabs;
+
+      if (!tabsToExport.length) return;
+
+      tabsToExport.forEach((tab, index) => {
+        let fName = (tab.name || `file-${index + 1}.html`).trim();
+        if (usedNames.has(fName)) {
+          const parts = fName.split('.');
+          const ext = parts.pop();
+          fName = `${parts.join('.')}_${index + 1}.${ext}`;
+        }
+        usedNames.add(fName);
+        zip.file(fName, tab.content || '');
+      });
+
+      const zipContent = await zip.generateAsync({ type: 'blob' });
+      const defaultZipName = singleTabOnly
+        ? `${(tabsToExport[0].name || 'file').replace(/\.[^/.]+$/, "")}.zip`
+        : `anzarg-project-${Date.now()}.zip`;
+
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultZipName,
+            types: [{
+              description: 'Project ZIP Archive',
+              accept: { 'application/zip': ['.zip'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(zipContent);
+          await writable.close();
+          triggerToast(`Saved ZIP: ${handle.name}`);
+          return;
+        } catch(err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const url = URL.createObjectURL(zipContent);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = defaultZipName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      triggerToast(singleTabOnly ? "Exported single tab as ZIP" : "Exported all files as ZIP");
+    }
+
+    function setupCustomModals() {
+      const modalAbout = document.getElementById('modalAboutSection');
+      document.getElementById('dNavAbout').addEventListener('click', () => {
+        closeDrawerPanel();
+        modalAbout.classList.remove('hidden');
+      });
+      document.getElementById('btnCloseAbout').addEventListener('click', () => {
+        modalAbout.classList.add('hidden');
+      });
+
+      const modalResetConfirm = document.getElementById('modalResetConfirm');
+      document.getElementById('dNavResetWorkspace').addEventListener('click', () => {
+        closeDrawerPanel();
+        modalResetConfirm.classList.remove('hidden');
+      });
+      document.getElementById('btnCancelResetConfirm').addEventListener('click', () => {
+        modalResetConfirm.classList.add('hidden');
+      });
+      document.getElementById('btnOkResetConfirm').addEventListener('click', async () => {
+        modalResetConfirm.classList.add('hidden');
+
+        await storeClearAll();
+
+        const freshTab = createFreshBlankTab();
+        fileTabs = [freshTab];
+        activeFileId = freshTab.id;
+
+        textarea.value = '';
+        lastRenderedLinesCount = 0;
+        updateLineNumbers();
+        historyStack.length = 0;
+        historyIndex = -1;
+
+        renderTabStrip();
+        await storeSave('workspace_tabs', fileTabs);
+        await storeSave('workspace_active_id', activeFileId);
+        triggerToast("Workspace reset to blank state");
+      });
+
+      const modalRename = document.getElementById('modalRename');
+      const inputRename = document.getElementById('inputRenameName');
+
+      document.getElementById('btnHeaderRename').addEventListener('click', () => {
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        if (!cur) return;
+        inputRename.value = cur.name;
+        modalRename.classList.remove('hidden');
+        inputRename.focus();
+      });
+
+      document.getElementById('btnCancelRename').addEventListener('click', () => modalRename.classList.add('hidden'));
+      document.getElementById('btnConfirmRename').addEventListener('click', () => {
+        const val = inputRename.value.trim();
+        if (val) {
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          if (cur) {
+            cur.name = val;
+            renderTabStrip();
+            scheduleAutoSave();
+            triggerToast(`Renamed to ${val}`);
+          }
+        }
+        modalRename.classList.add('hidden');
+      });
+
+      const modalNew = document.getElementById('modalNewFile');
+      const inputNew = document.getElementById('inputNewFileName');
+
+      function openNewFileModal() {
+        inputNew.value = `file-${fileTabs.length + 1}.html`;
+        modalNew.classList.remove('hidden');
+        inputNew.focus();
+      }
+
+      document.getElementById('btnTabPlus').addEventListener('click', openNewFileModal);
+      document.getElementById('dNavNewFile').addEventListener('click', () => {
+        closeDrawerPanel();
+        openNewFileModal();
+      });
+
+      document.getElementById('btnCancelNewFile').addEventListener('click', () => modalNew.classList.add('hidden'));
+      document.getElementById('btnConfirmNewFile').addEventListener('click', () => {
+        const val = inputNew.value.trim() || `file-${fileTabs.length + 1}.html`;
+        const newTab = createFreshBlankTab(val, '');
+        fileTabs.push(newTab);
+        handleSwitchTab(newTab.id);
+        modalNew.classList.add('hidden');
+        triggerToast(`Created ${val}`);
+      });
+
+      const modalGoTo = document.getElementById('modalGoToLine');
+      const inputGoTo = document.getElementById('inputGoToLineNumber');
+      const hintGoTo = document.getElementById('labelGoToHint');
+
+      document.getElementById('optGoToLine').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        const lines = textarea.value.split('\n').length;
+        hintGoTo.textContent = `Line (1 to ${lines}):`;
+        inputGoTo.value = 1;
+        modalGoTo.classList.remove('hidden');
+        inputGoTo.focus();
+      });
+
+      document.getElementById('btnCancelGoTo').addEventListener('click', () => modalGoTo.classList.add('hidden'));
+      document.getElementById('btnConfirmGoTo').addEventListener('click', () => {
+        const line = parseInt(inputGoTo.value, 10);
+        const lines = textarea.value.split('\n');
+        if (!isNaN(line) && line >= 1 && line <= lines.length) {
+          let pos = 0;
+          for (let i = 0; i < line - 1; i++) {
+            pos += lines[i].length + 1;
+          }
+          textarea.focus();
+          textarea.setSelectionRange(pos, pos);
+          modalGoTo.classList.add('hidden');
+        } else {
+          triggerToast("Invalid line number");
+        }
+      });
+
+      document.getElementById('optStats').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        const text = textarea.value;
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        document.getElementById('statFileName').textContent = cur ? cur.name : 'Unknown';
+        document.getElementById('statLines').textContent = text.split('\n').length;
+        document.getElementById('statWords').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+        document.getElementById('statChars').textContent = text.length;
+        document.getElementById('statSize').textContent = `${(new Blob([text]).size / 1024).toFixed(2)} KB`;
+        document.getElementById('modalStats').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseStats').addEventListener('click', () => {
+        document.getElementById('modalStats').classList.add('hidden');
+      });
+
+      document.getElementById('optEncoding').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        document.getElementById('modalEncoding').classList.remove('hidden');
+      });
+      document.getElementById('btnCancelEncoding').addEventListener('click', () => {
+        document.getElementById('modalEncoding').classList.add('hidden');
+      });
+      document.getElementById('btnConfirmEncoding').addEventListener('click', () => {
+        const choice = document.querySelector('input[name="encChoice"]:checked')?.value || 'UTF-8';
+        modalEncoding.classList.add('hidden');
+        triggerToast(`Encoding set to ${choice}`);
+      });
+
+      document.querySelectorAll('#colorPaletteGrid div').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+          const col = swatch.getAttribute('data-color');
+          document.getElementById('inputHexVal').value = col;
+          document.getElementById('nativeColorPicker').value = col;
+        });
+      });
+      document.getElementById('nativeColorPicker').addEventListener('input', (e) => {
+        document.getElementById('inputHexVal').value = e.target.value;
+      });
+      document.getElementById('btnCancelColor').addEventListener('click', () => {
+        document.getElementById('modalColor').classList.add('hidden');
+      });
+      document.getElementById('btnInsertColor').addEventListener('click', () => {
+        const hex = document.getElementById('inputHexVal').value.trim();
+        insertTextAtCursor(hex);
+        document.getElementById('modalColor').classList.add('hidden');
+        triggerToast(`Inserted: ${hex}`);
+      });
+
+      function openSettings() {
+        document.getElementById('settingSelectTheme').value = userSettings.theme;
+        document.getElementById('settingCheckLines').checked = userSettings.lineNumbers;
+        document.getElementById('settingCheckAccessory').checked = userSettings.miniBar;
+        document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
+        document.getElementById('modalSettings').classList.remove('hidden');
+      }
+
+      document.getElementById('optSettings').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        openSettings();
+      });
+      document.getElementById('dNavSettings').addEventListener('click', () => {
+        closeDrawerPanel();
+        openSettings();
+      });
+      document.getElementById('btnCloseSettings').addEventListener('click', () => {
+        document.getElementById('modalSettings').classList.add('hidden');
+      });
+      document.getElementById('btnDoneSettings').addEventListener('click', () => {
+        document.getElementById('modalSettings').classList.add('hidden');
+      });
+
+      document.getElementById('settingSelectTheme').addEventListener('change', (e) => {
+        userSettings.theme = e.target.value;
+        document.body.className = '';
+        if (userSettings.theme === 'cyberpunk') document.body.classList.add('theme-cyberpunk');
+        scheduleAutoSave();
+      });
+
+      document.getElementById('settingCheckLines').addEventListener('change', (e) => {
+        userSettings.lineNumbers = e.target.checked;
+        gutter.classList.toggle('hidden', !userSettings.lineNumbers);
+        scheduleAutoSave();
+      });
+
+      document.getElementById('settingCheckAccessory').addEventListener('change', (e) => {
+        userSettings.miniBar = e.target.checked;
+        document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
+        scheduleAutoSave();
+      });
+
+      document.getElementById('btnSettingFontInc').addEventListener('click', () => {
+        if (userSettings.fontSize < 24) {
+          userSettings.fontSize += 1;
+          document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
+          applySettingsStyles();
+          scheduleAutoSave();
+        }
+      });
+      document.getElementById('btnSettingFontDec').addEventListener('click', () => {
+        if (userSettings.fontSize > 11) {
+          userSettings.fontSize -= 1;
+          document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
+          applySettingsStyles();
+          scheduleAutoSave();
+        }
+      });
+
+      document.getElementById('optWordWrap').addEventListener('click', () => {
+        userSettings.wordWrap = !userSettings.wordWrap;
+        document.getElementById('checkWordWrapState').checked = userSettings.wordWrap;
+        textarea.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+        scheduleAutoSave();
+      });
+
+      document.getElementById('optReadOnly').addEventListener('click', () => {
+        textarea.readOnly = !textarea.readOnly;
+        document.getElementById('checkReadOnlyState').checked = textarea.readOnly;
+        triggerToast(textarea.readOnly ? "Read Only enabled" : "Editing unlocked");
+      });
+
+      document.getElementById('optExportSingleZip').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        exportTabAsZip(true);
+      });
+    }
+
+    function applySettingsStyles() {
+      if (!textarea) return;
+      textarea.style.fontSize = `${userSettings.fontSize}px`;
+      gutter.style.fontSize = `${userSettings.fontSize}px`;
+      textarea.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+      gutter.classList.toggle('hidden', !userSettings.lineNumbers);
+      lastRenderedLinesCount = 0;
+      updateLineNumbers();
+    }
+
+    function setupLiveRunner() {
+      const modal = document.getElementById('modalLivePreview');
+      const frame = document.getElementById('liveFrame');
+      const tray = document.getElementById('previewConsoleTray');
+      const logsBox = document.getElementById('consoleLogsBox');
+
+      function appendLog(type, msg) {
+        if (logsBox.children.length === 1 && logsBox.children[0].textContent.includes('No console logs')) {
+          logsBox.innerHTML = '';
+        }
+        const row = document.createElement('div');
+        row.className = `p-1 rounded ${type === 'error' ? 'text-rose-400 bg-rose-950/40' : type === 'warn' ? 'text-amber-400' : 'text-slate-300'}`;
+        row.textContent = `[${type}] ${msg}`;
+        logsBox.appendChild(row);
+        logsBox.scrollTop = logsBox.scrollHeight;
+      }
+
+      window.addEventListener('message', (e) => {
+        if (e.data && e.data.source === 'anzarg-frame-console') {
+          appendLog(e.data.type, e.data.message);
+        }
+      });
+
+      function buildInjectedSource(raw) {
+        const interceptor = `
+          <script>
+            (function(){
+              function forward(type, args){
+                try {
+                  var line = Array.from(args).map(function(item){
+                    return typeof item === 'object' ? JSON.stringify(item) : String(item);
+                  }).join(' ');
+                  window.parent.postMessage({ source: 'anzarg-frame-console', type: type, message: line }, '*');
+                } catch(e){}
+              }
+              var _log = console.log, _err = console.error, _warn = console.warn;
+              console.log = function(){ _log.apply(console, arguments); forward('log', arguments); };
+              console.error = function(){ _err.apply(console, arguments); forward('error', arguments); };
+              console.warn = function(){ _warn.apply(console, arguments); forward('warn', arguments); };
+              window.onerror = function(msg, url, l){ forward('error', msg + ' (Line ' + l + ')'); };
+            })();
+          <\/script>
+        `;
+        return raw.includes('<head>') ? raw.replace('<head>', '<head>' + interceptor) : interceptor + raw;
+      }
+
+      function launchPreview() {
+        logsBox.innerHTML = '<div class="text-slate-500 italic">Console ready...</div>';
+        modal.classList.remove('hidden');
+        frame.srcdoc = buildInjectedSource(textarea.value);
+      }
+
+      document.getElementById('btnHeaderRun').addEventListener('click', launchPreview);
+      document.getElementById('btnBottomRun').addEventListener('click', launchPreview);
+
+      document.getElementById('btnPreviewRefresh').addEventListener('click', () => {
+        frame.srcdoc = buildInjectedSource(textarea.value);
+        triggerToast("Refreshed Preview");
+      });
+      document.getElementById('btnPreviewClose').addEventListener('click', () => {
+        modal.classList.add('hidden');
+        frame.srcdoc = '';
+      });
+      document.getElementById('btnPreviewConsoleToggle').addEventListener('click', () => {
+        tray.classList.toggle('hidden');
+      });
+      document.getElementById('btnClearConsoleLogs').addEventListener('click', () => {
+        logsBox.innerHTML = '';
+      });
+    }
+
+    function closeDrawerPanel() {
+      const drawer = document.getElementById('drawerNav');
+      const overlay = document.getElementById('drawerOverlay');
+      drawer.classList.add('-translate-x-full');
+      setTimeout(() => overlay.classList.add('hidden'), 250);
+    }
+
+    function setupDrawerAndEvents() {
+      const drawer = document.getElementById('drawerNav');
+      const overlay = document.getElementById('drawerOverlay');
+
+      document.getElementById('btnOpenDrawer').addEventListener('click', () => {
+        overlay.classList.remove('hidden');
+        setTimeout(() => drawer.classList.remove('-translate-x-full'), 10);
+      });
+      overlay.addEventListener('click', closeDrawerPanel);
+
+      const overflowBtn = document.getElementById('btnHeaderMore');
+      const overflowMenu = document.getElementById('menuOverflowDropdown');
+      overflowBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overflowMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!overflowMenu.contains(e.target) && e.target !== overflowBtn) {
+          overflowMenu.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('btnHeaderSave').addEventListener('click', () => performDirectSave(false));
+      document.getElementById('btnBottomSave').addEventListener('click', () => performDirectSave(false));
+      document.getElementById('dNavSaveFile').addEventListener('click', () => {
+        closeDrawerPanel();
+        performDirectSave(false);
+      });
+      document.getElementById('optSaveAs').addEventListener('click', () => {
+        overflowMenu.classList.add('hidden');
+        performDirectSave(true);
+      });
+
+      document.getElementById('dNavOpenFile').addEventListener('click', () => {
+        closeDrawerPanel();
+        handleOpenFileNative();
+      });
+
+      document.getElementById('fallbackFileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const newTab = {
+            id: 'tab-' + Date.now(),
+            name: file.name,
+            content: evt.target.result,
+            isModified: false,
+            fileHandle: null,
+            isNewFile: false
+          };
+          fileTabs.push(newTab);
+          handleSwitchTab(newTab.id);
+          triggerToast(`Opened ${file.name}`);
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('btnHeaderUndo').addEventListener('click', performUndo);
+      document.getElementById('btnHeaderRedo').addEventListener('click', performRedo);
+      document.getElementById('btnBottomUndo').addEventListener('click', performUndo);
+      document.getElementById('btnBottomRedo').addEventListener('click', performRedo);
+
+      document.getElementById('btnBottomClose').addEventListener('click', () => {
+        triggerAppExitDialog();
+      });
+
+      document.getElementById('dNavExportAll').addEventListener('click', () => {
+        closeDrawerPanel();
+        exportTabAsZip(false);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      lucide.createIcons();
+      registerServiceWorker();
+      setupPwaInstallFlow();
+      await initIndexedDB();
+
+      const restoreModal = document.getElementById('modalRestoringSession');
+      restoreModal.classList.remove('hidden');
+
+      const savedTabs = await storeGet('workspace_tabs');
+      const savedActive = await storeGet('workspace_active_id');
+      const savedSettings = await storeGet('workspace_settings');
+      const savedLogo = await storeGet('studio_custom_logo');
+
+      if (savedSettings) {
+        userSettings = { ...userSettings, ...savedSettings };
+      }
+      if (userSettings.theme === 'default') {
+        userSettings.theme = 'material-darker';
+      }
+
+      if (savedTabs && savedTabs.length > 0) {
+        fileTabs = savedTabs;
+      } else {
+        fileTabs = [createFreshBlankTab()];
+      }
+
+      if (savedActive && fileTabs.some(t => t.id === savedActive)) {
+        activeFileId = savedActive;
+      } else {
+        activeFileId = fileTabs[0].id;
+      }
+
+      if (savedLogo) {
+        applyLogoToUI(savedLogo);
+      }
+
+      initNativeEditor();
+      const currentTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];
+      if (currentTab) {
+        textarea.value = currentTab.content || '';
+        updateLineNumbers();
+        recordHistory();
+      }
+
+      renderTabStrip();
+      setupAccessoryKeys();
+      setupQuickEditSearch();
+      setupCustomModals();
+      setupLiveRunner();
+      setupDrawerAndEvents();
+      setupExitSystem();
+      setupLogoCropperStudio();
+      setupZipImporter();
+
+      document.body.className = '';
+      if (userSettings.theme === 'cyberpunk') document.body.classList.add('theme-cyberpunk');
+      document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
+
+      setTimeout(() => {
+        restoreModal.classList.add('hidden');
+        lucide.createIcons();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

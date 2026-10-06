@@ -1057,8 +1057,9 @@
     let currentSearchMatches = [];
     let currentMatchPointer = -1;
 
-    // Service Worker & PWA Handler
+        // Intelligent Guarded PWA Installation Engine
     let deferredInstallPrompt = null;
+    let installCancelCount = 0;
 
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
@@ -1066,20 +1067,6 @@
           navigator.serviceWorker.register('./sw.js')
             .then(reg => console.log('ANZARG SW registered successfully:', reg.scope))
             .catch(err => console.log('ANZARG SW registration failed:', err));
-        });
-      }
-    }
-
-            // Intelligent Guarded PWA Installation Engine
-    let deferredInstallPrompt = null;
-    let installCancelCount = 0; // Resets automatically on every page refresh
-
-    function registerServiceWorker() {
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('ANZARG SW Registered:', reg.scope))
-            .catch(err => console.log('ANZARG SW Failed:', err));
         });
       }
     }

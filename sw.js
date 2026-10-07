@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v10';
+const CACHE_NAME = 'anzarg-studio-v11';
 
 // Core essential local assets jo app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [
@@ -20,7 +20,7 @@ const EXTERNAL_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Step 1: Local assets ko cache karein
+      // Step 1: Local assets ko guaranteed pre-cache karein
       try {
         await cache.addAll(LOCAL_ASSETS);
       } catch (err) {
@@ -50,7 +50,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            return caches.delete(key);
+            return caches.delete(key).catch(() => {});
           }
         })
       );
@@ -60,18 +60,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Sirf GET requests ko cache interceptor se guzarein
+  // Sirf GET requests ko intercept karein
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Non-HTTP aur extensions ko bypass karein
+  // Non-HTTP protocols (chrome-extension:, blob:, data:, about:) ko bypass karein
   if (!url.protocol.startsWith('http')) return;
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
-        // Cache mil gaya: turant return karein aur background me update karein
+        // Cache mil gaya: turant return karein aur background me update karein (Stale-While-Revalidate)
         fetch(event.request)
           .then((networkResponse) => {
             if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -96,7 +96,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Complete offline fallback navigation
+          // Offline navigation fallback (Bina internet ke app kholne par blank screen se bachane ke liye)
           if (event.request.mode === 'navigate') {
             const fallback = (await caches.match('./', { ignoreSearch: true })) || (await caches.match('./index.html', { ignoreSearch: true }));
             if (fallback) return fallback;

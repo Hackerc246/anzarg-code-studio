@@ -61,21 +61,21 @@
       --gutter-border: #21262d;
     }
 
-    /* Clean White / Light Mode */
+    /* Clean White / Light Mode - Sharp QuickEdit Contrast */
     body.theme-light {
       --bg-base: #f8fafc;
       --surface: #ffffff;
-      --surface-border: #e2e8f0;
+      --surface-border: #cbd5e1;
       --editor-bg: #ffffff;
       --accent: #0284c7;
       --accent-secondary: #059669;
       --text-main: #0f172a;
-      --text-muted: #64748b;
+      --text-muted: #475569;
       --editor-text: #0f172a;
       --editor-highlight: #bae6fd;
       
       --gutter-bg: #f1f5f9;
-      --gutter-text: #64748b;
+      --gutter-text: #475569;
       --gutter-border: #cbd5e1;
     }
 
@@ -144,7 +144,7 @@
       width: 48px;
       height: 100%;
       background-color: var(--gutter-bg);
-      border-right: 1px solid var(--gutter-border);
+      border-right: 1.5px solid var(--gutter-border);
       color: var(--gutter-text);
       font-family: 'Roboto Mono', 'Droid Sans Mono', monospace;
       font-size: 13px;
@@ -155,7 +155,7 @@
       -webkit-user-select: none;
       overflow: hidden;
       flex-shrink: 0;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: -0.5px;
       white-space: pre;
     }
@@ -185,6 +185,11 @@
       tab-size: 4;
       caret-color: var(--accent);
       display: block;
+    }
+
+    textarea#codeTextarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.85;
     }
 
     .quickedit-nav-btn {
@@ -235,7 +240,6 @@
       box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    /* Smart Install Pill Dynamic Style */
     #btnHeaderInstall {
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -250,11 +254,11 @@
   <!-- TOP HEADER -->
   <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm">
     <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-2">
-      <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-white/10 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
+      <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
 
-      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-white/5 active:scale-98 cursor-pointer overflow-hidden max-w-[190px] sm:max-w-xs transition" title="Tap to rename file">
+      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[190px] sm:max-w-xs transition" title="Tap to rename file">
         <i data-lucide="code" class="w-4 h-4 text-[var(--accent)] shrink-0"></i>
         <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)]">untitled.html</span>
         <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
@@ -263,70 +267,70 @@
 
     <div class="flex items-center space-x-0.5">
       <!-- Dynamic Animated Install Pill -->
-      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1.5 px-2.5 rounded-full bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 active:scale-95 border border-cyan-500/30 mr-1 shadow-sm transition">
+      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1.5 px-2.5 rounded-full bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 active:scale-95 border border-cyan-500/30 mr-1 shadow-sm transition">
         <i data-lucide="download" class="w-4 h-4 text-cyan-400 shrink-0 animate-bounce"></i>
         <span id="labelInstallText" class="text-xs font-semibold max-w-[80px] overflow-hidden opacity-100">Install</span>
       </button>
 
-      <button id="btnHeaderUndo" title="Undo" class="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderUndo" title="Undo" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="undo-2" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderRedo" title="Redo" class="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderRedo" title="Redo" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="redo-2" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderSave" title="Save File" class="p-2 rounded-lg hover:bg-white/10 text-emerald-400 hover:text-emerald-300 active:scale-90 transition">
+      <button id="btnHeaderSave" title="Save File" class="p-2 rounded-lg hover:bg-black/5 text-emerald-500 hover:text-emerald-400 active:scale-90 transition">
         <i data-lucide="save" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderSearch" title="Search & Replace" class="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderSearch" title="Search & Replace" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="search" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderRun" title="Live Preview" class="p-2 rounded-lg hover:bg-white/10 text-cyan-400 hover:text-cyan-300 active:scale-90 transition">
+      <button id="btnHeaderRun" title="Live Preview" class="p-2 rounded-lg hover:bg-black/5 text-cyan-500 hover:text-cyan-400 active:scale-90 transition">
         <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
       </button>
 
       <!-- 3-Dots Menu -->
       <div class="relative">
-        <button id="btnHeaderMore" aria-label="More Menu" class="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+        <button id="btnHeaderMore" aria-label="More Menu" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
           <i data-lucide="more-vertical" class="w-4 h-4"></i>
         </button>
 
         <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-60 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
-          <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i>
+          <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
             <span>Save As...</span>
           </button>
-          <button id="optExportSingleZip" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-400"></i>
+          <button id="optExportSingleZip" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-500"></i>
             <span>Export Active Tab as (.ZIP)</span>
           </button>
-          <button id="optGoToLine" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-400"></i>
+          <button id="optGoToLine" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
             <span>Go to Line</span>
           </button>
-          <button id="optEncoding" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="binary" class="w-4 h-4 text-amber-400"></i>
+          <button id="optEncoding" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="binary" class="w-4 h-4 text-amber-500"></i>
             <span>Encoding</span>
           </button>
-          <button id="optWordWrap" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between text-[var(--text-main)]">
+          <button id="optWordWrap" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center justify-between text-[var(--text-main)]">
             <span class="flex items-center space-x-2.5">
-              <i data-lucide="wrap-text" class="w-4 h-4 text-sky-400"></i>
+              <i data-lucide="wrap-text" class="w-4 h-4 text-sky-500"></i>
               <span>Word Wrap</span>
             </span>
-            <input type="checkbox" id="checkWordWrapState" class="accent-cyan-400 rounded cursor-pointer pointer-events-none">
+            <input type="checkbox" id="checkWordWrapState" class="accent-cyan-500 rounded cursor-pointer pointer-events-none">
           </button>
-          <button id="optReadOnly" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center justify-between text-[var(--text-main)]">
+          <button id="optReadOnly" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center justify-between text-[var(--text-main)]">
             <span class="flex items-center space-x-2.5">
-              <i data-lucide="lock" class="w-4 h-4 text-rose-400"></i>
+              <i data-lucide="lock" class="w-4 h-4 text-rose-500"></i>
               <span>Read Only</span>
             </span>
-            <input type="checkbox" id="checkReadOnlyState" class="accent-cyan-400 rounded cursor-pointer pointer-events-none">
+            <input type="checkbox" id="checkReadOnlyState" class="accent-cyan-500 rounded cursor-pointer pointer-events-none">
           </button>
-          <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+          <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
             <span>File Statistics</span>
           </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
-          <button id="optSettings" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-[var(--text-main)]">
+          <button id="optSettings" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="settings" class="w-4 h-4 text-[var(--text-muted)]"></i>
             <span>Editor Settings</span>
           </button>
@@ -362,7 +366,7 @@
   <!-- TAB STRIP -->
   <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none">
     <div id="tabStrip" class="flex-1 flex items-center space-x-1 overflow-x-auto no-scrollbar h-full py-1"></div>
-    <button id="btnTabPlus" title="Create New Tab" class="h-7 w-7 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
+    <button id="btnTabPlus" title="Create New Tab" class="h-7 w-7 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
       <i data-lucide="plus" class="w-4 h-4"></i>
     </button>
   </div>
@@ -380,38 +384,38 @@
 
   <!-- ACCESSORY SYMBOL KEYS BAR (Row 1) -->
   <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20">
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">=</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&quot;</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&#39;</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">{</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">}</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">(</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">)</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">[</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">]</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">;</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">:</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">$</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">_</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">-</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">!</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">#</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">`</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">?</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">|</button>
-    <button class="vkey px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&amp;</button>
-    <button class="vkey px-3 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold rounded-lg active:scale-95 transition">Tab</button>
-    <button id="btnKeyCloseTag" title="Auto-close HTML tag" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;/&gt;</button>
-    <button id="btnKeyUnindent" title="Unindent" class="px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">=</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&quot;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&#39;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">{</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">}</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">(</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">)</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">[</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">]</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">:</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">$</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">_</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">-</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">!</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">#</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">`</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">?</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">|</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&amp;</button>
+    <button class="vkey px-3 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">Tab</button>
+    <button id="btnKeyCloseTag" title="Auto-close HTML tag" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;/&gt;</button>
+    <button id="btnKeyUnindent" title="Unindent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
       <i data-lucide="indent-decrease" class="w-3.5 h-3.5"></i>
     </button>
-    <button id="btnKeyIndent" title="Indent" class="px-2.5 h-7 bg-white/5 hover:bg-white/15 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button id="btnKeyIndent" title="Indent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
       <i data-lucide="indent-increase" class="w-3.5 h-3.5"></i>
     </button>
-    <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition">
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
   </div>
@@ -427,13 +431,13 @@
     <button id="btnBottomSearch" title="Search" class="quickedit-nav-btn">
       <i data-lucide="search" class="w-5 h-5"></i>
     </button>
-    <button id="btnBottomSave" title="Save" class="quickedit-nav-btn text-emerald-400">
+    <button id="btnBottomSave" title="Save" class="quickedit-nav-btn text-emerald-500">
       <i data-lucide="save" class="w-5 h-5"></i>
     </button>
-    <button id="btnBottomRun" title="Live Preview" class="quickedit-nav-btn text-cyan-400">
+    <button id="btnBottomRun" title="Live Preview" class="quickedit-nav-btn text-cyan-500">
       <i data-lucide="play" class="w-5 h-5"></i>
     </button>
-    <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-400">
+    <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-500">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
   </footer>
@@ -455,45 +459,45 @@
 
     <div class="flex-1 overflow-y-auto py-2.5 text-sm space-y-0.5">
       <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">Storage & Files</div>
-      <button id="dNavNewFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="file-plus" class="w-4 h-4 text-cyan-400"></i>
+      <button id="dNavNewFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="file-plus" class="w-4 h-4 text-cyan-500"></i>
         <span>New File</span>
       </button>
-      <button id="dNavOpenFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="folder-open" class="w-4 h-4 text-emerald-400"></i>
+      <button id="dNavOpenFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="folder-open" class="w-4 h-4 text-emerald-500"></i>
         <span>Open File from Device</span>
       </button>
-      <button id="dNavOpenZip" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="file-archive" class="w-4 h-4 text-amber-400"></i>
+      <button id="dNavOpenZip" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="file-archive" class="w-4 h-4 text-amber-500"></i>
         <span>Open Project (.ZIP Archive)</span>
       </button>
-      <button id="dNavSaveFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="save" class="w-4 h-4 text-blue-400"></i>
+      <button id="dNavSaveFile" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="save" class="w-4 h-4 text-blue-500"></i>
         <span>Save Active File</span>
       </button>
-      <button id="dNavExportAll" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="archive" class="w-4 h-4 text-cyan-400"></i>
+      <button id="dNavExportAll" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="archive" class="w-4 h-4 text-cyan-500"></i>
         <span>Export all tabs & files</span>
       </button>
 
       <div class="h-px bg-[var(--surface-border)] my-2"></div>
       <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">Preferences & App</div>
 
-      <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
+      <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
         <i data-lucide="download-cloud" class="w-4 h-4 text-cyan-400"></i>
         <span class="font-semibold">Install App on Phone</span>
       </button>
 
-      <button id="dNavSettings" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="sliders" class="w-4 h-4 text-purple-400"></i>
+      <button id="dNavSettings" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="sliders" class="w-4 h-4 text-purple-500"></i>
         <span>Editor Settings</span>
       </button>
-      <button id="dNavResetWorkspace" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+      <button id="dNavResetWorkspace" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
         <span>Clear saved files & app data</span>
       </button>
-      <button id="dNavAbout" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-white/5 active:bg-white/10">
-        <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
+      <button id="dNavAbout" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="info" class="w-4 h-4 text-cyan-500"></i>
         <span>About & Policy Details</span>
       </button>
     </div>
@@ -521,23 +525,23 @@
 
   <!-- PWA INSTALL POPUP (STANDBY / FALLBACK) -->
   <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-slate-800 pwa-glow-card relative border border-white/60">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-3xl w-full max-w-sm p-6 shadow-2xl pwa-glow-card relative">
       <div class="flex items-center space-x-3.5 mb-3">
-        <img src="./icon-192.png" alt="App Icon" class="w-14 h-14 rounded-2xl shadow-md border border-slate-100 object-cover">
+        <img src="./icon-192.png" alt="App Icon" class="w-14 h-14 rounded-2xl shadow-md border border-slate-200/20 object-cover">
         <div>
-          <h3 class="text-base font-bold text-slate-900 leading-tight">ANZARG CODE STUDIO</h3>
-          <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-emerald-600 mt-0.5">
+          <h3 class="text-base font-bold text-[var(--text-main)] leading-tight">ANZARG CODE STUDIO</h3>
+          <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-emerald-500 mt-0.5">
             <span>Offline Support</span>
             <span>•</span>
             <span>Instant Load</span>
           </div>
         </div>
       </div>
-      <p class="text-xs text-slate-600 mb-6 leading-relaxed">
+      <p class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
         Bina browser kholiye direct code likhne, offline project run karne aur lightning-fast workflow ke liye app install karein!
       </p>
       <div class="flex items-center space-x-3">
-        <button id="btnPwaCancel" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+        <button id="btnPwaCancel" class="flex-1 py-2.5 bg-black/10 hover:bg-black/15 text-[var(--text-main)] font-bold text-xs rounded-xl transition">
           Baad Mein
         </button>
         <button id="btnPwaConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center space-x-1.5">
@@ -557,7 +561,7 @@
       <h3 class="text-base font-bold text-[var(--text-main)] mb-2">Do you want to exit now?</h3>
       <p class="text-xs text-[var(--text-muted)] mb-6">Your work is persistently saved in internal database.</p>
       <div class="flex items-center justify-between space-x-3">
-        <button id="btnExitLater" class="flex-1 py-2.5 bg-white/10 hover:bg-white/15 text-[var(--text-main)] font-bold text-xs rounded-xl uppercase transition">
+        <button id="btnExitLater" class="flex-1 py-2.5 bg-black/10 hover:bg-black/15 text-[var(--text-main)] font-bold text-xs rounded-xl uppercase transition">
           Later
         </button>
         <button id="btnExitConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl uppercase transition shadow-md">
@@ -569,14 +573,14 @@
 
   <!-- RESET CONFIRMATION MODAL -->
   <div id="modalResetConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center text-slate-200">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center">
       <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
-        <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-400"></i>
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-500"></i>
       </div>
-      <h3 class="text-base font-bold text-slate-100 mb-1.5">Reset Workspace?</h3>
-      <p class="text-xs text-slate-400 mb-5 leading-relaxed">This will permanently clear your saved workspace data.</p>
+      <h3 class="text-base font-bold text-[var(--text-main)] mb-1.5">Reset Workspace?</h3>
+      <p class="text-xs text-[var(--text-muted)] mb-5 leading-relaxed">This will permanently clear your saved workspace data.</p>
       <div class="flex items-center space-x-2.5">
-        <button id="btnCancelResetConfirm" class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs rounded-xl transition">
+        <button id="btnCancelResetConfirm" class="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] font-bold text-xs rounded-xl transition">
           Cancel
         </button>
         <button id="btnOkResetConfirm" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition shadow-md">
@@ -605,11 +609,11 @@
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
         <div class="flex items-center space-x-2">
           <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
+            <i data-lucide="terminal" class="w-4 h-4 text-cyan-500"></i>
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span class="text-[10px] text-cyan-400 font-mono">v5.0 Professional Edition</span>
+            <span class="text-[10px] text-cyan-500 font-mono">v5.0 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -619,23 +623,23 @@
 
       <div class="space-y-3.5 leading-relaxed text-[var(--text-muted)]">
         <div>
-          <h4 class="font-bold text-cyan-400 text-[11px] uppercase tracking-wider mb-1">Service & Capabilities</h4>
+          <h4 class="font-bold text-cyan-500 text-[11px] uppercase tracking-wider mb-1">Service & Capabilities</h4>
           <p class="text-[11px]">ANZARG CODE STUDIO is a lightweight, ad-free mobile coding studio built for professional client-side programming, rapid web previewing, and zero-distraction offline engineering.</p>
         </div>
 
-        <div class="p-2.5 bg-white/5 rounded-xl border border-[var(--surface-border)] text-[11px] space-y-1">
+        <div class="p-2.5 bg-black/5 rounded-xl border border-[var(--surface-border)] text-[11px] space-y-1">
           <div class="flex justify-between"><span>Owner & Author:</span><span class="text-[var(--text-main)] font-semibold">AnzarG</span></div>
-          <div class="flex justify-between"><span>Persistence:</span><span class="text-cyan-400 font-mono">Local IndexedDB v3 (Persistent API)</span></div>
+          <div class="flex justify-between"><span>Persistence:</span><span class="text-cyan-500 font-mono">Local IndexedDB v3 (Persistent API)</span></div>
           <div class="flex justify-between"><span>Platform:</span><span class="text-[var(--text-main)]">100% Offline Progressive Web App</span></div>
         </div>
 
         <div>
-          <h4 class="font-bold text-emerald-400 text-[11px] uppercase tracking-wider mb-1">Privacy & Data Safety Policy</h4>
+          <h4 class="font-bold text-emerald-500 text-[11px] uppercase tracking-wider mb-1">Privacy & Data Safety Policy</h4>
           <p class="text-[11px]">This application operates purely locally on device storage. It does not collect, sell, or transmit any code, personal data, or session cookies to external servers. Your files remain 100% private to your device.</p>
         </div>
 
         <div>
-          <h4 class="font-bold text-amber-400 text-[11px] uppercase tracking-wider mb-1">Backup Recommendation</h4>
+          <h4 class="font-bold text-amber-500 text-[11px] uppercase tracking-wider mb-1">Backup Recommendation</h4>
           <p class="text-[11px]">Workspaces are kept in device sandbox storage. Clearing your Android Settings "Clear Storage" will delete unbacked-up files. Use <strong>"Export all tabs & files"</strong> frequently.</p>
         </div>
 
@@ -685,10 +689,10 @@
   <div id="modalRename" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
-        <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i>
+        <i data-lucide="edit-3" class="w-4 h-4 text-cyan-500"></i>
         <span>Rename Active File</span>
       </h3>
-      <input type="text" id="inputRenameName" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <input type="text" id="inputRenameName" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-500 mb-4">
       <div class="flex justify-end space-x-2 text-xs">
         <button id="btnCancelRename" class="px-3 py-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg">Cancel</button>
         <button id="btnConfirmRename" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium">Rename</button>
@@ -700,10 +704,10 @@
   <div id="modalNewFile" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
-        <i data-lucide="file-plus" class="w-4 h-4 text-emerald-400"></i>
+        <i data-lucide="file-plus" class="w-4 h-4 text-emerald-500"></i>
         <span>Create New File</span>
       </h3>
-      <input type="text" id="inputNewFileName" placeholder="filename.html" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <input type="text" id="inputNewFileName" placeholder="filename.html" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-500 mb-4">
       <div class="flex justify-end space-x-2 text-xs">
         <button id="btnCancelNewFile" class="px-3 py-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg">Cancel</button>
         <button id="btnConfirmNewFile" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">Create</button>
@@ -715,11 +719,11 @@
   <div id="modalGoToLine" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-1 flex items-center space-x-2">
-        <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-400"></i>
+        <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
         <span>Go to Line</span>
       </h3>
       <p id="labelGoToHint" class="text-[11px] text-[var(--text-muted)] mb-3">Line (1 - 100):</p>
-      <input type="number" id="inputGoToLineNumber" min="1" class="w-full px-3 py-2 text-sm bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-400 mb-4">
+      <input type="number" id="inputGoToLineNumber" min="1" class="w-full px-3 py-2 text-sm bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-cyan-500 mb-4">
       <div class="flex justify-end space-x-2 text-xs">
         <button id="btnCancelGoTo" class="px-3 py-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg">Cancel</button>
         <button id="btnConfirmGoTo" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium">Jump</button>
@@ -731,21 +735,21 @@
   <div id="modalEncoding" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
-        <i data-lucide="binary" class="w-4 h-4 text-amber-400"></i>
+        <i data-lucide="binary" class="w-4 h-4 text-amber-500"></i>
         <span>Select File Encoding</span>
       </h3>
       <div class="space-y-2 text-xs">
-        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+        <label class="flex items-center justify-between p-2 rounded-xl bg-black/5 cursor-pointer">
           <span class="text-[var(--text-main)] font-mono">UTF-8 (Default)</span>
-          <input type="radio" name="encChoice" value="UTF-8" checked class="accent-cyan-400">
+          <input type="radio" name="encChoice" value="UTF-8" checked class="accent-cyan-500">
         </label>
-        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+        <label class="flex items-center justify-between p-2 rounded-xl bg-black/5 cursor-pointer">
           <span class="text-[var(--text-main)] font-mono">Windows-1252 (ANSI)</span>
-          <input type="radio" name="encChoice" value="windows-1252" class="accent-cyan-400">
+          <input type="radio" name="encChoice" value="windows-1252" class="accent-cyan-500">
         </label>
-        <label class="flex items-center justify-between p-2 rounded-xl bg-white/5 cursor-pointer">
+        <label class="flex items-center justify-between p-2 rounded-xl bg-black/5 cursor-pointer">
           <span class="text-[var(--text-main)] font-mono">ISO-8859-1 (Latin-1)</span>
-          <input type="radio" name="encChoice" value="ISO-8859-1" class="accent-cyan-400">
+          <input type="radio" name="encChoice" value="ISO-8859-1" class="accent-cyan-500">
         </label>
       </div>
       <div class="mt-4 flex justify-end space-x-2 text-xs">
@@ -759,15 +763,15 @@
   <div id="modalStats" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
-        <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+        <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
         <span>File Statistics</span>
       </h3>
       <div class="space-y-2 bg-[var(--editor-bg)] p-3 rounded-xl border border-[var(--surface-border)] font-mono text-[var(--text-main)]">
-        <div class="flex justify-between"><span>File:</span><span id="statFileName" class="text-cyan-400 truncate max-w-[140px]">-</span></div>
-        <div class="flex justify-between"><span>Total Lines:</span><span id="statLines" class="text-emerald-400">-</span></div>
-        <div class="flex justify-between"><span>Word Count:</span><span id="statWords" class="text-amber-400">-</span></div>
-        <div class="flex justify-between"><span>Characters:</span><span id="statChars" class="text-sky-400">-</span></div>
-        <div class="flex justify-between"><span>File Size:</span><span id="statSize" class="text-purple-400">-</span></div>
+        <div class="flex justify-between"><span>File:</span><span id="statFileName" class="text-cyan-500 truncate max-w-[140px]">-</span></div>
+        <div class="flex justify-between"><span>Total Lines:</span><span id="statLines" class="text-emerald-500">-</span></div>
+        <div class="flex justify-between"><span>Word Count:</span><span id="statWords" class="text-amber-500">-</span></div>
+        <div class="flex justify-between"><span>Characters:</span><span id="statChars" class="text-sky-500">-</span></div>
+        <div class="flex justify-between"><span>File Size:</span><span id="statSize" class="text-purple-500">-</span></div>
       </div>
       <div class="mt-4 text-right">
         <button id="btnCloseStats" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium">Close</button>
@@ -779,7 +783,7 @@
   <div id="modalColor" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
-        <i data-lucide="palette" class="w-4 h-4 text-amber-400"></i>
+        <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i>
         <span>Color Picker</span>
       </h3>
       <div class="space-y-3">
@@ -800,7 +804,7 @@
 
         <div class="flex items-center space-x-2 pt-1">
           <input type="color" id="nativeColorPicker" value="#00f2fe" class="w-9 h-9 rounded-lg border-0 bg-transparent cursor-pointer">
-          <input type="text" id="inputHexVal" value="#00f2fe" class="flex-1 px-3 py-1.5 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-amber-400">
+          <input type="text" id="inputHexVal" value="#00f2fe" class="flex-1 px-3 py-1.5 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-amber-500">
         </div>
       </div>
       <div class="mt-4 flex justify-end space-x-2">
@@ -810,12 +814,12 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (With Android Auto OS Sync Option) -->
+  <!-- SETTINGS MODAL -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
         <h3 class="text-sm font-bold text-[var(--text-main)] flex items-center space-x-2">
-          <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+          <i data-lucide="sliders" class="w-4 h-4 text-cyan-500"></i>
           <span>Editor Preferences</span>
         </h3>
         <button id="btnCloseSettings" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -824,10 +828,10 @@
       </div>
 
       <div class="space-y-4">
-        <div class="p-3 bg-white/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
+        <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0">
-              <i data-lucide="camera" class="w-6 h-6 text-cyan-400" id="settingLogoFallback"></i>
+              <i data-lucide="camera" class="w-6 h-6 text-cyan-500" id="settingLogoFallback"></i>
               <img id="settingLogoImg" class="w-full h-full object-cover hidden" alt="Avatar">
             </div>
             <div>
@@ -860,9 +864,9 @@
             <div class="text-[11px] text-[var(--text-muted)]">11px to 22px (Default: 13px)</div>
           </div>
           <div class="flex items-center space-x-1.5">
-            <button id="btnSettingFontDec" class="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-[var(--text-main)] font-bold active:scale-90 transition">-</button>
-            <span id="labelSettingFontSize" class="w-10 text-center font-mono font-medium text-cyan-400">13px</span>
-            <button id="btnSettingFontInc" class="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-[var(--text-main)] font-bold active:scale-90 transition">+</button>
+            <button id="btnSettingFontDec" class="w-7 h-7 bg-black/5 hover:bg-black/10 rounded-lg flex items-center justify-center text-[var(--text-main)] font-bold active:scale-90 transition">-</button>
+            <span id="labelSettingFontSize" class="w-10 text-center font-mono font-medium text-cyan-500">13px</span>
+            <button id="btnSettingFontInc" class="w-7 h-7 bg-black/5 hover:bg-black/10 rounded-lg flex items-center justify-center text-[var(--text-main)] font-bold active:scale-90 transition">+</button>
           </div>
         </div>
 
@@ -871,7 +875,7 @@
             <div class="font-medium text-[var(--text-main)]">Line Numbers</div>
             <div class="text-[11px] text-[var(--text-muted)]">Left gutter numbering</div>
           </div>
-          <input type="checkbox" id="settingCheckLines" checked class="accent-cyan-400 rounded cursor-pointer">
+          <input type="checkbox" id="settingCheckLines" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
 
         <div class="flex items-center justify-between">
@@ -879,7 +883,7 @@
             <div class="font-medium text-[var(--text-main)]">Mini Accessory Bar</div>
             <div class="text-[11px] text-[var(--text-muted)]">Top virtual symbol keys row</div>
           </div>
-          <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-400 rounded cursor-pointer">
+          <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
       </div>
 
@@ -893,7 +897,7 @@
   <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
-        <h3 class="text-sm font-bold text-cyan-400 flex items-center space-x-1.5">
+        <h3 class="text-sm font-bold text-cyan-500 flex items-center space-x-1.5">
           <i data-lucide="crop" class="w-4 h-4"></i>
           <span>Crop & Adjust Photo</span>
         </h3>
@@ -908,24 +912,24 @@
 
       <div class="flex items-center justify-between mt-3 px-1">
         <div class="flex items-center space-x-1.5">
-          <button id="btnCropZoomOut" title="Zoom Out" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+          <button id="btnCropZoomOut" title="Zoom Out" class="p-2 bg-black/5 hover:bg-black/10 rounded-lg text-slate-300 active:scale-90 transition">
             <i data-lucide="zoom-out" class="w-4 h-4"></i>
           </button>
-          <button id="btnCropZoomIn" title="Zoom In" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+          <button id="btnCropZoomIn" title="Zoom In" class="p-2 bg-black/5 hover:bg-black/10 rounded-lg text-slate-300 active:scale-90 transition">
             <i data-lucide="zoom-in" class="w-4 h-4"></i>
           </button>
-          <button id="btnCropRotate" title="Rotate 90deg" class="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90 transition">
+          <button id="btnCropRotate" title="Rotate 90deg" class="p-2 bg-black/5 hover:bg-black/10 rounded-lg text-slate-300 active:scale-90 transition">
             <i data-lucide="rotate-cw" class="w-4 h-4"></i>
           </button>
         </div>
-        <button id="btnCropReupload" class="px-2.5 py-1.5 bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-semibold rounded-lg flex items-center space-x-1 active:scale-95 transition">
+        <button id="btnCropReupload" class="px-2.5 py-1.5 bg-black/10 hover:bg-black/15 text-[var(--text-main)] text-xs font-semibold rounded-lg flex items-center space-x-1 active:scale-95 transition">
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
           <span>Re-upload</span>
         </button>
       </div>
 
       <div class="flex items-center justify-end space-x-2 mt-4 pt-3 border-t border-[var(--surface-border)]">
-        <button id="btnCropCancel" class="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs rounded-xl transition">
+        <button id="btnCropCancel" class="px-3.5 py-2 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] font-bold text-xs rounded-xl transition">
           Cancel
         </button>
         <button id="btnCropApply" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition active:scale-95">
@@ -1125,7 +1129,6 @@
 
         if (headerInstallBtn) {
           headerInstallBtn.classList.remove('hidden');
-          // Sleek Auto Shrink to clean Icon after 6 seconds
           setTimeout(() => {
             if (installTextLabel) {
               installTextLabel.style.maxWidth = '0px';
@@ -1332,8 +1335,8 @@
         const tabEl = document.createElement('div');
         tabEl.className = `flex items-center space-x-1 px-3 py-1 text-xs rounded-xl cursor-pointer shrink-0 transition-all select-none ${
           isActive
-            ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-semibold shadow-xs'
-            : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-white/5 border border-transparent'
+            ? 'bg-cyan-500/20 text-cyan-500 border border-cyan-500/50 font-semibold shadow-xs'
+            : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-black/5 border border-transparent'
         }`;
 
         const nameSpan = document.createElement('span');
@@ -1342,7 +1345,7 @@
         tabEl.appendChild(nameSpan);
 
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'ml-1 p-0.5 rounded-md hover:bg-white/20 text-[var(--text-muted)] hover:text-[var(--text-main)] transition';
+        closeBtn.className = 'ml-1 p-0.5 rounded-md hover:bg-black/10 text-[var(--text-muted)] hover:text-[var(--text-main)] transition';
         closeBtn.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
         closeBtn.onclick = (e) => {
           e.stopPropagation();
@@ -1747,6 +1750,7 @@
       exitModal.classList.remove('hidden');
     }
 
+    // Professional Safe Exit Flow (No about:blank Redirection)
     function setupExitSystem() {
       const exitModal = document.getElementById('modalExitConfirm');
       const btnLater = document.getElementById('btnExitLater');
@@ -1764,7 +1768,14 @@
         }
         await storeSave('workspace_tabs', fileTabs);
         await storeSave('workspace_active_id', activeFileId);
-        window.location.href = "about:blank";
+
+        // Standalone PWA close attempt
+        try {
+          window.close();
+        } catch(e){}
+
+        // Graceful non-broken exit confirmation
+        triggerToast("Session saved! Swipe away app to exit.");
       });
 
       window.history.pushState({ page: 'editor' }, '');
@@ -2093,7 +2104,7 @@
       triggerToast(singleTabOnly ? "Exported single tab as ZIP" : "Exported all files as ZIP");
     }
 
-    // Adaptive Theme Engine (System Default / Dark Slate / Light Mode / Cyberpunk)
+    // Dynamic Adaptive Theme Engine
     function applyAppTheme(themeName) {
       document.body.classList.remove('theme-light', 'theme-cyberpunk');
       let effectiveTheme = themeName;
@@ -2110,7 +2121,7 @@
       }
     }
 
-    // Live listener for phone system setting changes
+    // Live phone notification shade change listener
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (userSettings.theme === 'system') {
         applyAppTheme('system');

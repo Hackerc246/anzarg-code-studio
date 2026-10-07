@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v11';
+const CACHE_NAME = 'anzarg-studio-v12';
 
 // Core essential local assets jo app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [
@@ -20,7 +20,7 @@ const EXTERNAL_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Step 1: Local assets ko guaranteed pre-cache karein
+      // Step 1: Local assets ko pre-cache karein
       try {
         await cache.addAll(LOCAL_ASSETS);
       } catch (err) {
@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      // Cache me nahi hai: network se layein aur runtime par dynamic cache karein
+      // Cache me nahi hai: network se layein aur runtime par dynamic cache karein (Fonts & Icons included)
       return fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -96,7 +96,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Offline navigation fallback (Bina internet ke app kholne par blank screen se bachane ke liye)
+          // Offline navigation fallback (Shortcut link ya offline reload par 404 se bachane ke liye)
           if (event.request.mode === 'navigate') {
             const fallback = (await caches.match('./', { ignoreSearch: true })) || (await caches.match('./index.html', { ignoreSearch: true }));
             if (fallback) return fallback;

@@ -29,10 +29,10 @@
   <link rel="apple-touch-icon" href="./icon-512.png">
   <link rel="manifest" href="./manifest.json">
 
-  <!-- Google Font: Roboto Mono -->
+  <!-- Professional Developer Fonts: JetBrains Mono & Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -47,6 +47,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
+  <!-- Prism.js Syntax Highlighter Core & Languages -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
   <style>
     :root {
       --bg-base: #0d1117;
@@ -58,11 +66,12 @@
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
       --editor-text: #e6edf3;
-      --editor-highlight: #b4d5fe;
+      --editor-highlight: rgba(0, 242, 254, 0.25);
       
-      --gutter-bg: #11161f;
-      --gutter-text: #7d8799;
+      --gutter-bg: #0d1117;
+      --gutter-text: #6e7681;
       --gutter-border: #21262d;
+      --code-font: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     }
 
     body.theme-light {
@@ -78,7 +87,7 @@
       --editor-highlight: #bae6fd;
       
       --gutter-bg: #f1f5f9;
-      --gutter-text: #475569;
+      --gutter-text: #64748b;
       --gutter-border: #cbd5e1;
     }
 
@@ -123,11 +132,11 @@
 
     ::selection {
       background-color: var(--editor-highlight) !important;
-      color: #111111 !important;
+      color: inherit !important;
     }
     ::-moz-selection {
       background-color: var(--editor-highlight) !important;
-      color: #111111 !important;
+      color: inherit !important;
     }
 
     main#editorContainer {
@@ -143,28 +152,69 @@
       overflow: hidden;
     }
 
+    /* Professional Code Gutter (Line Numbers) */
     #lineNumbersGutter {
       width: 48px;
       height: 100%;
       background-color: var(--gutter-bg);
       border-right: 1.5px solid var(--gutter-border);
       color: var(--gutter-text);
-      font-family: 'Roboto Mono', 'Droid Sans Mono', monospace;
+      font-family: var(--code-font);
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.55;
       padding: 10px 8px 10px 0;
       text-align: right;
       user-select: none;
       -webkit-user-select: none;
       overflow: hidden;
       flex-shrink: 0;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: -0.5px;
       white-space: pre;
     }
 
-    textarea#codeTextarea {
+    /* Double Layer Syntax Highlighter Engine */
+    #editorStage {
       flex: 1 1 0%;
+      position: relative;
+      height: 100%;
+      width: 100%;
+      min-height: 0;
+      min-width: 0;
+      overflow: hidden;
+      background-color: var(--editor-bg);
+    }
+
+    #syntaxHighlightPre {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 10px 12px;
+      font-family: var(--code-font) !important;
+      font-size: 13px !important;
+      line-height: 1.55 !important;
+      background: transparent !important;
+      white-space: pre;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 1;
+      border: none;
+      border-radius: 0;
+    }
+
+    #syntaxHighlightCode {
+      font-family: var(--code-font) !important;
+      font-size: 13px !important;
+      line-height: 1.55 !important;
+      background: transparent !important;
+      text-shadow: none !important;
+    }
+
+    textarea#codeTextarea {
+      position: absolute;
+      inset: 0;
       height: 100% !important;
       width: 100% !important;
       min-height: 0;
@@ -173,11 +223,12 @@
       outline: none;
       resize: none;
       padding: 10px 12px;
-      font-family: 'Roboto Mono', 'Droid Sans Mono', monospace;
+      font-family: var(--code-font);
       font-size: 13px;
-      line-height: 1.45;
-      background-color: var(--editor-bg);
-      color: var(--editor-text);
+      line-height: 1.55;
+      background: transparent;
+      color: transparent; /* Makes text transparent so colored syntax layer underneath shines through */
+      caret-color: var(--accent);
       white-space: pre;
       overflow-wrap: normal;
       overflow-x: auto;
@@ -186,13 +237,14 @@
       user-select: text !important;
       -webkit-user-select: text !important;
       tab-size: 4;
-      caret-color: var(--accent);
       display: block;
+      z-index: 2;
     }
 
     textarea#codeTextarea::placeholder {
       color: var(--text-muted);
       opacity: 0.85;
+      -webkit-text-fill-color: var(--text-muted);
     }
 
     .quickedit-nav-btn {
@@ -408,10 +460,15 @@
     </button>
   </div>
 
-  <!-- MAIN EDITOR AREA -->
+  <!-- MAIN EDITOR AREA (DOUBLE-LAYER SYNTAX ENGINE) -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
-    <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
+    <div id="editorStage">
+      <!-- Layer 1: Colored Syntax Highlighter -->
+      <pre id="syntaxHighlightPre" aria-hidden="true"><code id="syntaxHighlightCode" class="language-html"></code></pre>
+      <!-- Layer 2: Interactive Editing Area -->
+      <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
+    </div>
 
     <!-- Floating Toast Message -->
     <div id="appToast" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-medium shadow-2xl backdrop-blur-md pointer-events-none z-30 transition-all">
@@ -680,7 +737,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.5 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.6 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1137,7 +1194,7 @@
     // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
     // ==========================================
     const APP_CONFIG = {
-      version: '5.6',
+      version: '5.7',
       edition: 'Professional Edition'
     };
 
@@ -1249,6 +1306,8 @@
     let autoDebounceTimer = null;
     let textarea = null;
     let gutter = null;
+    let syntaxCode = null;
+    let syntaxPre = null;
 
     const historyStack = [];
     let historyIndex = -1;
@@ -1402,6 +1461,7 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
+        updateSyntaxHighlighting();
         markActiveModified();
       }
     }
@@ -1413,6 +1473,7 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
+        updateSyntaxHighlighting();
         markActiveModified();
       }
     }
@@ -1440,6 +1501,25 @@
         numbersStr += i + '\n';
       }
       gutter.textContent = numbersStr;
+    }
+
+    // Dynamic Syntax Highlighter Rendering Engine
+    function updateSyntaxHighlighting() {
+      if (!syntaxCode || !textarea) return;
+      const code = textarea.value;
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      const fileName = cur ? cur.name.toLowerCase() : 'untitled.html';
+
+      let lang = 'html';
+      if (fileName.endsWith('.js') || fileName.endsWith('.json')) lang = 'javascript';
+      else if (fileName.endsWith('.css')) lang = 'css';
+      
+      syntaxCode.className = `language-${lang}`;
+      syntaxCode.textContent = code + (code.endsWith('\n') ? ' ' : '');
+      
+      if (window.Prism) {
+        Prism.highlightElement(syntaxCode);
+      }
     }
 
     function markActiveModified() {
@@ -1475,15 +1555,21 @@
     function initNativeEditor() {
       textarea = document.getElementById('codeTextarea');
       gutter = document.getElementById('lineNumbersGutter');
+      syntaxCode = document.getElementById('syntaxHighlightCode');
+      syntaxPre = document.getElementById('syntaxHighlightPre');
 
+      // Scroll synchronization
       textarea.addEventListener('scroll', () => {
         gutter.scrollTop = textarea.scrollTop;
+        syntaxPre.scrollTop = textarea.scrollTop;
+        syntaxPre.scrollLeft = textarea.scrollLeft;
       });
 
       let lineDebounce = null;
       let historyTimer = null;
       textarea.addEventListener('input', () => {
         markActiveModified();
+        updateSyntaxHighlighting();
 
         clearTimeout(lineDebounce);
         lineDebounce = setTimeout(updateLineNumbers, 80);
@@ -1501,6 +1587,7 @@
           const end = textarea.selectionEnd;
           textarea.setRangeText("    ", start, end, "end");
           updateLineNumbers();
+          updateSyntaxHighlighting();
           markActiveModified();
           recordHistory();
         }
@@ -1561,6 +1648,7 @@
         textarea.value = target.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
+        updateSyntaxHighlighting();
         historyStack.length = 0;
         historyIndex = -1;
         recordHistory();
@@ -1584,6 +1672,7 @@
         textarea.value = nextTab.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
+        updateSyntaxHighlighting();
       }
       renderTabStrip();
       scheduleAutoSave();
@@ -1595,6 +1684,7 @@
       textarea.setRangeText(text, start, end, 'end');
       textarea.focus();
       updateLineNumbers();
+      updateSyntaxHighlighting();
       markActiveModified();
       recordHistory();
     }
@@ -1622,6 +1712,7 @@
           textarea.value = val.substring(0, start - 2) + val.substring(start);
           textarea.setSelectionRange(start - 2, start - 2);
           updateLineNumbers();
+          updateSyntaxHighlighting();
           markActiveModified();
         }
       });
@@ -1688,7 +1779,7 @@
 
         const beforeText = textarea.value.substring(0, target.index);
         const lineNumber = beforeText.split('\n').length;
-        const lineHeight = userSettings.fontSize * 1.45;
+        const lineHeight = userSettings.fontSize * 1.55;
         const targetScroll = Math.max(0, (lineNumber * lineHeight) - (textarea.clientHeight / 2));
         textarea.scrollTop = targetScroll;
         gutter.scrollTop = targetScroll;
@@ -1766,6 +1857,7 @@
         if (match) {
           textarea.setRangeText(rep, selStart, selEnd, 'end');
           updateLineNumbers();
+          updateSyntaxHighlighting();
           markActiveModified();
           recordHistory();
           triggerToast("Replaced 1 match");
@@ -1793,6 +1885,7 @@
           if (count > 0) {
             textarea.value = textarea.value.replace(re, rep);
             updateLineNumbers();
+            updateSyntaxHighlighting();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
@@ -2410,6 +2503,7 @@
           textarea.value = fileTabs[0].content;
           lastRenderedLinesCount = 0;
           updateLineNumbers();
+          updateSyntaxHighlighting();
           renderTabStrip();
           scheduleAutoSave();
 
@@ -2763,7 +2857,7 @@
       document.getElementById('optWordWrap').addEventListener('click', () => {
         userSettings.wordWrap = !userSettings.wordWrap;
         document.getElementById('checkWordWrapState').checked = userSettings.wordWrap;
-        textarea.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+        applySettingsStyles();
         scheduleAutoSave();
       });
 
@@ -2780,13 +2874,22 @@
     }
 
     function applySettingsStyles() {
-      if (!textarea) return;
-      textarea.style.fontSize = `${userSettings.fontSize}px`;
-      gutter.style.fontSize = `${userSettings.fontSize}px`;
-      textarea.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+      if (!textarea || !syntaxPre || !syntaxCode) return;
+      const sizeStr = `${userSettings.fontSize}px`;
+      
+      textarea.style.fontSize = sizeStr;
+      gutter.style.fontSize = sizeStr;
+      syntaxPre.style.fontSize = sizeStr;
+      syntaxCode.style.fontSize = sizeStr;
+      
+      const wrapMode = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+      textarea.style.whiteSpace = wrapMode;
+      syntaxPre.style.whiteSpace = wrapMode;
+
       gutter.classList.toggle('hidden', !userSettings.lineNumbers);
       lastRenderedLinesCount = 0;
       updateLineNumbers();
+      updateSyntaxHighlighting();
     }
 
     // LIVE RUNNER ENGINE WITH BLOB URL
@@ -3035,6 +3138,7 @@
       if (currentTab) {
         textarea.value = currentTab.content || '';
         updateLineNumbers();
+        updateSyntaxHighlighting();
         recordHistory();
       }
 

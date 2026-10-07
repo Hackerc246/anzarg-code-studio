@@ -217,19 +217,23 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     .modal-backdrop {
-      background-color: rgba(0, 0, 0, 0.72);
+      background-color: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
     }
 
-    .drawer-anim {
-      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Fixed Drawer Sliding Architecture */
+    #drawerNav {
+      transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transform: translateX(-100%);
+      z-index: 60 !important;
     }
-
     #drawerNav.drawer-open {
       transform: translateX(0px) !important;
-      -webkit-transform: translateX(0px) !important;
-      z-index: 50 !important;
+    }
+
+    #drawerOverlay {
+      z-index: 55 !important;
     }
 
     .spinner-ring {
@@ -476,8 +480,8 @@
   </footer>
 
   <!-- DRAWER -->
-  <div id="drawerOverlay" class="fixed inset-0 modal-backdrop z-40 hidden"></div>
-  <aside id="drawerNav" class="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--surface-border)] z-50 transform -translate-x-full drawer-anim flex flex-col shadow-2xl">
+  <div id="drawerOverlay" class="fixed inset-0 modal-backdrop hidden"></div>
+  <aside id="drawerNav" class="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--surface-border)] flex flex-col shadow-2xl">
     
     <!-- DRAWER HEADER WITH DYNAMIC BANNER & LOGO -->
     <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
@@ -1058,6 +1062,7 @@
         </button>
       </div>
 
+      <!-- Cropper Image Container -->
       <div class="w-full h-64 bg-black/90 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] select-none">
         <img id="cropperImageTarget" src="" class="max-w-full max-h-full block" alt="Target Image">
       </div>
@@ -2039,7 +2044,7 @@
       }
 
       const drawer = document.getElementById('drawerNav');
-      if (drawer && (drawer.style.transform === 'translateX(0px)' || drawer.classList.contains('drawer-open'))) {
+      if (drawer && (drawer.classList.contains('drawer-open'))) {
         closeDrawerPanel();
         closedAny = true;
       }

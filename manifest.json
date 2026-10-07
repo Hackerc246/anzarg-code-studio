@@ -1,7 +1,7 @@
 {
   "name": "ANZARG CODE STUDIO",
   "short_name": "ANZARG",
-  "id": "./?source=pwa",
+  "id": "./",
   "description": "Professional Mobile Code Editor and Web Developer Studio",
   "lang": "en",
   "dir": "ltr",
@@ -69,7 +69,7 @@
   ],
   "file_handlers": [
     {
-      "action": "./?action=open",
+      "action": "./",
       "name": "Code Files",
       "accept": {
         "text/html": [".html", ".htm"],

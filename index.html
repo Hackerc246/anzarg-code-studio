@@ -226,6 +226,12 @@
       transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    #drawerNav.drawer-open {
+      transform: translateX(0px) !important;
+      -webkit-transform: translateX(0px) !important;
+      z-index: 50 !important;
+    }
+
     .spinner-ring {
       display: inline-block;
       width: 38px;
@@ -357,7 +363,6 @@
             <span>Editor Settings</span>
           </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
-          <!-- 3-Dot Force Exit Button -->
           <button id="optForceExitApp" class="w-full text-left px-3.5 py-2 hover:bg-rose-500/10 flex items-center space-x-2.5 text-rose-400 font-medium">
             <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
             <span>Force Exit Application</span>
@@ -476,7 +481,6 @@
     
     <!-- DRAWER HEADER WITH DYNAMIC BANNER & LOGO -->
     <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
-      <!-- Background Banner Image -->
       <img id="drawerBannerImg" class="absolute inset-0 w-full h-full object-cover hidden z-0 opacity-90 transition-opacity" alt="Banner">
       <div id="drawerBannerOverlay" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20 z-1 hidden"></div>
 
@@ -672,7 +676,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.2 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.5 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -915,7 +919,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (UPDATED WITH LOGO & BANNER STUDIO + FORCE CLOSE) -->
+  <!-- SETTINGS MODAL -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
@@ -1023,7 +1027,7 @@
           <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
 
-               <!-- Privacy Policy Access Button -->
+        <!-- Privacy Policy Access Button -->
         <div class="p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/20 flex items-center justify-between">
           <div>
             <div class="font-bold text-cyan-400">Privacy & Policy</div>
@@ -1033,6 +1037,13 @@
             View Policy
           </button>
         </div>
+      </div>
+
+      <div class="mt-5 pt-3 border-t border-[var(--surface-border)] text-right">
+        <button id="btnDoneSettings" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium active:scale-95 transition">Done</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ADVANCED CROPPER MODAL (FOR SELFIES & CUSTOM RATIOS) -->
   <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
@@ -1047,7 +1058,6 @@
         </button>
       </div>
 
-      <!-- Cropper Image Container -->
       <div class="w-full h-64 bg-black/90 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] select-none">
         <img id="cropperImageTarget" src="" class="max-w-full max-h-full block" alt="Target Image">
       </div>
@@ -1122,7 +1132,7 @@
     // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
     // ==========================================
     const APP_CONFIG = {
-      version: '5.5',
+      version: '5.6',
       edition: 'Professional Edition'
     };
 
@@ -1950,7 +1960,7 @@
       document.getElementById('modalExitConfirm').classList.remove('hidden');
     }
 
-        let isExiting = false;
+    let isExiting = false;
 
     // DIRECT FORCE EXIT (SHUTDOWN APP INSTANTLY - LOOP BREAKER)
     function executeForcefulClose() {
@@ -2003,6 +2013,7 @@
       const openModals = [
         'modalInstallPrompt',
         'modalAboutSection',
+        'modalPrivacyPolicy',
         'modalResetConfirm',
         'modalCropStudio',
         'modalSettings',
@@ -2028,7 +2039,7 @@
       }
 
       const drawer = document.getElementById('drawerNav');
-      if (drawer && (drawer.style.transform === 'translateX(0px)' || !drawer.classList.contains('-translate-x-full'))) {
+      if (drawer && (drawer.style.transform === 'translateX(0px)' || drawer.classList.contains('drawer-open'))) {
         closeDrawerPanel();
         closedAny = true;
       }
@@ -2089,14 +2100,9 @@
         areYouSureModal.classList.add('hidden');
       });
 
-      // 3-Dot Dropdown & Settings Force Exit Handlers
+      // 3-Dot Dropdown Force Exit Handler
       document.getElementById('optForceExitApp').addEventListener('click', () => {
         document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        triggerAppExitDialog();
-      });
-
-      document.getElementById('btnSettingsForceExit').addEventListener('click', () => {
-        document.getElementById('modalSettings').classList.add('hidden');
         triggerAppExitDialog();
       });
 
@@ -2238,7 +2244,7 @@
 
         setTimeout(() => {
           cropperInstance = new Cropper(cropImage, {
-            aspectRatio: (type === 'logo') ? 1 : (2.4 / 1), // 1:1 for Avatar, 2.4:1 for Mobile Drawer Banner
+            aspectRatio: (type === 'logo') ? 1 : (2.4 / 1),
             viewMode: 1,
             dragMode: 'move',
             autoCropArea: 0.95,
@@ -2876,19 +2882,17 @@
       });
     }
 
-        function openDrawerPanel() {
+    function openDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
       overlay.classList.remove('hidden');
-      drawer.style.transform = 'translateX(0px)';
-      drawer.classList.remove('-translate-x-full');
+      drawer.classList.add('drawer-open');
     }
 
     function closeDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
-      drawer.style.transform = 'translateX(-100%)';
-      drawer.classList.add('-translate-x-full');
+      drawer.classList.remove('drawer-open');
       setTimeout(() => overlay.classList.add('hidden'), 200);
     }
 

@@ -1,6 +1,6 @@
-const CACHE_NAME = 'anzarg-studio-v13';
+const CACHE_NAME = 'anzarg-studio-v14';
 
-// Core essential local assets jo app chalane ke liye zaroori hain
+// Core essential local assets jo offline app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [
   './',
   './index.html',
@@ -36,7 +36,15 @@ self.addEventListener('install', (event) => {
             await cache.put(req, res);
           }
         } catch (e) {
-          console.warn('External asset caching warning for:', url);
+          try {
+            const noCorsReq = new Request(url, { mode: 'no-cors' });
+            const noCorsRes = await fetch(noCorsReq);
+            if (noCorsRes) {
+              await cache.put(noCorsReq, noCorsRes);
+            }
+          } catch (err) {
+            console.warn('External asset caching warning for:', url);
+          }
         }
       }
     })
@@ -84,7 +92,7 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      // Cache me nahi hai: network se layein aur runtime par dynamic cache karein (Fonts & Icons included)
+      // Cache me nahi hai: network se fetch karein aur runtime par dynamic cache karein
       return fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -96,9 +104,12 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Offline navigation fallback (Shortcut parameters jaise ?action=new aur ?source=pwa par safe handle karein)
-          if (event.request.mode === 'navigate') {
-            const fallback = (await caches.match('./', { ignoreSearch: true })) || (await caches.match('./index.html', { ignoreSearch: true }));
+          // Robust offline navigation fallback (?action=new, ?source=pwa ya direct load)
+          const isNav = event.request.mode === 'navigate' || 
+                        (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
+          if (isNav) {
+            const fallback = (await caches.match('./', { ignoreSearch: true })) || 
+                             (await caches.match('./index.html', { ignoreSearch: true }));
             if (fallback) return fallback;
           }
         });

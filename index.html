@@ -240,7 +240,7 @@
       box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    /* Vertical Scroll Ticker Animation (Video Style) */
+    /* Vertical Scroll Ticker Animation */
     .ticker-viewport {
       height: 18px;
       overflow: hidden;
@@ -284,7 +284,7 @@
     </div>
 
     <div class="flex items-center space-x-0.5">
-      <!-- Dynamic Vertical Ticker Install Pill (Video Style) -->
+      <!-- Dynamic Vertical Ticker Install Pill -->
       <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
         <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
         <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
@@ -575,7 +575,7 @@
     </div>
   </div>
 
-  <!-- EXACT QUICKEDIT STYLE UNIFIED EXIT MODAL -->
+  <!-- EXACT QUICKEDIT STYLE UNIFIED EXIT MODAL (POPUP 1) -->
   <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
       <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
@@ -595,6 +595,23 @@
         </button>
         <button id="btnExitAndSave" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
           SAVE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXACT QUICKEDIT "ARE YOU SURE?" CONFIRMATION MODAL (POPUP 2) -->
+  <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
+      <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
+      <p id="labelAreYouSureDesc" class="text-xs text-[var(--text-main)] mb-6 leading-relaxed">Unsaved changes will be lost. Are you sure you want to exit?</p>
+      
+      <div class="flex items-center justify-end space-x-4 text-xs font-bold tracking-wide">
+        <button id="btnAreYouSureExit" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
+          EXIT
+        </button>
+        <button id="btnAreYouSureLater" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
+          LATER
         </button>
       </div>
     </div>
@@ -968,7 +985,7 @@
     </div>
   </div>
 
-  <!-- LIVE RUNNER MODAL (Fixed LocalStorage allow-same-origin Sandbox) -->
+  <!-- LIVE RUNNER MODAL -->
   <div id="modalLivePreview" class="hidden fixed inset-0 bg-black/85 flex flex-col z-50">
     <div class="h-12 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-3 shrink-0">
       <div class="flex items-center space-x-2">
@@ -990,7 +1007,6 @@
     </div>
 
     <div class="flex-1 bg-white relative flex flex-col overflow-hidden">
-      <!-- allow-same-origin added to ensure smooth local storage operations -->
       <iframe id="liveFrame" sandbox="allow-scripts allow-modals allow-same-origin" class="w-full flex-1 border-none"></iframe>
 
       <div id="previewConsoleTray" class="hidden h-40 bg-slate-950 border-t border-slate-800 flex flex-col text-xs font-mono select-text">
@@ -1074,7 +1090,6 @@
       try { localStorage.clear(); } catch(e){}
     }
 
-    // Android Guaranteed Persistent Storage Trigger
     function requestPersistentStorage() {
       if (navigator.storage && navigator.storage.persist) {
         navigator.storage.persist().then((persistent) => {
@@ -1159,7 +1174,6 @@
 
         if (headerInstallBtn) {
           headerInstallBtn.classList.remove('hidden');
-          // Smooth shrink to sleek download icon after ticker completes cycles
           setTimeout(() => {
             if (tickerWrapper) {
               tickerWrapper.style.maxWidth = '0px';
@@ -1665,18 +1679,22 @@
       document.getElementById('btnBottomSearch').addEventListener('click', openSearch);
     }
 
-    function showSavedSuccessModal() {
+    function showSavedSuccessModal(callback) {
       const modal = document.getElementById('modalSavedSuccess');
       modal.classList.remove('hidden');
+      
+      const doneBtn = document.getElementById('btnSavedSuccessDone');
+      const handleDone = () => {
+        modal.classList.add('hidden');
+        doneBtn.removeEventListener('click', handleDone);
+        if (callback) callback();
+      };
+      doneBtn.addEventListener('click', handleDone);
     }
-
-    document.getElementById('btnSavedSuccessDone').addEventListener('click', () => {
-      document.getElementById('modalSavedSuccess').classList.add('hidden');
-    });
 
     async function performDirectSave(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
-      if (!cur) return;
+      if (!cur) return false;
 
       const content = textarea.value;
       cur.content = content;
@@ -1688,22 +1706,7 @@
       }
       cur.name = cleanName;
 
-      // 1. Direct overwrite if fileHandle exists
-      if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
-        try {
-          const writable = await cur.fileHandle.createWritable();
-          await writable.write(content);
-          await writable.close();
-          cur.isModified = false;
-          renderTabStrip();
-          showSavedSuccessModal();
-          return;
-        } catch(err) {
-          console.warn("Direct overwrite fallback to device export:", err);
-        }
-      }
-
-      // 2. Direct clean browser download export
+      // Pure in-app file download without intrusive browser dialogs
       const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1717,46 +1720,18 @@
       cur.isModified = false;
       cur.isNewFile = false;
       renderTabStrip();
-      showSavedSuccessModal();
+      await storeSave('workspace_tabs', fileTabs);
+      return true;
     }
 
     async function handleOpenFileNative() {
-      if ('showOpenFilePicker' in window) {
-        try {
-          const [handle] = await window.showOpenFilePicker({
-            multiple: false,
-            types: [{
-              description: 'Code Files',
-              accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'] }
-            }]
-          });
-          const file = await handle.getFile();
-          const text = await file.text();
-
-          const newTab = {
-            id: 'tab-' + Date.now(),
-            name: file.name,
-            content: text,
-            isModified: false,
-            fileHandle: handle,
-            isNewFile: false
-          };
-          fileTabs.push(newTab);
-          handleSwitchTab(newTab.id);
-          triggerToast(`Opened ${file.name}`);
-          return;
-        } catch(err) {
-          if (err.name === 'AbortError') return;
-        }
-      }
-
       document.getElementById('fallbackFileInput').click();
     }
 
-    // Professional Unified Exit Modal Handler (Image 33833 & 33841)
+    // Professional Unified Exit Modal Handler (QuickEdit Style)
     function triggerAppExitDialog() {
+      const hasUnsaved = fileTabs.some(t => t.isModified);
       const cur = fileTabs.find(t => t.id === activeFileId);
-      const isUnsaved = cur && cur.isModified;
 
       const desc = document.getElementById('labelExitDescription');
       const fileBox = document.getElementById('boxExitFileInfo');
@@ -1765,7 +1740,7 @@
 
       fileNameSpan.textContent = cur ? cur.name : 'untitled.html';
 
-      if (isUnsaved) {
+      if (hasUnsaved) {
         desc.textContent = "Following files contain unsaved changes, do you want to save them?";
         fileBox.classList.remove('hidden');
         btnSave.classList.remove('hidden');
@@ -1775,39 +1750,88 @@
         btnSave.classList.add('hidden');
       }
 
-      const exitModal = document.getElementById('modalExitConfirm');
-      exitModal.classList.remove('hidden');
+      document.getElementById('modalExitConfirm').classList.remove('hidden');
     }
 
     function setupExitSystem() {
       const exitModal = document.getElementById('modalExitConfirm');
+      const areYouSureModal = document.getElementById('modalExitAreYouSure');
+
       const btnWithoutSave = document.getElementById('btnExitWithoutSave');
       const btnLater = document.getElementById('btnExitLater');
       const btnAndSave = document.getElementById('btnExitAndSave');
 
-      // EXIT button: safe close
-      btnWithoutSave.addEventListener('click', async () => {
+      const btnAreYouSureExit = document.getElementById('btnAreYouSureExit');
+      const btnAreYouSureLater = document.getElementById('btnAreYouSureLater');
+
+      const finalizeAppExit = () => {
         exitModal.classList.add('hidden');
-        try { window.close(); } catch(e){}
+        areYouSureModal.classList.add('hidden');
         triggerToast("Session safely finished.");
+        setTimeout(() => {
+          try {
+            window.close();
+          } catch(e){}
+        }, 500);
+      };
+
+      // EXIT button (Popup 1)
+      btnWithoutSave.addEventListener('click', () => {
+        const hasUnsaved = fileTabs.some(t => t.isModified);
+        exitModal.classList.add('hidden');
+
+        if (hasUnsaved) {
+          // Unsaved changes hai -> Ask "Are you sure?" (Popup 2)
+          areYouSureModal.classList.remove('hidden');
+        } else {
+          // Already saved/empty -> Direct Exit
+          finalizeAppExit();
+        }
       });
 
-      // LATER button: continue editing
+      // LATER button (Popup 1)
       btnLater.addEventListener('click', () => {
         exitModal.classList.add('hidden');
       });
 
-      // SAVE button: save and exit
+      // SAVE button (Popup 1)
       btnAndSave.addEventListener('click', async () => {
         exitModal.classList.add('hidden');
-        await performDirectSave(false);
-        try { window.close(); } catch(e){}
+        const saved = await performDirectSave(false);
+        if (saved) {
+          showSavedSuccessModal(() => {
+            finalizeAppExit();
+          });
+        }
       });
 
+      // "Are you sure?" modal handlers (Popup 2)
+      btnAreYouSureExit.addEventListener('click', () => {
+        finalizeAppExit();
+      });
+
+      btnAreYouSureLater.addEventListener('click', () => {
+        areYouSureModal.classList.add('hidden');
+      });
+
+      // Android Hardware Back Button + History Lock Trap
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', (e) => {
         window.history.pushState({ page: 'editor' }, '');
 
+        // 1. Agar Popup 2 (Are you sure) open hai, toh use band karein
+        if (!areYouSureModal.classList.contains('hidden')) {
+          areYouSureModal.classList.add('hidden');
+          return;
+        }
+
+        // 2. Agar Popup 1 (Exit Confirm) open hai, toh use band karein
+        if (!exitModal.classList.contains('hidden')) {
+          exitModal.classList.add('hidden');
+          return;
+        }
+
+        // 3. Agar koi application setting/other modal khula hai, toh pehle sirf wo band ho
         const openModals = [
           'modalInstallPrompt',
           'modalAboutSection',
@@ -1835,12 +1859,14 @@
           }
         }
 
+        // 4. Drawer open hai toh drawer close ho
         const drawer = document.getElementById('drawerNav');
         if (!drawer.classList.contains('-translate-x-full')) {
           closeDrawerPanel();
           closedAny = true;
         }
 
+        // 5. Agar screen par kuch bhi khula nahi hai, toh App Exit Dialog trigger ho
         if (!closedAny) {
           triggerAppExitDialog();
         }
@@ -2111,7 +2137,6 @@
       triggerToast(singleTabOnly ? "Exported single tab as ZIP" : "Exported all files as ZIP");
     }
 
-    // Dynamic Adaptive Theme Engine
     function applyAppTheme(themeName) {
       document.body.classList.remove('theme-light', 'theme-cyberpunk');
       let effectiveTheme = themeName;
@@ -2128,7 +2153,6 @@
       }
     }
 
-    // Live phone notification shade change listener
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (userSettings.theme === 'system') {
         applyAppTheme('system');
@@ -2490,15 +2514,23 @@
         }
       });
 
-      document.getElementById('btnHeaderSave').addEventListener('click', () => performDirectSave(false));
-      document.getElementById('btnBottomSave').addEventListener('click', () => performDirectSave(false));
-      document.getElementById('dNavSaveFile').addEventListener('click', () => {
-        closeDrawerPanel();
-        performDirectSave(false);
+      document.getElementById('btnHeaderSave').addEventListener('click', async () => {
+        const saved = await performDirectSave(false);
+        if (saved) showSavedSuccessModal();
       });
-      document.getElementById('optSaveAs').addEventListener('click', () => {
+      document.getElementById('btnBottomSave').addEventListener('click', async () => {
+        const saved = await performDirectSave(false);
+        if (saved) showSavedSuccessModal();
+      });
+      document.getElementById('dNavSaveFile').addEventListener('click', async () => {
+        closeDrawerPanel();
+        const saved = await performDirectSave(false);
+        if (saved) showSavedSuccessModal();
+      });
+      document.getElementById('optSaveAs').addEventListener('click', async () => {
         overflowMenu.classList.add('hidden');
-        performDirectSave(true);
+        const saved = await performDirectSave(true);
+        if (saved) showSavedSuccessModal();
       });
 
       document.getElementById('dNavOpenFile').addEventListener('click', () => {
@@ -2598,9 +2630,19 @@
 
       document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
 
-      setTimeout(() => {
+            setTimeout(() => {
         restoreModal.classList.add('hidden');
         lucide.createIcons();
+
+        // Manifest shortcut (?action=new) handle karne ke liye
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') {
+          const newName = `file-${fileTabs.length + 1}.html`;
+          const newTab = createFreshBlankTab(newName, '');
+          fileTabs.push(newTab);
+          handleSwitchTab(newTab.id);
+          triggerToast(`Created ${newName}`);
+        }
       }, 500);
     });
   </script>

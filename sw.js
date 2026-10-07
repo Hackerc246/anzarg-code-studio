@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v14';
+const CACHE_NAME = 'anzarg-studio-v15';
 
 // Core essential local assets jo offline app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [

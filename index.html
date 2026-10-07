@@ -61,7 +61,6 @@
       --gutter-border: #21262d;
     }
 
-    /* Clean White / Light Mode - Sharp QuickEdit Contrast */
     body.theme-light {
       --bg-base: #f8fafc;
       --surface: #ffffff;
@@ -240,7 +239,6 @@
       box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    /* Vertical Scroll Ticker Animation */
     .ticker-viewport {
       height: 18px;
       overflow: hidden;
@@ -320,7 +318,7 @@
         <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-60 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
           <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
-            <span>Save As...</span>
+            <span>Save As / Export</span>
           </button>
           <button id="optExportSingleZip" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="file-archive" class="w-4 h-4 text-cyan-500"></i>
@@ -546,7 +544,7 @@
     </div>
   </div>
 
-  <!-- PWA INSTALL POPUP (STANDBY / FALLBACK) -->
+  <!-- PWA INSTALL POPUP -->
   <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-3xl w-full max-w-sm p-6 shadow-2xl pwa-glow-card relative">
       <div class="flex items-center space-x-3.5 mb-3">
@@ -649,7 +647,7 @@
     </div>
   </div>
 
-  <!-- ABOUT & DETAILS POLICY MODAL (PLAY STORE READY) -->
+  <!-- ABOUT & DETAILS POLICY MODAL -->
   <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -1692,7 +1690,8 @@
       doneBtn.addEventListener('click', handleDone);
     }
 
-    async function performDirectSave(forceSaveAs = false) {
+    // Professional In-App Save & Export System (No unwanted browser downloads)
+    async function performDirectSave(forceFileExport = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur) return false;
 
@@ -1706,21 +1705,26 @@
       }
       cur.name = cleanName;
 
-      // Pure in-app file download without intrusive browser dialogs
-      const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = cleanName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Agar user ne "Save As / Export" chuna ho, sirf tabhi device export trigger ho
+      if (forceFileExport) {
+        const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = cleanName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
 
       cur.isModified = false;
       cur.isNewFile = false;
       renderTabStrip();
+
+      // IndexedDB persistent storage
       await storeSave('workspace_tabs', fileTabs);
+      await storeSave('workspace_active_id', activeFileId);
       return true;
     }
 
@@ -1745,7 +1749,7 @@
         fileBox.classList.remove('hidden');
         btnSave.classList.remove('hidden');
       } else {
-        desc.textContent = "All changes are saved in local storage. Do you want to exit now?";
+        desc.textContent = "All changes are securely saved in local storage. Do you want to exit now?";
         fileBox.classList.add('hidden');
         btnSave.classList.add('hidden');
       }
@@ -1781,10 +1785,8 @@
         exitModal.classList.add('hidden');
 
         if (hasUnsaved) {
-          // Unsaved changes hai -> Ask "Are you sure?" (Popup 2)
           areYouSureModal.classList.remove('hidden');
         } else {
-          // Already saved/empty -> Direct Exit
           finalizeAppExit();
         }
       });
@@ -2249,7 +2251,7 @@
         triggerToast(`Created ${val}`);
       });
 
-      const modalGoTo = document.getElementById('modalGoToLine');
+      const modalGoToLine = document.getElementById('modalGoToLine');
       const inputGoTo = document.getElementById('inputGoToLineNumber');
       const hintGoTo = document.getElementById('labelGoToHint');
 
@@ -2258,11 +2260,11 @@
         const lines = textarea.value.split('\n').length;
         hintGoTo.textContent = `Line (1 to ${lines}):`;
         inputGoTo.value = 1;
-        modalGoTo.classList.remove('hidden');
+        modalGoToLine.classList.remove('hidden');
         inputGoTo.focus();
       });
 
-      document.getElementById('btnCancelGoTo').addEventListener('click', () => modalGoTo.classList.add('hidden'));
+      document.getElementById('btnCancelGoTo').addEventListener('click', () => modalGoToLine.classList.add('hidden'));
       document.getElementById('btnConfirmGoTo').addEventListener('click', () => {
         const line = parseInt(inputGoTo.value, 10);
         const lines = textarea.value.split('\n');
@@ -2273,7 +2275,7 @@
           }
           textarea.focus();
           textarea.setSelectionRange(pos, pos);
-          modalGoTo.classList.add('hidden');
+          modalGoToLine.classList.add('hidden');
         } else {
           triggerToast("Invalid line number");
         }
@@ -2630,7 +2632,7 @@
 
       document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
 
-            setTimeout(() => {
+      setTimeout(() => {
         restoreModal.classList.add('hidden');
         lucide.createIcons();
 

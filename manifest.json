@@ -1,7 +1,7 @@
 {
   "name": "ANZARG CODE STUDIO",
   "short_name": "ANZARG",
-  "id": "./",
+  "id": "./?source=pwa",
   "description": "Professional Mobile Code Editor and Web Developer Studio",
   "lang": "en",
   "dir": "ltr",

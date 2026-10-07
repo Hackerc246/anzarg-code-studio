@@ -31,7 +31,7 @@
 
   <!-- Google Font: Roboto Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
@@ -240,12 +240,30 @@
       box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    #btnHeaderInstall {
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Vertical Scroll Ticker Animation (Video Style) */
+    .ticker-viewport {
+      height: 18px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      position: relative;
     }
-    #labelInstallText {
-      transition: max-width 0.35s ease, opacity 0.25s ease;
+    .ticker-track {
+      display: flex;
+      flex-direction: column;
+      animation: verticalTicker 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+    .ticker-item {
+      height: 18px;
+      line-height: 18px;
+      font-size: 11px;
+      font-weight: 700;
       white-space: nowrap;
+    }
+    @keyframes verticalTicker {
+      0%, 42% { transform: translateY(0); }
+      50%, 92% { transform: translateY(-18px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
@@ -266,10 +284,15 @@
     </div>
 
     <div class="flex items-center space-x-0.5">
-      <!-- Dynamic Animated Install Pill -->
-      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1.5 px-2.5 rounded-full bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 active:scale-95 border border-cyan-500/30 mr-1 shadow-sm transition">
-        <i data-lucide="download" class="w-4 h-4 text-cyan-400 shrink-0 animate-bounce"></i>
-        <span id="labelInstallText" class="text-xs font-semibold max-w-[80px] overflow-hidden opacity-100">Install</span>
+      <!-- Dynamic Vertical Ticker Install Pill (Video Style) -->
+      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
+        <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
+          <div class="ticker-track">
+            <span class="ticker-item text-cyan-300">Get App</span>
+            <span class="ticker-item text-emerald-300">Install App</span>
+          </div>
+        </div>
       </button>
 
       <button id="btnHeaderUndo" title="Undo" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
@@ -514,7 +537,7 @@
 
   <!-- QUICKEDIT STYLE RESTORING PREVIOUS SESSION SPINNER -->
   <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
       <div class="spinner-ring shrink-0"></div>
       <div>
         <p class="text-sm font-semibold text-[var(--text-main)]">Restoring previous session...</p>
@@ -552,20 +575,26 @@
     </div>
   </div>
 
-  <!-- QUICKEDIT STYLE "DO YOU WANT TO EXIT NOW?" MODAL -->
+  <!-- EXACT QUICKEDIT STYLE UNIFIED EXIT MODAL -->
   <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center">
-      <div class="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-emerald-500 flex items-center justify-center">
-        <span class="text-emerald-500 text-2xl font-bold font-mono">?</span>
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
+      <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
+      <p id="labelExitDescription" class="text-xs text-[var(--text-main)] mb-3 leading-relaxed">Following files contain unsaved changes, do you want to save them?</p>
+      
+      <div id="boxExitFileInfo" class="flex items-center space-x-2 py-2 px-2.5 rounded-lg bg-black/5 mb-5 border border-[var(--surface-border)]">
+        <i data-lucide="file-text" class="w-4 h-4 text-slate-400 shrink-0"></i>
+        <span id="exitUnsavedFileName" class="text-xs font-mono font-medium text-[var(--text-main)] truncate">untitled.html</span>
       </div>
-      <h3 class="text-base font-bold text-[var(--text-main)] mb-2">Do you want to exit now?</h3>
-      <p class="text-xs text-[var(--text-muted)] mb-6">Your work is persistently saved in internal database.</p>
-      <div class="flex items-center justify-between space-x-3">
-        <button id="btnExitLater" class="flex-1 py-2.5 bg-black/10 hover:bg-black/15 text-[var(--text-main)] font-bold text-xs rounded-xl uppercase transition">
-          Later
+
+      <div class="flex items-center justify-end space-x-4 text-xs font-bold tracking-wide">
+        <button id="btnExitWithoutSave" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
+          EXIT
         </button>
-        <button id="btnExitConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl uppercase transition shadow-md">
-          Exit
+        <button id="btnExitLater" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
+          LATER
+        </button>
+        <button id="btnExitAndSave" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
+          SAVE
         </button>
       </div>
     </div>
@@ -652,16 +681,16 @@
 
   <!-- SEARCH MODAL POPUP -->
   <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl text-slate-800">
-      <h2 class="text-xl font-bold text-emerald-600 mb-4">Search</h2>
+    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-6 shadow-2xl text-[var(--text-main)]">
+      <h2 class="text-xl font-bold text-emerald-500 mb-4">Search</h2>
 
-      <label class="block text-xs font-semibold text-slate-600 mb-1">Search text:</label>
-      <input type="text" id="inputModalFind" placeholder="Text to search..." class="w-full px-3 py-2 text-sm border border-emerald-500/60 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-slate-900 bg-white">
+      <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Search text:</label>
+      <input type="text" id="inputModalFind" placeholder="Text to search..." class="w-full px-3 py-2 text-sm border border-emerald-500/60 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-[var(--text-main)] bg-[var(--editor-bg)]">
 
-      <label class="block text-xs font-semibold text-slate-600 mb-1">Replace with:</label>
-      <input type="text" id="inputModalReplace" placeholder="Replace with..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-slate-900 bg-white">
+      <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Replace with:</label>
+      <input type="text" id="inputModalReplace" placeholder="Replace with..." class="w-full px-3 py-2 text-sm border border-[var(--surface-border)] rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mb-4 text-[var(--text-main)] bg-[var(--editor-bg)]">
 
-      <div class="space-y-2 mb-6 text-xs text-slate-700">
+      <div class="space-y-2 mb-6 text-xs text-[var(--text-muted)]">
         <label class="flex items-center space-x-2 cursor-pointer">
           <input type="checkbox" id="checkModalCase" class="w-4 h-4 accent-emerald-600 rounded">
           <span>Case sensitive</span>
@@ -676,10 +705,10 @@
         </label>
       </div>
 
-      <div class="flex items-center justify-end space-x-3 text-xs font-bold text-emerald-600">
-        <button id="btnModalClose" class="px-2 py-1.5 hover:text-slate-500 text-slate-400">CLOSE</button>
-        <button id="btnModalReplaceAll" class="px-2 py-1.5 hover:text-emerald-700">REPLACE ALL</button>
-        <button id="btnModalReplace" class="px-2 py-1.5 hover:text-emerald-700">REPLACE</button>
+      <div class="flex items-center justify-end space-x-3 text-xs font-bold text-emerald-500">
+        <button id="btnModalClose" class="px-2 py-1.5 hover:text-slate-400 text-[var(--text-muted)]">CLOSE</button>
+        <button id="btnModalReplaceAll" class="px-2 py-1.5 hover:text-emerald-400">REPLACE ALL</button>
+        <button id="btnModalReplace" class="px-2 py-1.5 hover:text-emerald-400">REPLACE</button>
         <button id="btnModalSearch" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 shadow-sm">SEARCH</button>
       </div>
     </div>
@@ -939,7 +968,7 @@
     </div>
   </div>
 
-  <!-- LIVE RUNNER MODAL -->
+  <!-- LIVE RUNNER MODAL (Fixed LocalStorage allow-same-origin Sandbox) -->
   <div id="modalLivePreview" class="hidden fixed inset-0 bg-black/85 flex flex-col z-50">
     <div class="h-12 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-3 shrink-0">
       <div class="flex items-center space-x-2">
@@ -961,7 +990,8 @@
     </div>
 
     <div class="flex-1 bg-white relative flex flex-col overflow-hidden">
-      <iframe id="liveFrame" sandbox="allow-scripts allow-modals" class="w-full flex-1 border-none"></iframe>
+      <!-- allow-same-origin added to ensure smooth local storage operations -->
+      <iframe id="liveFrame" sandbox="allow-scripts allow-modals allow-same-origin" class="w-full flex-1 border-none"></iframe>
 
       <div id="previewConsoleTray" class="hidden h-40 bg-slate-950 border-t border-slate-800 flex flex-col text-xs font-mono select-text">
         <div class="h-7 bg-slate-900 px-3 flex items-center justify-between text-[11px] text-slate-400">
@@ -1100,7 +1130,7 @@
     function setupPwaInstallFlow() {
       const headerInstallBtn = document.getElementById('btnHeaderInstall');
       const drawerInstallBtn = document.getElementById('dNavInstallApp');
-      const installTextLabel = document.getElementById('labelInstallText');
+      const tickerWrapper = document.getElementById('wrapperInstallTicker');
       const modal = document.getElementById('modalInstallPrompt');
       const btnCancel = document.getElementById('btnPwaCancel');
       const btnConfirm = document.getElementById('btnPwaConfirm');
@@ -1129,13 +1159,14 @@
 
         if (headerInstallBtn) {
           headerInstallBtn.classList.remove('hidden');
+          // Smooth shrink to sleek download icon after ticker completes cycles
           setTimeout(() => {
-            if (installTextLabel) {
-              installTextLabel.style.maxWidth = '0px';
-              installTextLabel.style.opacity = '0';
-              setTimeout(() => installTextLabel.classList.add('hidden'), 350);
+            if (tickerWrapper) {
+              tickerWrapper.style.maxWidth = '0px';
+              tickerWrapper.style.opacity = '0';
+              setTimeout(() => tickerWrapper.classList.add('hidden'), 400);
             }
-          }, 6000);
+          }, 8500);
         }
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
       });
@@ -1657,6 +1688,7 @@
       }
       cur.name = cleanName;
 
+      // 1. Direct overwrite if fileHandle exists
       if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
         try {
           const writable = await cur.fileHandle.createWritable();
@@ -1667,35 +1699,11 @@
           showSavedSuccessModal();
           return;
         } catch(err) {
-          console.warn("Direct overwrite failed, asking storage picker:", err);
+          console.warn("Direct overwrite fallback to device export:", err);
         }
       }
 
-      if ('showSaveFilePicker' in window) {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: cleanName,
-            types: [{
-              description: 'Code Document',
-              accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt'] }
-            }]
-          });
-          cur.fileHandle = handle;
-          cur.name = handle.name;
-          cur.isNewFile = false;
-
-          const writable = await cur.fileHandle.createWritable();
-          await writable.write(content);
-          await writable.close();
-          cur.isModified = false;
-          renderTabStrip();
-          showSavedSuccessModal();
-          return;
-        } catch(err) {
-          if (err.name === 'AbortError') return;
-        }
-      }
-
+      // 2. Direct clean browser download export
       const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1745,37 +1753,55 @@
       document.getElementById('fallbackFileInput').click();
     }
 
+    // Professional Unified Exit Modal Handler (Image 33833 & 33841)
     function triggerAppExitDialog() {
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      const isUnsaved = cur && cur.isModified;
+
+      const desc = document.getElementById('labelExitDescription');
+      const fileBox = document.getElementById('boxExitFileInfo');
+      const fileNameSpan = document.getElementById('exitUnsavedFileName');
+      const btnSave = document.getElementById('btnExitAndSave');
+
+      fileNameSpan.textContent = cur ? cur.name : 'untitled.html';
+
+      if (isUnsaved) {
+        desc.textContent = "Following files contain unsaved changes, do you want to save them?";
+        fileBox.classList.remove('hidden');
+        btnSave.classList.remove('hidden');
+      } else {
+        desc.textContent = "All changes are saved in local storage. Do you want to exit now?";
+        fileBox.classList.add('hidden');
+        btnSave.classList.add('hidden');
+      }
+
       const exitModal = document.getElementById('modalExitConfirm');
       exitModal.classList.remove('hidden');
     }
 
-    // Professional Safe Exit Flow (No about:blank Redirection)
     function setupExitSystem() {
       const exitModal = document.getElementById('modalExitConfirm');
+      const btnWithoutSave = document.getElementById('btnExitWithoutSave');
       const btnLater = document.getElementById('btnExitLater');
-      const btnExit = document.getElementById('btnExitConfirm');
+      const btnAndSave = document.getElementById('btnExitAndSave');
 
+      // EXIT button: safe close
+      btnWithoutSave.addEventListener('click', async () => {
+        exitModal.classList.add('hidden');
+        try { window.close(); } catch(e){}
+        triggerToast("Session safely finished.");
+      });
+
+      // LATER button: continue editing
       btnLater.addEventListener('click', () => {
         exitModal.classList.add('hidden');
       });
 
-      btnExit.addEventListener('click', async () => {
+      // SAVE button: save and exit
+      btnAndSave.addEventListener('click', async () => {
         exitModal.classList.add('hidden');
-        if (textarea && activeFileId) {
-          const cur = fileTabs.find(t => t.id === activeFileId);
-          if (cur) cur.content = textarea.value;
-        }
-        await storeSave('workspace_tabs', fileTabs);
-        await storeSave('workspace_active_id', activeFileId);
-
-        // Standalone PWA close attempt
-        try {
-          window.close();
-        } catch(e){}
-
-        // Graceful non-broken exit confirmation
-        triggerToast("Session saved! Swipe away app to exit.");
+        await performDirectSave(false);
+        try { window.close(); } catch(e){}
       });
 
       window.history.pushState({ page: 'editor' }, '');
@@ -2073,25 +2099,6 @@
       const defaultZipName = singleTabOnly
         ? `${(tabsToExport[0].name || 'file').replace(/\.[^/.]+$/, "")}.zip`
         : `anzarg-project-${Date.now()}.zip`;
-
-      if ('showSaveFilePicker' in window) {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: defaultZipName,
-            types: [{
-              description: 'Project ZIP Archive',
-              accept: { 'application/zip': ['.zip'] }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(zipContent);
-          await writable.close();
-          triggerToast(`Saved ZIP: ${handle.name}`);
-          return;
-        } catch(err) {
-          if (err.name === 'AbortError') return;
-        }
-      }
 
       const url = URL.createObjectURL(zipContent);
       const a = document.createElement('a');

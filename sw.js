@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v12';
+const CACHE_NAME = 'anzarg-studio-v13';
 
 // Core essential local assets jo app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [
@@ -96,7 +96,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Offline navigation fallback (Shortcut link ya offline reload par 404 se bachane ke liye)
+          // Offline navigation fallback (Shortcut parameters jaise ?action=new aur ?source=pwa par safe handle karein)
           if (event.request.mode === 'navigate') {
             const fallback = (await caches.match('./', { ignoreSearch: true })) || (await caches.match('./index.html', { ignoreSearch: true }));
             if (fallback) return fallback;

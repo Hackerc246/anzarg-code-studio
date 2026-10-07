@@ -1087,7 +1087,7 @@
     // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
     // ==========================================
     const APP_CONFIG = {
-      version: '5.3',
+      version: '5.4',
       edition: 'Professional Edition'
     };
 
@@ -1915,30 +1915,94 @@
       document.getElementById('modalExitConfirm').classList.remove('hidden');
     }
 
-    let isExiting = false;
+        let isExiting = false;
 
-    // DIRECT FORCE EXIT (SHUTDOWN APP INSTANTLY)
+    // DIRECT FORCE EXIT (SHUTDOWN APP INSTANTLY - LOOP BREAKER)
     function executeForcefulClose() {
       isExiting = true;
-      triggerToast("Closing Application...");
+      window.removeEventListener('popstate', handlePopStateExit);
+
+      // Saare open modals aur backdrops turant hide karein
       document.querySelectorAll('.fixed').forEach(el => el.classList.add('hidden'));
+      triggerToast("Closing Application...");
 
       setTimeout(() => {
+        // 1. Direct browser / PWA window close
         try {
           window.open('', '_self', '');
           window.close();
         } catch(e){}
 
+        // 2. Android Cordova / Webview direct termination
         try {
-          navigator.app && navigator.app.exitApp ? navigator.app.exitApp() : null;
+          if (navigator.app && navigator.app.exitApp) {
+            navigator.app.exitApp();
+          }
         } catch(e){}
 
+        // 3. Clean history dismissal without loop
         if (window.history.length > 1) {
-          window.history.go(-1);
+          window.history.go(-window.history.length);
         } else {
           window.location.replace("about:blank");
         }
-      }, 200);
+      }, 120);
+    }
+
+    function handlePopStateExit(e) {
+      if (isExiting) return;
+
+      const areYouSureModal = document.getElementById('modalExitAreYouSure');
+      const exitModal = document.getElementById('modalExitConfirm');
+
+      if (!areYouSureModal.classList.contains('hidden')) {
+        areYouSureModal.classList.add('hidden');
+        return;
+      }
+
+      if (!exitModal.classList.contains('hidden')) {
+        exitModal.classList.add('hidden');
+        return;
+      }
+
+      const openModals = [
+        'modalInstallPrompt',
+        'modalAboutSection',
+        'modalResetConfirm',
+        'modalCropStudio',
+        'modalSettings',
+        'modalSearchQuickEdit',
+        'modalSavedSuccess',
+        'modalLivePreview',
+        'modalRename',
+        'modalNewFile',
+        'modalGoToLine',
+        'modalEncoding',
+        'modalStats',
+        'modalColor'
+      ];
+
+      let closedAny = false;
+      for (let mId of openModals) {
+        const el = document.getElementById(mId);
+        if (el && !el.classList.contains('hidden')) {
+          el.classList.add('hidden');
+          closedAny = true;
+          break;
+        }
+      }
+
+      const drawer = document.getElementById('drawerNav');
+      if (drawer && (drawer.style.transform === 'translateX(0px)' || !drawer.classList.contains('-translate-x-full'))) {
+        closeDrawerPanel();
+        closedAny = true;
+      }
+
+      if (!closedAny) {
+        triggerAppExitDialog();
+      } else {
+        window.history.pushState({ page: 'editor' }, '');
+      }
     }
 
     function setupExitSystem() {
@@ -1982,6 +2046,7 @@
 
       // "Are you sure?" modal handlers (Popup 2)
       btnAreYouSureExit.addEventListener('click', () => {
+        areYouSureModal.classList.add('hidden');
         executeForcefulClose();
       });
 
@@ -2000,60 +2065,9 @@
         triggerAppExitDialog();
       });
 
-      // Android Hardware Back Button + History Lock Trap (Standard Popstate)
+      // Back Button Listener Setup
       window.history.pushState({ page: 'editor' }, '');
-      window.addEventListener('popstate', (e) => {
-        if (isExiting) return;
-
-        window.history.pushState({ page: 'editor' }, '');
-
-        if (!areYouSureModal.classList.contains('hidden')) {
-          areYouSureModal.classList.add('hidden');
-          return;
-        }
-
-        if (!exitModal.classList.contains('hidden')) {
-          exitModal.classList.add('hidden');
-          return;
-        }
-
-        const openModals = [
-          'modalInstallPrompt',
-          'modalAboutSection',
-          'modalResetConfirm',
-          'modalCropStudio',
-          'modalSettings',
-          'modalSearchQuickEdit',
-          'modalSavedSuccess',
-          'modalLivePreview',
-          'modalRename',
-          'modalNewFile',
-          'modalGoToLine',
-          'modalEncoding',
-          'modalStats',
-          'modalColor'
-        ];
-
-        let closedAny = false;
-        for (let mId of openModals) {
-          const el = document.getElementById(mId);
-          if (el && !el.classList.contains('hidden')) {
-            el.classList.add('hidden');
-            closedAny = true;
-            break;
-          }
-        }
-
-        const drawer = document.getElementById('drawerNav');
-        if (!drawer.classList.contains('-translate-x-full')) {
-          closeDrawerPanel();
-          closedAny = true;
-        }
-
-        if (!closedAny) {
-          triggerAppExitDialog();
-        }
-      });
+      window.addEventListener('popstate', handlePopStateExit);
     }
 
     // =========================================================================
@@ -2802,20 +2816,28 @@
       });
     }
 
+        function openDrawerPanel() {
+      const drawer = document.getElementById('drawerNav');
+      const overlay = document.getElementById('drawerOverlay');
+      overlay.classList.remove('hidden');
+      drawer.style.transform = 'translateX(0px)';
+      drawer.classList.remove('-translate-x-full');
+    }
+
     function closeDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
+      drawer.style.transform = 'translateX(-100%)';
       drawer.classList.add('-translate-x-full');
-      setTimeout(() => overlay.classList.add('hidden'), 250);
+      setTimeout(() => overlay.classList.add('hidden'), 200);
     }
 
     function setupDrawerAndEvents() {
-      const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
 
-      document.getElementById('btnOpenDrawer').addEventListener('click', () => {
-        overlay.classList.remove('hidden');
-        setTimeout(() => drawer.classList.remove('-translate-x-full'), 10);
+      document.getElementById('btnOpenDrawer').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDrawerPanel();
       });
       overlay.addEventListener('click', closeDrawerPanel);
 

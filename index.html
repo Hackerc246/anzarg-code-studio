@@ -43,6 +43,10 @@
   <!-- JSZip Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
+  <!-- Cropper.js for Selfies, Logo & Banner Adjustments -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <style>
     :root {
       --bg-base: #0d1117;
@@ -348,10 +352,15 @@
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
             <span>File Statistics</span>
           </button>
-          <div class="h-px bg-[var(--surface-border)] my-1"></div>
           <button id="optSettings" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="settings" class="w-4 h-4 text-[var(--text-muted)]"></i>
             <span>Editor Settings</span>
+          </button>
+          <div class="h-px bg-[var(--surface-border)] my-1"></div>
+          <!-- 3-Dot Force Exit Button -->
+          <button id="optForceExitApp" class="w-full text-left px-3.5 py-2 hover:bg-rose-500/10 flex items-center space-x-2.5 text-rose-400 font-medium">
+            <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
+            <span>Force Exit Application</span>
           </button>
         </div>
       </div>
@@ -466,13 +475,13 @@
   <aside id="drawerNav" class="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--surface-border)] z-50 transform -translate-x-full drawer-anim flex flex-col shadow-2xl">
     
     <!-- DRAWER HEADER WITH DYNAMIC BANNER & LOGO -->
-    <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-700 to-emerald-700">
+    <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
       <!-- Background Banner Image -->
       <img id="drawerBannerImg" class="absolute inset-0 w-full h-full object-cover hidden z-0 opacity-90 transition-opacity" alt="Banner">
       <div id="drawerBannerOverlay" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20 z-1 hidden"></div>
 
       <div class="relative z-10 flex items-center space-x-3.5 text-white">
-        <div id="drawerLogoAvatar" class="w-14 h-14 rounded-2xl border-2 border-white/40 bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg relative">
+        <div id="drawerLogoAvatar" class="w-14 h-14 rounded-2xl border-2 border-white/40 bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg relative cursor-pointer" title="Adjust Logo">
           <i data-lucide="terminal" class="w-7 h-7 text-white" id="drawerLogoFallback"></i>
           <img id="drawerLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
         </div>
@@ -864,7 +873,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (UPDATED WITH LOGO & BANNER STUDIO) -->
+  <!-- SETTINGS MODAL (UPDATED WITH LOGO & BANNER STUDIO + FORCE CLOSE) -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
@@ -880,36 +889,52 @@
       <div class="space-y-4">
         <!-- Logo Setup Card -->
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+          <div class="flex items-center space-x-3 cursor-pointer" id="settingLogoPreviewClickable" title="Tap to Adjust">
+            <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
               <i data-lucide="camera" class="w-6 h-6 text-cyan-500" id="settingLogoFallback"></i>
               <img id="settingLogoImg" class="w-full h-full object-cover hidden" alt="Avatar">
             </div>
             <div>
-              <div class="font-bold text-[var(--text-main)]">Studio Logo</div>
+              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
+                <span>Studio Logo</span>
+                <span class="text-[10px] text-cyan-400 font-normal">✏️ Adjust</span>
+              </div>
               <div class="text-[10px] text-[var(--text-muted)]">Upload, Pinch-Zoom & Crop</div>
             </div>
           </div>
-          <button id="btnTriggerPhotoUpload" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
-            Upload
-          </button>
+          <div class="flex items-center space-x-1.5">
+            <button id="btnRemoveLogo" title="Remove Logo" class="hidden p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition active:scale-90">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            <button id="btnTriggerPhotoUpload" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+              Upload
+            </button>
+          </div>
         </div>
 
-        <!-- Banner Setup Card (NEW) -->
+        <!-- Banner Setup Card -->
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div id="settingBannerPreviewBox" class="w-14 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+          <div class="flex items-center space-x-3 cursor-pointer" id="settingBannerPreviewClickable" title="Tap to Adjust">
+            <div id="settingBannerPreviewBox" class="w-14 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
               <i data-lucide="image" class="w-5 h-5 text-emerald-500" id="settingBannerFallback"></i>
               <img id="settingBannerImg" class="w-full h-full object-cover hidden" alt="Banner">
             </div>
             <div>
-              <div class="font-bold text-[var(--text-main)]">Drawer Banner</div>
-              <div class="text-[10px] text-[var(--text-muted)]">Custom Top Header Cover</div>
+              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
+                <span>Drawer Banner</span>
+                <span class="text-[10px] text-emerald-400 font-normal">✏️ Adjust</span>
+              </div>
+              <div class="text-[10px] text-[var(--text-muted)]">Selfie / Photo Cover</div>
             </div>
           </div>
-          <button id="btnTriggerBannerUpload" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
-            Upload
-          </button>
+          <div class="flex items-center space-x-1.5">
+            <button id="btnRemoveBanner" title="Remove Banner" class="hidden p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition active:scale-90">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            <button id="btnTriggerBannerUpload" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+              Upload
+            </button>
+          </div>
         </div>
 
         <input type="file" id="inputProfileFile" accept="image/*" class="hidden">
@@ -955,6 +980,17 @@
           </div>
           <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
+
+        <!-- Exit From Settings Option -->
+        <div class="p-3 bg-rose-500/5 rounded-xl border border-rose-500/20 flex items-center justify-between">
+          <div>
+            <div class="font-bold text-rose-400">Exit Studio</div>
+            <div class="text-[10px] text-[var(--text-muted)]">Forcefully close application</div>
+          </div>
+          <button id="btnSettingsForceExit" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+            Close App
+          </button>
+        </div>
       </div>
 
       <div class="mt-5 pt-3 border-t border-[var(--surface-border)] text-right">
@@ -963,24 +999,22 @@
     </div>
   </div>
 
-  <!-- CANVAS 2-FINGER TOUCH PINCH-ZOOM CROP STUDIO -->
+  <!-- ADVANCED CROPPER MODAL (FOR SELFIES & CUSTOM RATIOS) -->
   <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
         <h3 class="text-sm font-bold text-cyan-500 flex items-center space-x-1.5">
           <i data-lucide="crop" class="w-4 h-4"></i>
-          <span id="labelCropModalTitle">Crop & Adjust Image</span>
+          <span id="labelCropModalTitle">Crop & Adjust Photo</span>
         </h3>
         <button id="btnCropCancelTop" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="w-full h-64 bg-black/70 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] select-none">
-        <canvas id="cropCanvas" width="300" height="260" class="touch-none cursor-grab active:cursor-grabbing w-full h-full block"></canvas>
-        <div class="absolute bottom-1.5 left-2 right-2 text-center pointer-events-none text-[10px] text-cyan-200/80 bg-black/50 py-0.5 rounded-md backdrop-blur-xs">
-          Two fingers to pinch-zoom • Drag to reposition
-        </div>
+      <!-- Cropper Image Container -->
+      <div class="w-full h-64 bg-black/90 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] select-none">
+        <img id="cropperImageTarget" src="" class="max-w-full max-h-full block" alt="Target Image">
       </div>
 
       <div class="flex items-center justify-between mt-3 px-1">
@@ -1053,7 +1087,7 @@
     // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
     // ==========================================
     const APP_CONFIG = {
-      version: '5.2', // <-- BAS YAHAN VERSION BADLEIN: About badge + sw.js auto-sync ho jayenge
+      version: '5.3',
       edition: 'Professional Edition'
     };
 
@@ -1108,6 +1142,21 @@
           req.onsuccess = () => resolve(req.result ? req.result.value : null);
           req.onerror = () => resolve(null);
         } catch(e) { resolve(null); }
+      });
+    }
+
+    async function storeRemove(key) {
+      if (!idb) {
+        try { localStorage.removeItem(key); } catch(e){}
+        return;
+      }
+      return new Promise((resolve) => {
+        try {
+          const tx = idb.transaction('store', 'readwrite');
+          tx.objectStore('store').delete(key);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch(e) { resolve(false); }
       });
     }
 
@@ -1168,7 +1217,6 @@
     let currentMatchPointer = -1;
     let deferredInstallPrompt = null;
 
-    // AUTO-SYNC ZERO TOUCH SERVICE WORKER REGISTRATION
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1732,9 +1780,6 @@
       doneBtn.addEventListener('click', handleDone);
     }
 
-    // =========================================================================
-    // NATIVE ANDROID SYSTEM STORAGE SAVE ENGINE (SHOWSAVEFILEPICKER RESTORED)
-    // =========================================================================
     async function performDirectSave(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur) return false;
@@ -1749,7 +1794,7 @@
       }
       cur.name = cleanName;
 
-      // Rule 1: Existing File Handle overwrite
+      // Handle overwrite
       if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
         try {
           const writable = await cur.fileHandle.createWritable();
@@ -1765,7 +1810,7 @@
         }
       }
 
-      // Rule 2: Android Native Storage Folder Picker
+      // Android Native Storage Folder Picker
       if ('showSaveFilePicker' in window) {
         try {
           const handle = await window.showSaveFilePicker({
@@ -1792,7 +1837,7 @@
         }
       }
 
-      // Rule 3: Old Smartphone Fallback Download
+      // Fallback
       try {
         const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -1846,7 +1891,6 @@
       document.getElementById('fallbackFileInput').click();
     }
 
-    // Professional Unified Exit Modal Handler (QuickEdit Style)
     function triggerAppExitDialog() {
       const hasUnsaved = fileTabs.some(t => t.isModified);
       const cur = fileTabs.find(t => t.id === activeFileId);
@@ -1871,8 +1915,31 @@
       document.getElementById('modalExitConfirm').classList.remove('hidden');
     }
 
-    // EXIT SYSTEM WITH INFINITE LOOP TRAP LOCK
     let isExiting = false;
+
+    // DIRECT FORCE EXIT (SHUTDOWN APP INSTANTLY)
+    function executeForcefulClose() {
+      isExiting = true;
+      triggerToast("Closing Application...");
+      document.querySelectorAll('.fixed').forEach(el => el.classList.add('hidden'));
+
+      setTimeout(() => {
+        try {
+          window.open('', '_self', '');
+          window.close();
+        } catch(e){}
+
+        try {
+          navigator.app && navigator.app.exitApp ? navigator.app.exitApp() : null;
+        } catch(e){}
+
+        if (window.history.length > 1) {
+          window.history.go(-1);
+        } else {
+          window.location.replace("about:blank");
+        }
+      }, 200);
+    }
 
     function setupExitSystem() {
       const exitModal = document.getElementById('modalExitConfirm');
@@ -1885,24 +1952,6 @@
       const btnAreYouSureExit = document.getElementById('btnAreYouSureExit');
       const btnAreYouSureLater = document.getElementById('btnAreYouSureLater');
 
-      const finalizeAppExit = () => {
-        isExiting = true;
-        exitModal.classList.add('hidden');
-        areYouSureModal.classList.add('hidden');
-        triggerToast("Session safely finished.");
-
-        setTimeout(() => {
-          try {
-            window.open('', '_self', '');
-            window.close();
-          } catch(e){}
-
-          if (window.history.length > 1) {
-            window.history.go(-1);
-          }
-        }, 350);
-      };
-
       // EXIT button (Popup 1)
       btnWithoutSave.addEventListener('click', () => {
         const hasUnsaved = fileTabs.some(t => t.isModified);
@@ -1911,7 +1960,7 @@
         if (hasUnsaved) {
           areYouSureModal.classList.remove('hidden');
         } else {
-          finalizeAppExit();
+          executeForcefulClose();
         }
       });
 
@@ -1926,21 +1975,32 @@
         const saved = await performDirectSave(false);
         if (saved) {
           showSavedSuccessModal(() => {
-            finalizeAppExit();
+            executeForcefulClose();
           });
         }
       });
 
       // "Are you sure?" modal handlers (Popup 2)
       btnAreYouSureExit.addEventListener('click', () => {
-        finalizeAppExit();
+        executeForcefulClose();
       });
 
       btnAreYouSureLater.addEventListener('click', () => {
         areYouSureModal.classList.add('hidden');
       });
 
-      // Android Hardware Back Button + History Lock Trap
+      // 3-Dot Dropdown & Settings Force Exit Handlers
+      document.getElementById('optForceExitApp').addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown').classList.add('hidden');
+        triggerAppExitDialog();
+      });
+
+      document.getElementById('btnSettingsForceExit').addEventListener('click', () => {
+        document.getElementById('modalSettings').classList.add('hidden');
+        triggerAppExitDialog();
+      });
+
+      // Android Hardware Back Button + History Lock Trap (Standard Popstate)
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', (e) => {
         if (isExiting) return;
@@ -1997,24 +2057,20 @@
     }
 
     // =========================================================================
-    // DUAL LOGO + BANNER 2-FINGER TOUCH PINCH-ZOOM CROP ENGINE
+    // DUAL LOGO + BANNER CROPPER ENGINE (SELFIES, ANY RATIO, DRAG & ZOOM)
     // =========================================================================
     let currentCropTarget = 'logo'; // 'logo' | 'banner'
-    let cropImg = new Image();
-    let cropScale = 1;
-    let cropRotation = 0;
-    let cropOffsetX = 0;
-    let cropOffsetY = 0;
-
-    // Touch & Pointer gesture tracking
-    const activeTouches = new Map();
-    let initialPinchDistance = null;
-    let initialPinchScale = 1;
-    let isSingleDragging = false;
-    let dragStartX = 0, dragStartY = 0;
+    let cropperInstance = null;
 
     function applyLogoToUI(dataUrl) {
-      if (!dataUrl) return;
+      if (!dataUrl) {
+        document.getElementById('drawerLogoImg').classList.add('hidden');
+        document.getElementById('drawerLogoFallback').classList.remove('hidden');
+        document.getElementById('settingLogoImg').classList.add('hidden');
+        document.getElementById('settingLogoFallback').classList.remove('hidden');
+        document.getElementById('btnRemoveLogo').classList.add('hidden');
+        return;
+      }
       const dImg = document.getElementById('drawerLogoImg');
       const dFallback = document.getElementById('drawerLogoFallback');
       dImg.src = dataUrl;
@@ -2026,10 +2082,18 @@
       sImg.src = dataUrl;
       sImg.classList.remove('hidden');
       sFallback.classList.add('hidden');
+      document.getElementById('btnRemoveLogo').classList.remove('hidden');
     }
 
     function applyBannerToUI(dataUrl) {
-      if (!dataUrl) return;
+      if (!dataUrl) {
+        document.getElementById('drawerBannerImg').classList.add('hidden');
+        document.getElementById('drawerBannerOverlay').classList.add('hidden');
+        document.getElementById('settingBannerImg').classList.add('hidden');
+        document.getElementById('settingBannerFallback').classList.remove('hidden');
+        document.getElementById('btnRemoveBanner').classList.add('hidden');
+        return;
+      }
       const bImg = document.getElementById('drawerBannerImg');
       const bOverlay = document.getElementById('drawerBannerOverlay');
       bImg.src = dataUrl;
@@ -2041,16 +2105,17 @@
       sBanner.src = dataUrl;
       sBanner.classList.remove('hidden');
       sFallback.classList.add('hidden');
+      document.getElementById('btnRemoveBanner').classList.remove('hidden');
     }
 
     function setupLogoAndBannerCropperStudio() {
       const logoInput = document.getElementById('inputProfileFile');
       const bannerInput = document.getElementById('inputBannerFile');
       const cropModal = document.getElementById('modalCropStudio');
-      const canvas = document.getElementById('cropCanvas');
-      const ctx = canvas.getContext('2d');
+      const cropImage = document.getElementById('cropperImageTarget');
       const titleLabel = document.getElementById('labelCropModalTitle');
 
+      // Trigger from Settings & Drawer Header
       document.getElementById('btnTriggerPhotoUpload').addEventListener('click', () => {
         currentCropTarget = 'logo';
         titleLabel.textContent = "Crop & Adjust Studio Logo";
@@ -2063,193 +2128,161 @@
         bannerInput.click();
       });
 
-      const handleImageSelection = (file) => {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          cropImg = new Image();
-          cropImg.onload = () => {
-            const fitScale = Math.max(canvas.width / cropImg.width, canvas.height / cropImg.height);
-            cropScale = fitScale * 1.05;
-            cropRotation = 0;
-            cropOffsetX = 0;
-            cropOffsetY = 0;
-            cropModal.classList.remove('hidden');
-            renderCropCanvas();
-          };
-          cropImg.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
-      };
-
-      logoInput.addEventListener('change', (e) => handleImageSelection(e.target.files[0]));
-      bannerInput.addEventListener('change', (e) => handleImageSelection(e.target.files[0]));
-
-      function renderCropCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. Draw Image with Transformations
-        ctx.save();
-        ctx.translate(canvas.width / 2 + cropOffsetX, canvas.height / 2 + cropOffsetY);
-        ctx.rotate((cropRotation * Math.PI) / 180);
-        ctx.scale(cropScale, cropScale);
-        ctx.drawImage(cropImg, -cropImg.width / 2, -cropImg.height / 2);
-        ctx.restore();
-
-        // 2. Draw Translucent Dark Mask
-        ctx.save();
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.58)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // 3. Cutout Area According to Target
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        if (currentCropTarget === 'logo') {
-          // Circular / Rounded Studio Mask
-          ctx.arc(canvas.width / 2, canvas.height / 2, 95, 0, Math.PI * 2);
+      // Tap to re-adjust existing image
+      document.getElementById('settingLogoPreviewClickable').addEventListener('click', async () => {
+        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
+        if (orig) {
+          openCropperModalWithImage(orig, 'logo');
         } else {
-          // Wide Drawer Header Rectangular Mask (2.2 : 1 aspect ratio)
-          const rectW = 260;
-          const rectH = 120;
-          ctx.roundRect((canvas.width - rectW) / 2, (canvas.height - rectH) / 2, rectW, rectH, 12);
-        }
-        ctx.fill();
-        ctx.restore();
-
-        // 4. Accent Border Guide
-        ctx.save();
-        ctx.beginPath();
-        if (currentCropTarget === 'logo') {
-          ctx.arc(canvas.width / 2, canvas.height / 2, 95, 0, Math.PI * 2);
-          ctx.strokeStyle = '#00f2fe';
-        } else {
-          const rectW = 260;
-          const rectH = 120;
-          ctx.roundRect((canvas.width - rectW) / 2, (canvas.height - rectH) / 2, rectW, rectH, 12);
-          ctx.strokeStyle = '#10b981';
-        }
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Pointer Event Handlers for 2-Finger Pinch Zoom + Touch Drag
-      canvas.addEventListener('pointerdown', (e) => {
-        canvas.setPointerCapture(e.pointerId);
-        activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-        if (activeTouches.size === 1) {
-          isSingleDragging = true;
-          dragStartX = e.clientX - cropOffsetX;
-          dragStartY = e.clientY - cropOffsetY;
-        } else if (activeTouches.size === 2) {
-          isSingleDragging = false;
-          const pts = Array.from(activeTouches.values());
-          initialPinchDistance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-          initialPinchScale = cropScale;
-        }
-      });
-
-      canvas.addEventListener('pointermove', (e) => {
-        if (!activeTouches.has(e.pointerId)) return;
-        activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-        if (activeTouches.size === 1 && isSingleDragging) {
-          cropOffsetX = e.clientX - dragStartX;
-          cropOffsetY = e.clientY - dragStartY;
-          renderCropCanvas();
-        } else if (activeTouches.size === 2 && initialPinchDistance) {
-          const pts = Array.from(activeTouches.values());
-          const currentDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-          const ratio = currentDist / initialPinchDistance;
-          cropScale = Math.min(Math.max(0.15, initialPinchScale * ratio), 8);
-          renderCropCanvas();
-        }
-      });
-
-      const handlePointerEnd = (e) => {
-        activeTouches.delete(e.pointerId);
-        if (activeTouches.size === 1) {
-          const remaining = Array.from(activeTouches.values())[0];
-          isSingleDragging = true;
-          dragStartX = remaining.x - cropOffsetX;
-          dragStartY = remaining.y - cropOffsetY;
-        } else {
-          isSingleDragging = false;
-          initialPinchDistance = null;
-        }
-      };
-
-      canvas.addEventListener('pointerup', handlePointerEnd);
-      canvas.addEventListener('pointercancel', handlePointerEnd);
-
-      // Desktop / Toolbar Fallback Buttons
-      document.getElementById('btnCropZoomIn').addEventListener('click', () => {
-        cropScale *= 1.15;
-        renderCropCanvas();
-      });
-      document.getElementById('btnCropZoomOut').addEventListener('click', () => {
-        cropScale = Math.max(0.15, cropScale / 1.15);
-        renderCropCanvas();
-      });
-      document.getElementById('btnCropRotate').addEventListener('click', () => {
-        cropRotation = (cropRotation + 90) % 360;
-        renderCropCanvas();
-      });
-      document.getElementById('btnCropReupload').addEventListener('click', () => {
-        if (currentCropTarget === 'logo') {
-          logoInput.value = '';
+          currentCropTarget = 'logo';
           logoInput.click();
+        }
+      });
+
+      document.getElementById('drawerLogoAvatar').addEventListener('click', async () => {
+        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
+        if (orig) {
+          openCropperModalWithImage(orig, 'logo');
         } else {
-          bannerInput.value = '';
+          currentCropTarget = 'logo';
+          logoInput.click();
+        }
+      });
+
+      document.getElementById('settingBannerPreviewClickable').addEventListener('click', async () => {
+        const orig = await storeGet('studio_custom_banner_orig') || await storeGet('studio_custom_banner');
+        if (orig) {
+          openCropperModalWithImage(orig, 'banner');
+        } else {
+          currentCropTarget = 'banner';
           bannerInput.click();
         }
       });
 
-      const closeCrop = () => {
-        cropModal.classList.add('hidden');
-        logoInput.value = '';
-        bannerInput.value = '';
-        activeTouches.clear();
-      };
-      document.getElementById('btnCropCancel').addEventListener('click', closeCrop);
-      document.getElementById('btnCropCancelTop').addEventListener('click', closeCrop);
+      // Remove Buttons
+      document.getElementById('btnRemoveLogo').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await storeRemove('studio_custom_logo');
+        await storeRemove('studio_custom_logo_orig');
+        applyLogoToUI(null);
+        triggerToast("Logo Removed! 🗑️");
+      });
 
-      // Final Crop Export Engine
-      document.getElementById('btnCropApply').addEventListener('click', async () => {
-        const exportCanvas = document.createElement('canvas');
-        if (currentCropTarget === 'logo') {
-          exportCanvas.width = 250;
-          exportCanvas.height = 250;
-        } else {
-          exportCanvas.width = 540;
-          exportCanvas.height = 250;
+      document.getElementById('btnRemoveBanner').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await storeRemove('studio_custom_banner');
+        await storeRemove('studio_custom_banner_orig');
+        applyBannerToUI(null);
+        triggerToast("Banner Removed! 🗑️");
+      });
+
+      function openCropperModalWithImage(imageSrc, type) {
+        currentCropTarget = type;
+        titleLabel.textContent = (type === 'logo') ? "Crop & Adjust Studio Logo" : "Crop & Adjust Drawer Banner";
+        cropImage.src = imageSrc;
+        cropModal.classList.remove('hidden');
+
+        if (cropperInstance) {
+          cropperInstance.destroy();
+          cropperInstance = null;
         }
 
-        const eCtx = exportCanvas.getContext('2d');
-        const scaleFactorX = exportCanvas.width / (currentCropTarget === 'logo' ? 190 : 260);
+        setTimeout(() => {
+          cropperInstance = new Cropper(cropImage, {
+            aspectRatio: (type === 'logo') ? 1 : (2.4 / 1), // 1:1 for Avatar, 2.4:1 for Mobile Drawer Banner
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.95,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false
+          });
+        }, 120);
+      }
 
-        eCtx.save();
-        eCtx.translate(exportCanvas.width / 2, exportCanvas.height / 2);
-        eCtx.translate(cropOffsetX * scaleFactorX, cropOffsetY * scaleFactorX);
-        eCtx.rotate((cropRotation * Math.PI) / 180);
-        eCtx.scale(cropScale * scaleFactorX, cropScale * scaleFactorX);
-        eCtx.drawImage(cropImg, -cropImg.width / 2, -cropImg.height / 2);
-        eCtx.restore();
+      const handleImageSelection = (file, type) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (evt) => {
+          const rawData = evt.target.result;
+          if (type === 'logo') {
+            await storeSave('studio_custom_logo_orig', rawData);
+          } else {
+            await storeSave('studio_custom_banner_orig', rawData);
+          }
+          openCropperModalWithImage(rawData, type);
+        };
+        reader.readAsDataURL(file);
+      };
 
-        const dataUrl = exportCanvas.toDataURL('image/png', 0.92);
+      logoInput.addEventListener('change', (e) => {
+        handleImageSelection(e.target.files[0], 'logo');
+        logoInput.value = '';
+      });
+
+      bannerInput.addEventListener('change', (e) => {
+        handleImageSelection(e.target.files[0], 'banner');
+        bannerInput.value = '';
+      });
+
+      // Controls
+      document.getElementById('btnCropZoomIn').addEventListener('click', () => {
+        if (cropperInstance) cropperInstance.zoom(0.1);
+      });
+      document.getElementById('btnCropZoomOut').addEventListener('click', () => {
+        if (cropperInstance) cropperInstance.zoom(-0.1);
+      });
+      document.getElementById('btnCropRotate').addEventListener('click', () => {
+        if (cropperInstance) cropperInstance.rotate(90);
+      });
+
+      document.getElementById('btnCropReupload').addEventListener('click', () => {
+        if (currentCropTarget === 'logo') {
+          logoInput.click();
+        } else {
+          bannerInput.click();
+        }
+      });
+
+      const closeCropper = () => {
+        cropModal.classList.add('hidden');
+        if (cropperInstance) {
+          cropperInstance.destroy();
+          cropperInstance = null;
+        }
+      };
+
+      document.getElementById('btnCropCancel').addEventListener('click', closeCropper);
+      document.getElementById('btnCropCancelTop').addEventListener('click', closeCropper);
+
+      // Save Cropped Result
+      document.getElementById('btnCropApply').addEventListener('click', async () => {
+        if (!cropperInstance) return;
+
+        const canvas = cropperInstance.getCroppedCanvas({
+          maxWidth: (currentCropTarget === 'logo') ? 350 : 800,
+          maxHeight: (currentCropTarget === 'logo') ? 350 : 400,
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high'
+        });
+
+        const dataUrl = canvas.toDataURL('image/png', 0.92);
 
         if (currentCropTarget === 'logo') {
           await storeSave('studio_custom_logo', dataUrl);
           applyLogoToUI(dataUrl);
-          triggerToast("Logo Saved Successfully!");
+          triggerToast("Logo Saved Successfully! ✅");
         } else {
           await storeSave('studio_custom_banner', dataUrl);
           applyBannerToUI(dataUrl);
-          triggerToast("Banner Saved Successfully!");
+          triggerToast("Banner Saved Successfully! ✅");
         }
 
-        cropModal.classList.add('hidden');
+        closeCropper();
       });
     }
 
@@ -2671,7 +2704,7 @@
       updateLineNumbers();
     }
 
-    // LIVE RUNNER ENGINE WITH BLOB URL & GPU TIMING SYNC
+    // LIVE RUNNER ENGINE WITH BLOB URL
     let activePreviewBlobUrl = null;
 
     function setupLiveRunner() {
@@ -2858,7 +2891,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // DYNAMIC VERSION AUTO-SYNC ENGINE
       const badge = document.getElementById('appVersionBadge');
       if (badge) {
         badge.textContent = `v${APP_CONFIG.version} ${APP_CONFIG.edition}`;

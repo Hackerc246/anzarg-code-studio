@@ -282,7 +282,6 @@
     </div>
 
     <div class="flex items-center space-x-0.5">
-      <!-- Dynamic Vertical Ticker Install Pill -->
       <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
         <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
         <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
@@ -309,7 +308,6 @@
         <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
       </button>
 
-      <!-- 3-Dots Menu -->
       <div class="relative">
         <button id="btnHeaderMore" aria-label="More Menu" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
           <i data-lucide="more-vertical" class="w-4 h-4"></i>
@@ -647,7 +645,7 @@
     </div>
   </div>
 
-  <!-- ABOUT & DETAILS POLICY MODAL (WITH DYNAMIC VERSION BADGE) -->
+  <!-- ABOUT & DETAILS POLICY MODAL -->
   <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -1084,16 +1082,17 @@
 
     async function storeClearAll() {
       if (idb) {
-        await new Promise((resolve) => {
-          try {
-            const tx = idb.transaction('store', 'readwrite');
-            tx.objectStore('store').clear();
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => resolve(false);
-          } catch(e) { resolve(false); }
-        });
+        try {
+          idb.close();
+          idb = null;
+        } catch(e){}
       }
-      try { localStorage.clear(); } catch(e){}
+      return new Promise((resolve) => {
+        const req = indexedDB.deleteDatabase(DB_NAME);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => resolve(false);
+        req.onblocked = () => resolve(true);
+      });
     }
 
     function requestPersistentStorage() {
@@ -1753,7 +1752,7 @@
           await storeSave('workspace_tabs', fileTabs);
           return true;
         } catch (err) {
-          if (err.name === 'AbortError') return false; // User cancelled Android picker
+          if (err.name === 'AbortError') return false;
           console.warn("Picker failed, checking legacy fallback:", err);
         }
       }
@@ -1852,11 +1851,18 @@
         exitModal.classList.add('hidden');
         areYouSureModal.classList.add('hidden');
         triggerToast("Session safely finished.");
+
         setTimeout(() => {
+          // Robust Android/PWA Graceful Dismissal
           try {
+            window.open('', '_self', '');
             window.close();
           } catch(e){}
-        }, 500);
+
+          if (window.history.length > 1) {
+            window.history.go(-1);
+          }
+        }, 350);
       };
 
       // EXIT button (Popup 1)
@@ -2280,25 +2286,36 @@
       document.getElementById('btnCancelResetConfirm').addEventListener('click', () => {
         modalResetConfirm.classList.add('hidden');
       });
+
+      // =========================================================================
+      // FACTORY RESET & PURE CLEAN SWEEP REBOOT ENGINE
+      // =========================================================================
       document.getElementById('btnOkResetConfirm').addEventListener('click', async () => {
         modalResetConfirm.classList.add('hidden');
 
-        await storeClearAll();
+        // Step 1: Kill all active auto-save timers immediately
+        clearTimeout(autoDebounceTimer);
+        autoDebounceTimer = null;
 
-        const freshTab = createFreshBlankTab();
-        fileTabs = [freshTab];
-        activeFileId = freshTab.id;
+        // Step 2: Clean Storage Sweep (IndexedDB, LocalStorage, SessionStorage)
+        try {
+          await storeClearAll();
+        } catch(e){}
 
-        textarea.value = '';
-        lastRenderedLinesCount = 0;
-        updateLineNumbers();
-        historyStack.length = 0;
-        historyIndex = -1;
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch(e){}
 
-        renderTabStrip();
-        await storeSave('workspace_tabs', fileTabs);
-        await storeSave('workspace_active_id', activeFileId);
-        triggerToast("Workspace reset to blank state");
+        // Step 3: Hard Reboot/Restart App to 100% Brand New State
+        triggerToast("Workspace reset completely. Restarting...");
+        setTimeout(() => {
+          try {
+            window.location.replace(window.location.origin + window.location.pathname);
+          } catch(err) {
+            window.location.reload();
+          }
+        }, 300);
       });
 
       const modalRename = document.getElementById('modalRename');
@@ -2689,13 +2706,17 @@
       await initIndexedDB();
       requestPersistentStorage();
 
-      const restoreModal = document.getElementById('modalRestoringSession');
-      restoreModal.classList.remove('hidden');
-
       const savedTabs = await storeGet('workspace_tabs');
       const savedActive = await storeGet('workspace_active_id');
       const savedSettings = await storeGet('workspace_settings');
       const savedLogo = await storeGet('studio_custom_logo');
+
+      // Only show restore modal if there is actual previous data
+      const restoreModal = document.getElementById('modalRestoringSession');
+      const hasPreviousSession = savedTabs && savedTabs.length > 0;
+      if (hasPreviousSession) {
+        restoreModal.classList.remove('hidden');
+      }
 
       if (savedSettings) {
         userSettings = { ...userSettings, ...savedSettings };
@@ -2752,7 +2773,7 @@
           handleSwitchTab(newTab.id);
           triggerToast(`Created ${newName}`);
         }
-      }, 500);
+      }, hasPreviousSession ? 400 : 50);
     });
   </script>
 </body>

@@ -1,6 +1,6 @@
-// Dynamic Version Extraction from URL parameter (?v=5.1 ya ?v=15)
+// Dynamic Version Extraction from URL parameter (?v=5.1)
 const swUrl = new URL(location);
-const dynamicVer = swUrl.searchParams.get('v') || '15';
+const dynamicVer = swUrl.searchParams.get('v') || '5.1';
 const CACHE_NAME = `anzarg-studio-v${dynamicVer}`;
 
 // Core essential local assets jo offline app chalane ke liye zaroori hain
@@ -68,6 +68,15 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// App Factory Reset Trigger Listener
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'CLEAR_ALL_CACHES') {
+    caches.keys().then((keys) => {
+      keys.forEach((key) => caches.delete(key));
+    });
+  }
 });
 
 self.addEventListener('fetch', (event) => {

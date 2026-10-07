@@ -61,9 +61,23 @@
         {
           "src": "./icon-192.png",
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/png",
+          "purpose": "any"
         }
       ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./?action=open",
+      "name": "Code Files",
+      "accept": {
+        "text/html": [".html", ".htm"],
+        "text/css": [".css"],
+        "text/javascript": [".js"],
+        "application/json": [".json"],
+        "text/plain": [".txt", ".md"]
+      }
     }
   ]
 }

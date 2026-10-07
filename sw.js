@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anzarg-studio-v9';
+const CACHE_NAME = 'anzarg-studio-v10';
 
 // Core essential local assets jo app chalane ke liye zaroori hain
 const LOCAL_ASSETS = [
@@ -20,12 +20,14 @@ const EXTERNAL_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Step 1: Local assets ko guaranteed add karein
-      await cache.addAll(LOCAL_ASSETS).catch((err) => {
-        console.warn('Local assets cache error:', err);
-      });
+      // Step 1: Local assets ko cache karein
+      try {
+        await cache.addAll(LOCAL_ASSETS);
+      } catch (err) {
+        console.warn('Local assets cache warning:', err);
+      }
 
-      // Step 2: External CDNs ko gracefully cache karein (agar network issue ho toh fail na ho)
+      // Step 2: External CDNs ko gracefully pre-cache karein
       for (const url of EXTERNAL_ASSETS) {
         try {
           const req = new Request(url, { mode: 'cors' });
@@ -58,17 +60,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Sirf GET requests ko cache interceptor se guzarein
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Chrome extensions aur non-http protocols ko bypass karein
+  // Non-HTTP aur extensions ko bypass karein
   if (!url.protocol.startsWith('http')) return;
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
-        // Cache-First with Background Update Strategy
+        // Cache mil gaya: turant return karein aur background me update karein
         fetch(event.request)
           .then((networkResponse) => {
             if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -81,7 +84,7 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      // Network se fetch karein aur runtime par dynamic cache karein (Fonts & Icons included)
+      // Cache me nahi hai: network se layein aur runtime par dynamic cache karein
       return fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -93,9 +96,9 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(async () => {
-          // Offline navigation fallback
+          // Complete offline fallback navigation
           if (event.request.mode === 'navigate') {
-            const fallback = await caches.match('./', { ignoreSearch: true }) || await caches.match('./index.html', { ignoreSearch: true });
+            const fallback = (await caches.match('./', { ignoreSearch: true })) || (await caches.match('./index.html', { ignoreSearch: true }));
             if (fallback) return fallback;
           }
         });

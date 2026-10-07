@@ -495,7 +495,7 @@
     </div>
   </div>
 
-  <!-- PWA INSTALL POPUP (SEVAK AI STYLE) -->
+  <!-- PWA INSTALL POPUP (STANDBY / FALLBACK) -->
   <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl text-slate-800 pwa-glow-card relative border border-white/60">
       <div class="flex items-center space-x-3.5 mb-3">
@@ -1059,7 +1059,6 @@
 
     // Intelligent Guarded PWA Installation Engine
     let deferredInstallPrompt = null;
-    let installCancelCount = 0;
 
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
@@ -1078,7 +1077,7 @@
       const btnCancel = document.getElementById('btnPwaCancel');
       const btnConfirm = document.getElementById('btnPwaConfirm');
 
-      // Guard 1: Standalone check
+      // Standalone check
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       if (isStandalone) {
         if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
@@ -1087,7 +1086,7 @@
         return;
       }
 
-      // Guard 2: Installed check
+      // Installed check
       if ('getInstalledRelatedApps' in navigator) {
         navigator.getInstalledRelatedApps().then(apps => {
           if (apps && apps.length > 0) {
@@ -1106,30 +1105,34 @@
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
       });
 
-      // Show modal after 2.5 seconds
-      setTimeout(() => {
-        if (modal && installCancelCount < 2) {
-          modal.classList.remove('hidden');
-        }
-      }, 2500);
-
-      // Cancel handling
-      if (btnCancel && modal) {
-        btnCancel.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          installCancelCount++;
-
-          if (installCancelCount === 1) {
-            setTimeout(() => {
-              if (modal && installCancelCount < 2) {
-                modal.classList.remove('hidden');
-              }
-            }, 2500);
+      // User-friendly direct install invocation
+      const triggerInstallAction = async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            deferredInstallPrompt = null;
           }
+        } else {
+          // Fallback if browser doesn't expose prompt directly
+          if (modal) modal.classList.remove('hidden');
+        }
+      };
+
+      if (headerInstallBtn) headerInstallBtn.addEventListener('click', triggerInstallAction);
+      if (drawerInstallBtn) {
+        drawerInstallBtn.addEventListener('click', () => {
+          closeDrawerPanel();
+          triggerInstallAction();
         });
       }
 
-      // Single install action (No overlapping duplicate toasts)
+      if (btnCancel && modal) {
+        btnCancel.addEventListener('click', () => {
+          modal.classList.add('hidden');
+        });
+      }
+
       if (btnConfirm && modal) {
         btnConfirm.addEventListener('click', async () => {
           modal.classList.add('hidden');
@@ -1141,29 +1144,12 @@
         });
       }
 
-      const openModalDirect = () => {
-        if (deferredInstallPrompt && modal) {
-          modal.classList.remove('hidden');
-        } else {
-          triggerToast("Application is ready or already installed");
-        }
-      };
-
-      if (headerInstallBtn) headerInstallBtn.addEventListener('click', openModalDirect);
-      if (drawerInstallBtn) {
-        drawerInstallBtn.addEventListener('click', () => {
-          closeDrawerPanel();
-          openModalDirect();
-        });
-      }
-
-      // Single Professional Notification on complete install
+      // Native clean cleanup on install completion
       window.addEventListener('appinstalled', () => {
         if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
         if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
         if (modal) modal.classList.add('hidden');
         deferredInstallPrompt = null;
-        triggerToast("ANZARG Studio Installed Successfully");
       });
     }
 

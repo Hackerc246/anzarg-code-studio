@@ -533,7 +533,7 @@
     </div>
   </aside>
 
-  <!-- QUICKEDIT STYLE RESTORING PREVIOUS SESSION SPINNER -->
+  <!-- RESTORING SESSION SPINNER -->
   <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
       <div class="spinner-ring shrink-0"></div>
@@ -647,7 +647,7 @@
     </div>
   </div>
 
-  <!-- ABOUT & DETAILS POLICY MODAL -->
+  <!-- ABOUT & DETAILS POLICY MODAL (WITH DYNAMIC VERSION BADGE) -->
   <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -657,7 +657,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span class="text-[10px] text-cyan-500 font-mono">v5.0 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.1 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -937,7 +937,7 @@
     </div>
   </div>
 
-  <!-- NATIVE CANVAS CROP & EDIT STUDIO MODAL -->
+  <!-- CANVAS CROP & EDIT STUDIO MODAL -->
   <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
@@ -1020,6 +1020,14 @@
   </div>
 
   <script>
+    // ==========================================
+    // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
+    // ==========================================
+    const APP_CONFIG = {
+      version: '5.1',
+      edition: 'Professional Edition'
+    };
+
     // Database Engine
     const DB_NAME = 'ANZARG_STUDIO_DB';
     const DB_VER = 3;
@@ -1133,8 +1141,8 @@
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('ANZARG SW registered successfully:', reg.scope))
+          navigator.serviceWorker.register(`./sw.js?v=${APP_CONFIG.version}`)
+            .then(reg => console.log('ANZARG SW Registered Version:', APP_CONFIG.version))
             .catch(err => console.log('ANZARG SW registration failed:', err));
         });
       }
@@ -1690,8 +1698,10 @@
       doneBtn.addEventListener('click', handleDone);
     }
 
-    // Professional In-App Save & Export System (No unwanted browser downloads)
-    async function performDirectSave(forceFileExport = false) {
+    // =========================================================================
+    // NATIVE ANDROID SYSTEM STORAGE SAVE ENGINE (SHOWSAVEFILEPICKER RESTORED)
+    // =========================================================================
+    async function performDirectSave(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur) return false;
 
@@ -1705,8 +1715,51 @@
       }
       cur.name = cleanName;
 
-      // Agar user ne "Save As / Export" chuna ho, sirf tabhi device export trigger ho
-      if (forceFileExport) {
+      // Rule 1: Existing File Handle overwrite (No repeated folder asking)
+      if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
+        try {
+          const writable = await cur.fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          cur.isModified = false;
+          renderTabStrip();
+          await storeSave('workspace_tabs', fileTabs);
+          return true;
+        } catch (err) {
+          if (err.name === 'AbortError') return false;
+          console.warn("Handle overwrite failed, fallback to picker:", err);
+        }
+      }
+
+      // Rule 2: Android Native Storage Folder Picker (showSaveFilePicker)
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: cleanName,
+            types: [{
+              description: 'HTML Source File',
+              accept: { 'text/html': ['.html', '.htm'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(content);
+          await writable.close();
+
+          cur.fileHandle = handle;
+          cur.name = handle.name || cleanName;
+          cur.isModified = false;
+          cur.isNewFile = false;
+          renderTabStrip();
+          await storeSave('workspace_tabs', fileTabs);
+          return true;
+        } catch (err) {
+          if (err.name === 'AbortError') return false; // User cancelled Android picker
+          console.warn("Picker failed, checking legacy fallback:", err);
+        }
+      }
+
+      // Rule 3: Old Smartphone / Fallback Download
+      try {
         const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1716,19 +1769,46 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+
+        cur.isModified = false;
+        cur.isNewFile = false;
+        renderTabStrip();
+        await storeSave('workspace_tabs', fileTabs);
+        return true;
+      } catch (e) {
+        return false;
       }
-
-      cur.isModified = false;
-      cur.isNewFile = false;
-      renderTabStrip();
-
-      // IndexedDB persistent storage
-      await storeSave('workspace_tabs', fileTabs);
-      await storeSave('workspace_active_id', activeFileId);
-      return true;
     }
 
     async function handleOpenFileNative() {
+      if ('showOpenFilePicker' in window) {
+        try {
+          const [handle] = await window.showOpenFilePicker({
+            multiple: false,
+            types: [{
+              description: 'Code Files',
+              accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'] }
+            }]
+          });
+          const file = await handle.getFile();
+          const text = await file.text();
+
+          const newTab = {
+            id: 'tab-' + Date.now(),
+            name: file.name,
+            content: text,
+            isModified: false,
+            fileHandle: handle,
+            isNewFile: false
+          };
+          fileTabs.push(newTab);
+          handleSwitchTab(newTab.id);
+          triggerToast(`Opened ${file.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
       document.getElementById('fallbackFileInput').click();
     }
 
@@ -1833,7 +1913,7 @@
           return;
         }
 
-        // 3. Agar koi application setting/other modal khula hai, toh pehle sirf wo band ho
+        // 3. Agar koi application modal khula hai, toh pehle sirf wo band ho
         const openModals = [
           'modalInstallPrompt',
           'modalAboutSection',
@@ -2128,6 +2208,27 @@
         ? `${(tabsToExport[0].name || 'file').replace(/\.[^/.]+$/, "")}.zip`
         : `anzarg-project-${Date.now()}.zip`;
 
+      // Native Android Save Folder Picker for ZIP
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultZipName,
+            types: [{
+              description: 'ZIP Archive',
+              accept: { 'application/zip': ['.zip'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(zipContent);
+          await writable.close();
+          triggerToast("ZIP Saved Successfully!");
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      // Fallback
       const url = URL.createObjectURL(zipContent);
       const a = document.createElement('a');
       a.href = url;
@@ -2576,6 +2677,12 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      // Dynamic About Version Badge Sync
+      const badge = document.getElementById('appVersionBadge');
+      if (badge) {
+        badge.textContent = `v${APP_CONFIG.version} ${APP_CONFIG.edition}`;
+      }
+
       lucide.createIcons();
       registerServiceWorker();
       setupPwaInstallFlow();
@@ -2636,7 +2743,7 @@
         restoreModal.classList.add('hidden');
         lucide.createIcons();
 
-        // Manifest shortcut (?action=new) handle karne ke liye
+        // Shortcut param (?action=new) handler
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('action') === 'new') {
           const newName = `file-${fileTabs.length + 1}.html`;

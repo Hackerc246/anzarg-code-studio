@@ -55,9 +55,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
   <style>
-    /* =========================================================================
-       UNIVERSAL TOKEN ENGINE (AUTO-SYNC ACROSS ALL THEMES & CONTRASTS)
-       ========================================================================= */
     :root {
       --bg-base: #0d1117;
       --surface: #161b22;
@@ -74,7 +71,6 @@
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
 
-      /* Prism Dynamic Tokens (Dark Slate) */
       --syn-tag: #7ee787;
       --syn-attr-name: #79c0ff;
       --syn-string: #a5d6ff;
@@ -96,13 +92,12 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --editor-text: #0f172a;
-      --editor-highlight: rgba(16, 185, 129, 0.28); /* QuickEdit Natural Mint Contrast */
+      --editor-highlight: rgba(16, 185, 129, 0.28);
       
       --gutter-bg: #f8fafc;
       --gutter-text: #64748b;
       --gutter-border: #e2e8f0;
 
-      /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
       --syn-tag: #0369a1;
       --syn-attr-name: #6b21a8;
       --syn-string: #15803d;
@@ -162,7 +157,6 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* Universal Selection Highlighter */
     ::selection {
       background-color: var(--editor-highlight) !important;
       color: inherit !important;
@@ -218,7 +212,6 @@
       transition: background-color 0.2s ease;
     }
 
-    /* ZERO-JITTER STACKING ARCHITECTURE */
     #syntaxHighlightPre, textarea#codeTextarea {
       position: absolute;
       inset: 0;
@@ -405,7 +398,6 @@
       100% { transform: translateY(0); }
     }
 
-    /* Virtual Modifier Active Highlighting */
     .vkey-mod-active {
       background-color: var(--accent) !important;
       color: #000000 !important;
@@ -510,29 +502,14 @@
     </div>
   </header>
 
-  <!-- QUICKEDIT COMPACT SEARCH BAR -->
-  <header id="quickSearchNavBar" class="hidden h-12 bg-slate-900 border-b border-emerald-500/40 flex items-center justify-between px-3 z-30 shrink-0 select-none shadow-md">
-    <div class="flex items-center space-x-2 flex-1 overflow-hidden mr-2">
-      <button id="btnQuickSearchExit" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white active:scale-95 transition">
-        <i data-lucide="arrow-left" class="w-5 h-5 text-emerald-400"></i>
-      </button>
-      <span class="text-xs font-mono text-slate-300 truncate">
-        Search: "<span id="labelQuickSearchText" class="text-emerald-300 font-semibold"></span>"
-      </span>
-      <span id="labelQuickSearchCount" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">0/0</span>
+  <!-- ADDRESS & PATH BREADCRUMB BAR (QuickEdit Standard Path View) -->
+  <div id="fileAddressBar" class="h-6 bg-[var(--surface)] border-b border-[var(--surface-border)] px-3 flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] shrink-0 select-none">
+    <div class="flex items-center space-x-1.5 truncate">
+      <i data-lucide="folder" class="w-3 h-3 text-cyan-400 shrink-0"></i>
+      <span id="labelFilePathBreadcrumb" class="truncate">Storage > Documents > untitled.html</span>
     </div>
-    <div class="flex items-center space-x-1">
-      <button id="btnQuickSearchPrev" title="Previous match" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
-        <i data-lucide="arrow-up" class="w-4 h-4"></i>
-      </button>
-      <button id="btnQuickSearchNext" title="Next match" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
-        <i data-lucide="arrow-down" class="w-4 h-4"></i>
-      </button>
-      <button id="btnQuickSearchReopenModal" title="Edit Search" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 active:scale-90 transition">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400"></i>
-      </button>
-    </div>
-  </header>
+    <span id="badgeStorageType" class="text-[9px] px-1.5 py-0.2 rounded bg-black/5 text-[var(--accent)] font-semibold shrink-0">Workspace</span>
+  </div>
 
   <!-- TAB STRIP -->
   <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none transition-colors">
@@ -558,21 +535,17 @@
 
   <!-- SMART DEVELOPER VIRTUAL KEYBOARD STRIP (Row 1) -->
   <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 transition-colors">
-    
-    <!-- Primary Dev Modifier Keys (Termux / Hacker's Standard) -->
     <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">CTRL</button>
     <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">ALT</button>
     <button id="btnKeySelectAll" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">ALL</button>
     <button id="btnKeyCopy" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">COPY</button>
     <button id="btnKeyPaste" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent-secondary)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">PASTE</button>
     
-    <!-- Precision Cursor Movement Arrows -->
     <button id="btnKeyArrowLeft" title="Cursor Left" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">◀</button>
     <button id="btnKeyArrowRight" title="Cursor Right" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">▶</button>
     
     <div class="h-4 w-px bg-[var(--surface-border)] mx-1"></div>
 
-    <!-- Essential Code Symbols -->
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
@@ -607,7 +580,17 @@
     <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition">
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
+
+    <!-- Expand/Collapse Floating Key Switch -->
+    <button id="btnToggleAccessoryBar" title="Minimize Keyboard Strip" class="px-2 h-7 bg-black/5 hover:bg-black/15 text-[var(--text-muted)] rounded-lg text-xs font-bold active:scale-90 transition">
+      ▼
+    </button>
   </div>
+
+  <!-- FLOATING STRIP RESTORE BUTTON -->
+  <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden fixed bottom-12 right-2 p-1.5 bg-[var(--surface)] border border-[var(--surface-border)] rounded-full text-cyan-400 shadow-xl z-20 active:scale-90 transition">
+    ▲
+  </button>
 
   <!-- QUICKEDIT NAVIGATION BAR (Row 2) -->
   <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20 transition-colors">
@@ -634,7 +617,6 @@
   <!-- DRAWER OVERLAY & ASIDE PANEL -->
   <div id="drawerOverlay"></div>
   <aside id="drawerNav">
-    
     <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
       <img id="drawerBannerImg" class="absolute inset-0 w-full h-full object-cover hidden z-0 opacity-90 transition-opacity" alt="Banner">
       <div id="drawerBannerOverlay" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20 z-1 hidden"></div>
@@ -746,6 +728,28 @@
     </div>
   </div>
 
+  <!-- IN-APP CONFIRM OVERWRITE MODAL (SAFETY POPUP) -->
+  <div id="modalConfirmOverwrite" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
+    <div class="material-card-elevated w-full max-w-xs p-6 text-left">
+      <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-3">
+        <i data-lucide="alert-circle" class="w-6 h-6 text-amber-500"></i>
+      </div>
+      <h3 class="text-lg font-bold text-[var(--text-main)] mb-1">Save Changes?</h3>
+      <p class="text-xs text-[var(--text-muted)] mb-4 leading-relaxed">
+        You made edits to <strong id="overwriteFileName" class="text-cyan-400">file.html</strong>. Do you want to update this file on device storage?
+      </p>
+      
+      <div class="flex items-center justify-end space-x-2 text-xs font-semibold">
+        <button id="btnCancelOverwrite" class="px-3.5 py-2 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-xl transition">
+          Cancel
+        </button>
+        <button id="btnProceedOverwrite" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md transition active:scale-95">
+          Yes, Save
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MATERIAL 3 DIALOG: UNIFIED EXIT MODAL (POPUP 1) -->
   <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-left">
@@ -811,14 +815,14 @@
     </div>
   </div>
 
-  <!-- SAVED SUCCESSFULLY MATERIAL CARD -->
+  <!-- SAVED SUCCESSFULLY MATERIAL CARD (TRANSPARENT LOCATION FEEDBACK) -->
   <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-center">
       <div class="w-14 h-14 mx-auto mb-3.5 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-emerald-500/10">
         <i data-lucide="check" class="w-7 h-7 text-emerald-500 stroke-[2.5]"></i>
       </div>
       <h3 class="text-base font-bold text-[var(--text-main)] mb-1">Saved Successfully</h3>
-      <p class="text-xs text-[var(--text-muted)] mb-5">Workspace updated in IndexedDB storage.</p>
+      <p id="labelSaveSuccessPath" class="text-xs text-cyan-400 font-mono mb-5 truncate px-2">Storage Location</p>
       <button id="btnSavedSuccessDone" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl uppercase tracking-wider transition shadow-md active:scale-95">
         Done
       </button>
@@ -835,7 +839,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.2 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.3 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1247,23 +1251,23 @@
     </div>
   </div>
 
-  <!-- LIVE RUNNER MODAL -->
+  <!-- LIVE RUNNER MODAL (SINGLE CLEAN FLOATING TOP BAR) -->
   <div id="modalLivePreview" class="hidden fixed inset-0 bg-black/85 flex flex-col z-50">
-    <div class="h-12 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-3 shrink-0">
-      <div class="flex items-center space-x-2">
-        <i data-lucide="globe" class="w-4 h-4 text-emerald-400"></i>
-        <span class="text-xs font-bold text-slate-200">Live HTML/Web Runner</span>
+    <div class="h-11 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-3 shrink-0 select-none shadow-md">
+      <div class="flex items-center space-x-2 truncate">
+        <button id="btnPreviewClose" title="Back to Editor" class="p-1 hover:bg-white/10 rounded-lg text-slate-300 active:scale-95 transition">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-cyan-400"></i>
+        </button>
+        <span class="text-xs font-bold text-slate-200">Live Preview</span>
+        <span class="text-[11px] font-mono text-slate-500 truncate" id="labelPreviewAddress">preview://localhost</span>
       </div>
-      <div class="flex items-center space-x-2">
-        <button id="btnPreviewConsoleToggle" title="Toggle Console" class="px-2.5 py-1 text-[11px] bg-white/10 hover:bg-white/20 text-slate-300 rounded-lg flex items-center space-x-1">
-          <i data-lucide="terminal" class="w-3.5 h-3.5 text-amber-400"></i>
+      <div class="flex items-center space-x-1.5">
+        <button id="btnPreviewConsoleToggle" title="Toggle Console" class="px-2 py-1 text-[11px] bg-white/10 hover:bg-white/15 text-slate-300 rounded-lg flex items-center space-x-1 active:scale-95">
+          <i data-lucide="terminal" class="w-3 h-3 text-amber-400"></i>
           <span>Console</span>
         </button>
-        <button id="btnPreviewRefresh" title="Reload Preview" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-300">
+        <button id="btnPreviewRefresh" title="Reload Preview" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-300 active:scale-90">
           <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-        </button>
-        <button id="btnPreviewClose" title="Close Preview" class="p-1.5 hover:bg-white/10 rounded-lg text-rose-400">
-          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
@@ -1288,7 +1292,7 @@
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '6.2',
+      version: '6.3',
       edition: 'Professional Edition'
     };
 
@@ -1390,7 +1394,8 @@
         content: customContent,
         isModified: false,
         fileHandle: null,
-        isNewFile: true
+        isNewFile: true,
+        sourceOrigin: 'Local Sandbox'
       };
     }
 
@@ -1640,7 +1645,8 @@
           name: t.name,
           content: t.content,
           isModified: t.isModified,
-          isNewFile: t.isNewFile
+          isNewFile: t.isNewFile,
+          sourceOrigin: t.sourceOrigin || 'Workspace'
         }));
         await storeSave('workspace_tabs', serializedTabs);
         await storeSave('workspace_active_id', activeFileId);
@@ -1691,6 +1697,18 @@
       applySettingsStyles();
     }
 
+    function updateAddressBreadcrumb(tab) {
+      if (!tab) return;
+      const breadcrumb = document.getElementById('labelFilePathBreadcrumb');
+      const badge = document.getElementById('badgeStorageType');
+      const previewAddr = document.getElementById('labelPreviewAddress');
+      
+      const origin = tab.sourceOrigin || (tab.fileHandle ? 'Device Storage' : 'Local Sandbox');
+      breadcrumb.textContent = `${origin} > ${tab.name}`;
+      badge.textContent = tab.fileHandle ? 'Device' : (tab.isNewFile ? 'New' : 'Sandbox');
+      if (previewAddr) previewAddr.textContent = `live://${tab.name}`;
+    }
+
     function renderTabStrip() {
       const container = document.getElementById('tabStrip');
       container.innerHTML = '';
@@ -1726,6 +1744,7 @@
       if (current) {
         document.getElementById('labelFileName').textContent = current.name;
         document.getElementById('dotUnsaved').classList.toggle('hidden', !current.isModified);
+        updateAddressBreadcrumb(current);
       }
     }
 
@@ -1785,7 +1804,6 @@
     }
 
     function setupAccessoryKeys() {
-      // 1. Virtual Dev Action Keys (Termux / Hacker's Bar Standard)
       const btnCtrl = document.getElementById('btnKeyCtrl');
       const btnAlt = document.getElementById('btnKeyAlt');
       const btnSelectAll = document.getElementById('btnKeySelectAll');
@@ -1865,7 +1883,28 @@
         }
       });
 
-      // 2. Symbols and HTML Keys
+      // Collapse / Expand Strip Handlers
+      const accessoryRow = document.getElementById('accessoryBar');
+      const btnToggle = document.getElementById('btnToggleAccessoryBar');
+      const btnRestore = document.getElementById('btnRestoreAccessoryBar');
+
+      btnToggle.addEventListener('click', () => {
+        accessoryRow.classList.add('hidden');
+        btnRestore.classList.remove('hidden');
+        userSettings.miniBar = false;
+        document.getElementById('settingCheckAccessory').checked = false;
+        scheduleAutoSave();
+      });
+
+      btnRestore.addEventListener('click', () => {
+        accessoryRow.classList.remove('hidden');
+        btnRestore.classList.add('hidden');
+        userSettings.miniBar = true;
+        document.getElementById('settingCheckAccessory').checked = true;
+        scheduleAutoSave();
+      });
+
+      // Symbol Keys
       document.querySelectorAll('.vkey').forEach(btn => {
         btn.addEventListener('click', () => {
           const val = btn.textContent.trim();
@@ -2086,8 +2125,10 @@
       document.getElementById('btnBottomSearch').addEventListener('click', openSearch);
     }
 
-    function showSavedSuccessModal(callback) {
+    function showSavedSuccessModal(pathLocation, callback) {
       const modal = document.getElementById('modalSavedSuccess');
+      const pathLabel = document.getElementById('labelSaveSuccessPath');
+      if (pathLabel) pathLabel.textContent = pathLocation || 'Saved to Device';
       modal.classList.remove('hidden');
       
       const doneBtn = document.getElementById('btnSavedSuccessDone');
@@ -2099,8 +2140,8 @@
       doneBtn.addEventListener('click', handleDone);
     }
 
-    // 🔒 RELIABLE SAVE SYSTEM (NO FORCED DOWNLOAD ON USER CANCEL)
-    async function performDirectSave(forceSaveAs = false) {
+    // 🔒 SMART SAVE & OVERWRITE ENGINE WITH USER SAFETY
+    async function executeSaveWorkflow(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur) return false;
 
@@ -2114,80 +2155,97 @@
       }
       cur.name = cleanName;
 
-      // 1. Overwrite direct file handle if available
-      if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
-        try {
-          const writable = await cur.fileHandle.createWritable();
-          await writable.write(content);
-          await writable.close();
-          cur.isModified = false;
-          renderTabStrip();
-          await storeSave('workspace_tabs', fileTabs);
-          return true;
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            return false;
-          }
-          console.warn("Handle overwrite failed:", err);
+      // Case A: File uploaded from device and modified -> Ask Confirmation Dialog
+      if (cur.fileHandle && !cur.isNewFile && !forceSaveAs) {
+        if (cur.isModified) {
+          const confirmModal = document.getElementById('modalConfirmOverwrite');
+          document.getElementById('overwriteFileName').textContent = cur.name;
+          confirmModal.classList.remove('hidden');
+          return;
+        } else {
+          showSavedSuccessModal(`Device Storage > ${cur.name}`);
+          return;
         }
       }
 
-      // 2. Android / Chrome Native Storage Picker
-      if ('showSaveFilePicker' in window && forceSaveAs) {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: cleanName,
-            types: [{
-              description: 'HTML Source File',
-              accept: { 'text/html': ['.html', '.htm'] }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(content);
-          await writable.close();
+      // Case B: Fresh New File / Pasted Code / Export -> Directly open device storage file picker
+      if (cur.isNewFile || forceSaveAs) {
+        if ('showSaveFilePicker' in window) {
+          try {
+            const handle = await window.showSaveFilePicker({
+              suggestedName: cleanName,
+              types: [{
+                description: 'HTML Source File',
+                accept: { 'text/html': ['.html', '.htm'] }
+              }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
 
-          cur.fileHandle = handle;
-          cur.name = handle.name || cleanName;
+            cur.fileHandle = handle;
+            cur.name = handle.name || cleanName;
+            cur.isModified = false;
+            cur.isNewFile = false;
+            cur.sourceOrigin = 'Device Storage';
+            renderTabStrip();
+            await storeSave('workspace_tabs', fileTabs);
+            showSavedSuccessModal(`Device Storage > ${cur.name}`);
+            return true;
+          } catch (err) {
+            if (err.name === 'AbortError') return false;
+            console.warn("Save picker cancelled, using fallback:", err);
+          }
+        }
+
+        // Fallback for devices without File System Access API
+        try {
+          const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = cleanName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
           cur.isModified = false;
           cur.isNewFile = false;
+          cur.sourceOrigin = 'Downloads';
           renderTabStrip();
           await storeSave('workspace_tabs', fileTabs);
+          showSavedSuccessModal(`Downloads > ${cleanName}`);
           return true;
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            return false;
-          }
-          console.warn("Save picker cancelled:", err);
+        } catch (e) {
+          return false;
         }
       }
 
-      // 3. Clean Internal Workspace Save (No browser prompt needed)
-      if (!forceSaveAs) {
-        cur.isModified = false;
-        renderTabStrip();
-        await storeSave('workspace_tabs', fileTabs);
-        return true;
-      }
+      // Default Workspace fallback
+      cur.isModified = false;
+      renderTabStrip();
+      await storeSave('workspace_tabs', fileTabs);
+      showSavedSuccessModal(`Workspace Sandbox > ${cur.name}`);
+      return true;
+    }
 
-      // 4. Manual Fallback Download (Only when user explicitly asks for export)
+    async function handleDirectFileOverwrite() {
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      if (!cur || !cur.fileHandle) return;
+
       try {
-        const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = cleanName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const writable = await cur.fileHandle.createWritable();
+        await writable.write(textarea.value);
+        await writable.close();
 
         cur.isModified = false;
-        cur.isNewFile = false;
         renderTabStrip();
         await storeSave('workspace_tabs', fileTabs);
-        return true;
-      } catch (e) {
-        return false;
+        showSavedSuccessModal(`Updated: ${cur.name}`);
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        triggerToast("Failed to overwrite file on device");
       }
     }
 
@@ -2210,7 +2268,8 @@
             content: text,
             isModified: false,
             fileHandle: handle,
-            isNewFile: false
+            isNewFile: false,
+            sourceOrigin: 'Device Storage'
           };
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
@@ -2302,6 +2361,7 @@
         'modalSettings',
         'modalSearchQuickEdit',
         'modalSavedSuccess',
+        'modalConfirmOverwrite',
         'modalLivePreview',
         'modalRename',
         'modalNewFile',
@@ -2361,11 +2421,9 @@
 
       btnAndSave.addEventListener('click', async () => {
         exitModal.classList.add('hidden');
-        const saved = await performDirectSave(false);
+        const saved = await executeSaveWorkflow(false);
         if (saved) {
-          showSavedSuccessModal(() => {
-            executeForcefulClose();
-          });
+          executeForcefulClose();
         }
       });
 
@@ -2386,6 +2444,16 @@
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', handlePopStateExit);
     }
+
+    // Overwrite Confirmation Modal Listeners
+    document.getElementById('btnCancelOverwrite').addEventListener('click', () => {
+      document.getElementById('modalConfirmOverwrite').classList.add('hidden');
+    });
+
+    document.getElementById('btnProceedOverwrite').addEventListener('click', async () => {
+      document.getElementById('modalConfirmOverwrite').classList.add('hidden');
+      await handleDirectFileOverwrite();
+    });
 
     // =========================================================================
     // DUAL LOGO + BANNER CROPPER ENGINE
@@ -2668,7 +2736,8 @@
               content: f.content,
               isModified: false,
               fileHandle: null,
-              isNewFile: false
+              isNewFile: false,
+              sourceOrigin: 'ZIP Project'
             });
           });
 
@@ -3008,6 +3077,7 @@
       document.getElementById('settingCheckAccessory').addEventListener('change', (e) => {
         userSettings.miniBar = e.target.checked;
         document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
+        document.getElementById('btnRestoreAccessoryBar').classList.toggle('hidden', userSettings.miniBar);
         scheduleAutoSave();
       });
 
@@ -3199,22 +3269,18 @@
       });
 
       document.getElementById('btnHeaderSave').addEventListener('click', async () => {
-        const saved = await performDirectSave(false);
-        if (saved) showSavedSuccessModal();
+        await executeSaveWorkflow(false);
       });
       document.getElementById('btnBottomSave').addEventListener('click', async () => {
-        const saved = await performDirectSave(false);
-        if (saved) showSavedSuccessModal();
+        await executeSaveWorkflow(false);
       });
       document.getElementById('dNavSaveFile').addEventListener('click', async () => {
         closeDrawerPanel();
-        const saved = await performDirectSave(false);
-        if (saved) showSavedSuccessModal();
+        await executeSaveWorkflow(false);
       });
       document.getElementById('optSaveAs').addEventListener('click', async () => {
         overflowMenu.classList.add('hidden');
-        const saved = await performDirectSave(true);
-        if (saved) showSavedSuccessModal();
+        await executeSaveWorkflow(true);
       });
 
       document.getElementById('dNavOpenFile').addEventListener('click', () => {
@@ -3233,7 +3299,8 @@
             content: evt.target.result,
             isModified: false,
             fileHandle: null,
-            isNewFile: false
+            isNewFile: false,
+            sourceOrigin: 'Storage'
           };
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
@@ -3325,7 +3392,10 @@
       setupLogoAndBannerCropperStudio();
       setupZipImporter();
 
-      document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
+      if (!userSettings.miniBar) {
+        document.getElementById('accessoryBar').classList.add('hidden');
+        document.getElementById('btnRestoreAccessoryBar').classList.remove('hidden');
+      }
 
       setTimeout(() => {
         restoreModal.classList.add('hidden');

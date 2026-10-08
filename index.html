@@ -55,9 +55,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
   <style>
-    /* =========================================================================
-       UNIVERSAL TOKEN ENGINE (AUTO-SYNC ACROSS ALL THEMES & CONTRASTS)
-       ========================================================================= */
     :root {
       --bg-base: #0d1117;
       --surface: #161b22;
@@ -74,7 +71,6 @@
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
 
-      /* Prism Dynamic Tokens (Dark Slate) */
       --syn-tag: #7ee787;
       --syn-attr-name: #79c0ff;
       --syn-string: #a5d6ff;
@@ -96,13 +92,12 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --editor-text: #0f172a;
-      --editor-highlight: rgba(16, 185, 129, 0.28); /* QuickEdit Natural Mint Contrast */
+      --editor-highlight: rgba(16, 185, 129, 0.28);
       
       --gutter-bg: #f8fafc;
       --gutter-text: #64748b;
       --gutter-border: #e2e8f0;
 
-      /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
       --syn-tag: #0369a1;
       --syn-attr-name: #6b21a8;
       --syn-string: #15803d;
@@ -162,7 +157,6 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* Universal Selection Highlighter */
     ::selection {
       background-color: var(--editor-highlight) !important;
       color: inherit !important;
@@ -185,7 +179,6 @@
       overflow: hidden;
     }
 
-    /* Gutter Bar */
     #lineNumbersGutter {
       width: 48px;
       height: 100%;
@@ -219,7 +212,7 @@
       transition: background-color 0.2s ease;
     }
 
-    /* Unified Rendering Box Metrics for Zero-Desync & Zero-Shake */
+    /* ZERO-JITTER STACKING ARCHITECTURE */
     #syntaxHighlightPre, textarea#codeTextarea {
       position: absolute;
       inset: 0;
@@ -233,6 +226,8 @@
       border: none !important;
       outline: none !important;
       box-sizing: border-box !important;
+      transform: translateZ(0);
+      will-change: scroll-position;
     }
 
     #syntaxHighlightPre {
@@ -318,7 +313,6 @@
       z-index: 60;
     }
 
-    /* Modern In-App Material Elevation Cards */
     .material-card-elevated {
       background-color: var(--surface);
       border: 1px solid var(--surface-border);
@@ -327,7 +321,6 @@
       transition: all 0.2s ease;
     }
 
-    /* Hardware Accelerated Slide Drawer Architecture */
     #drawerNav {
       position: fixed;
       top: 0;
@@ -814,7 +807,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.9 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.1 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1071,7 +1064,6 @@
       </div>
 
       <div class="space-y-4">
-        <!-- Logo Setup Card -->
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
           <div class="flex items-center space-x-3 cursor-pointer" id="settingLogoPreviewClickable" title="Tap to Adjust">
             <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
@@ -1096,7 +1088,6 @@
           </div>
         </div>
 
-        <!-- Banner Setup Card -->
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
           <div class="flex items-center space-x-3 cursor-pointer" id="settingBannerPreviewClickable" title="Tap to Adjust">
             <div id="settingBannerPreviewBox" class="w-14 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
@@ -1165,7 +1156,6 @@
           <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
 
-        <!-- Privacy Policy Access Button -->
         <div class="p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/20 flex items-center justify-between">
           <div>
             <div class="font-bold text-cyan-400">Privacy & Policy</div>
@@ -1270,11 +1260,10 @@
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '6.0',
+      version: '6.1',
       edition: 'Professional Edition'
     };
 
-    // Database Engine
     const DB_NAME = 'ANZARG_STUDIO_DB';
     const DB_VER = 3;
     let idb = null;
@@ -1960,7 +1949,6 @@
           if (count > 0) {
             textarea.value = textarea.value.replace(re, rep);
             updateLineNumbers();
-            updateSyntaxHighlighting();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
@@ -1998,6 +1986,7 @@
       doneBtn.addEventListener('click', handleDone);
     }
 
+    // 🔒 RELIABLE SAVE SYSTEM (NO FORCED DOWNLOAD ON USER CANCEL)
     async function performDirectSave(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur) return false;
@@ -2012,7 +2001,7 @@
       }
       cur.name = cleanName;
 
-      // Overwrite file
+      // 1. Overwrite direct file handle if available
       if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
         try {
           const writable = await cur.fileHandle.createWritable();
@@ -2023,13 +2012,16 @@
           await storeSave('workspace_tabs', fileTabs);
           return true;
         } catch (err) {
-          if (err.name === 'AbortError') return false;
-          console.warn("Handle overwrite fallback:", err);
+          if (err.name === 'AbortError') {
+            // User cancelled prompt -> STOP, do not trigger auto-download
+            return false;
+          }
+          console.warn("Handle overwrite failed:", err);
         }
       }
 
-      // Android Native Storage Folder Picker
-      if ('showSaveFilePicker' in window) {
+      // 2. Android / Chrome Native Storage Picker
+      if ('showSaveFilePicker' in window && forceSaveAs) {
         try {
           const handle = await window.showSaveFilePicker({
             suggestedName: cleanName,
@@ -2050,12 +2042,23 @@
           await storeSave('workspace_tabs', fileTabs);
           return true;
         } catch (err) {
-          if (err.name === 'AbortError') return false;
-          console.warn("Picker failed, checking legacy fallback:", err);
+          if (err.name === 'AbortError') {
+            // User pressed Cancel on picker -> Gracefully exit
+            return false;
+          }
+          console.warn("Save picker cancelled:", err);
         }
       }
 
-      // Fallback
+      // 3. Clean Internal Workspace Save (No browser prompt needed)
+      if (!forceSaveAs) {
+        cur.isModified = false;
+        renderTabStrip();
+        await storeSave('workspace_tabs', fileTabs);
+        return true;
+      }
+
+      // 4. Manual Fallback Download (Only when user explicitly asks for export)
       try {
         const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -2135,12 +2138,10 @@
 
     let isExiting = false;
 
-    // DIRECT FORCE EXIT (SHUTDOWN APP INSTANTLY - LOOP BREAKER)
     function executeForcefulClose() {
       isExiting = true;
       window.removeEventListener('popstate', handlePopStateExit);
 
-      // Saare open modals aur backdrops turant hide karein
       document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
       closeDrawerPanel();
       triggerToast("Closing Application...");
@@ -2233,7 +2234,6 @@
       const btnAreYouSureExit = document.getElementById('btnAreYouSureExit');
       const btnAreYouSureLater = document.getElementById('btnAreYouSureLater');
 
-      // EXIT button (Popup 1)
       btnWithoutSave.addEventListener('click', () => {
         exitModal.classList.add('hidden');
         const hasUnsaved = fileTabs.some(t => t.isModified);
@@ -2244,12 +2244,10 @@
         }
       });
 
-      // LATER button (Popup 1)
       btnLater.addEventListener('click', () => {
         exitModal.classList.add('hidden');
       });
 
-      // SAVE button (Popup 1)
       btnAndSave.addEventListener('click', async () => {
         exitModal.classList.add('hidden');
         const saved = await performDirectSave(false);
@@ -2260,7 +2258,6 @@
         }
       });
 
-      // "Are you sure?" modal handlers (Popup 2)
       btnAreYouSureExit.addEventListener('click', () => {
         areYouSureModal.classList.add('hidden');
         executeForcefulClose();
@@ -2270,7 +2267,6 @@
         areYouSureModal.classList.add('hidden');
       });
 
-      // 3-Dot Dropdown Force Exit Handler
       document.getElementById('optForceExitApp').addEventListener('click', () => {
         document.getElementById('menuOverflowDropdown').classList.add('hidden');
         triggerAppExitDialog();
@@ -2649,7 +2645,6 @@
       triggerToast(singleTabOnly ? "Exported single tab as ZIP" : "Exported all files as ZIP");
     }
 
-    // Dynamic Zero-Lag Theme Switch Function
     function applyAppTheme(themeName) {
       document.body.classList.remove('theme-light', 'theme-cyberpunk');
       let effectiveTheme = themeName;
@@ -2684,7 +2679,6 @@
         modalAbout.classList.add('hidden');
       });
 
-      // Privacy Policy Modal Handlers
       const modalPrivacy = document.getElementById('modalPrivacyPolicy');
       const openPrivacyBtn = document.getElementById('btnOpenPrivacyPolicyModal');
       const closePrivacyTop = document.getElementById('btnClosePrivacyTop');
@@ -2961,7 +2955,6 @@
       updateSyntaxHighlighting();
     }
 
-    // LIVE RUNNER ENGINE WITH BLOB URL
     let activePreviewBlobUrl = null;
 
     function setupLiveRunner() {
@@ -3059,7 +3052,6 @@
       });
     }
 
-    // 📱 HARDWARE-ACCELERATED ULTRA SMOOTH DRAWER CONTROLLER
     function openDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');

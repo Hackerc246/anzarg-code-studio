@@ -74,7 +74,6 @@
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
 
-      /* Prism Dynamic Tokens (Dark Slate) */
       --syn-tag: #7ee787;
       --syn-attr-name: #79c0ff;
       --syn-string: #a5d6ff;
@@ -102,7 +101,6 @@
       --gutter-text: #64748b;
       --gutter-border: #e2e8f0;
 
-      /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
       --syn-tag: #0369a1;
       --syn-attr-name: #6b21a8;
       --syn-string: #15803d;
@@ -413,17 +411,21 @@
 </head>
 <body>
 
-  <!-- TOP HEADER -->
-  <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
-    <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-2">
+  <!-- TOP HEADER (WITH INTEGRATED QUICKEDIT SUB-PATH) -->
+  <header id="mainAppHeader" class="h-14 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
+    <div class="flex items-center space-x-2 overflow-hidden flex-1 mr-2">
       <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
 
-      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[190px] sm:max-w-xs transition" title="Tap to rename file">
-        <i data-lucide="code" class="w-4 h-4 text-[var(--accent)] shrink-0"></i>
-        <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)]">untitled.html</span>
-        <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
+      <!-- QuickEdit Matching Title + Address Container -->
+      <div id="btnHeaderRename" class="flex flex-col justify-center py-1 px-1.5 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[200px] sm:max-w-xs transition" title="Tap to rename file">
+        <div class="flex items-center space-x-1.5 overflow-hidden">
+          <i data-lucide="code" class="w-3.5 h-3.5 text-[var(--accent)] shrink-0"></i>
+          <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)] leading-tight">untitled.html</span>
+          <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
+        </div>
+        <span id="labelHeaderSubPath" class="text-[10px] font-mono text-[var(--text-muted)] truncate block mt-0.5">/storage/emulated/0/untitled.html</span>
       </div>
     </div>
 
@@ -507,15 +509,6 @@
       </div>
     </div>
   </header>
-
-  <!-- ADDRESS & PATH BREADCRUMB BAR -->
-  <div id="fileAddressBar" class="h-6 bg-[var(--surface)] border-b border-[var(--surface-border)] px-3 flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] shrink-0 select-none">
-    <div class="flex items-center space-x-1.5 truncate">
-      <i data-lucide="folder" class="w-3 h-3 text-cyan-400 shrink-0"></i>
-      <span id="labelFilePathBreadcrumb" class="truncate">Storage > Documents > untitled.html</span>
-    </div>
-    <span id="badgeStorageType" class="text-[9px] px-1.5 py-0.2 rounded bg-black/5 text-[var(--accent)] font-semibold shrink-0">Workspace</span>
-  </div>
 
   <!-- TAB STRIP -->
   <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none transition-colors">
@@ -844,7 +837,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.4 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.5 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -942,10 +935,6 @@
         <label class="flex items-center space-x-2 cursor-pointer">
           <input type="checkbox" id="checkModalRegex" class="w-4 h-4 accent-emerald-600 rounded">
           <span>Regular expression</span>
-        </label>
-        <label class="flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="checkModalWrap" checked class="w-4 h-4 accent-emerald-600 rounded">
-          <span>Wrap around</span>
         </label>
       </div>
 
@@ -1297,7 +1286,7 @@
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '6.4',
+      version: '6.5',
       edition: 'Professional Edition'
     };
 
@@ -1392,7 +1381,7 @@
       }
     }
 
-    function createFreshBlankTab(customName = 'untitled.html', customContent = '') {
+    function createFreshBlankTab(customName = 'untitled.html', customContent = '', customPath = '/storage/emulated/0/untitled.html') {
       return {
         id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
         name: customName,
@@ -1400,7 +1389,7 @@
         isModified: false,
         fileHandle: null,
         isNewFile: true,
-        sourceOrigin: 'Local Sandbox'
+        filePath: customPath
       };
     }
 
@@ -1427,6 +1416,37 @@
     let deferredInstallPrompt = null;
     let isCtrlPressed = false;
     let isAltPressed = false;
+
+    // 🚀 ANDROID "OPEN WITH" FILE LAUNCH RECEIVER
+    function setupLaunchQueueReceiver() {
+      if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
+        window.launchQueue.setConsumer(async (launchParams) => {
+          if (!launchParams.files.length) return;
+          for (const handle of launchParams.files) {
+            try {
+              const file = await handle.getFile();
+              const text = await file.text();
+              const fullSimulatedPath = `/storage/emulated/0/${file.name}`;
+              
+              const newTab = {
+                id: 'tab-' + Date.now(),
+                name: file.name,
+                content: text,
+                isModified: false,
+                fileHandle: handle,
+                isNewFile: false,
+                filePath: fullSimulatedPath
+              };
+              fileTabs.push(newTab);
+              handleSwitchTab(newTab.id);
+              triggerToast(`Opened via Android: ${file.name}`);
+            } catch(e) {
+              console.warn("LaunchQueue failed:", e);
+            }
+          }
+        });
+      }
+    }
 
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
@@ -1455,16 +1475,6 @@
         if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
         if (modal) modal.classList.add('hidden');
         return;
-      }
-
-      if ('getInstalledRelatedApps' in navigator) {
-        navigator.getInstalledRelatedApps().then(apps => {
-          if (apps && apps.length > 0) {
-            if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
-            if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
-            if (modal) modal.classList.add('hidden');
-          }
-        }).catch(() => {});
       }
 
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -1504,10 +1514,7 @@
         });
       }
 
-      if (btnCancel && modal) {
-        btnCancel.addEventListener('click', () => modal.classList.add('hidden'));
-      }
-
+      if (btnCancel && modal) btnCancel.addEventListener('click', () => modal.classList.add('hidden'));
       if (btnConfirm && modal) {
         btnConfirm.addEventListener('click', async () => {
           modal.classList.add('hidden');
@@ -1518,13 +1525,6 @@
           }
         });
       }
-
-      window.addEventListener('appinstalled', () => {
-        if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
-        if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
-        if (modal) modal.classList.add('hidden');
-        deferredInstallPrompt = null;
-      });
     }
 
     function triggerToast(text) {
@@ -1650,7 +1650,7 @@
           content: t.content,
           isModified: t.isModified,
           isNewFile: t.isNewFile,
-          sourceOrigin: t.sourceOrigin || 'Workspace'
+          filePath: t.filePath || `/storage/emulated/0/${t.name}`
         }));
         await storeSave('workspace_tabs', serializedTabs);
         await storeSave('workspace_active_id', activeFileId);
@@ -1705,16 +1705,14 @@
       applySettingsStyles();
     }
 
-    function updateAddressBreadcrumb(tab) {
+    function updateAddressHeader(tab) {
       if (!tab) return;
-      const breadcrumb = document.getElementById('labelFilePathBreadcrumb');
-      const badge = document.getElementById('badgeStorageType');
+      const subPathLabel = document.getElementById('labelHeaderSubPath');
       const previewAddr = document.getElementById('labelPreviewAddress');
       
-      const origin = tab.sourceOrigin || (tab.fileHandle ? 'Device Storage' : 'Local Sandbox');
-      if (breadcrumb) breadcrumb.textContent = `${origin} > ${tab.name}`;
-      if (badge) badge.textContent = tab.fileHandle ? 'Device' : (tab.isNewFile ? 'New' : 'Sandbox');
-      if (previewAddr) previewAddr.textContent = `live://${tab.name}`;
+      const realDisplayPath = tab.filePath || `/storage/emulated/0/${tab.name}`;
+      if (subPathLabel) subPathLabel.textContent = realDisplayPath;
+      if (previewAddr) previewAddr.textContent = realDisplayPath;
     }
 
     function renderTabStrip() {
@@ -1755,7 +1753,7 @@
         const dotUnsaved = document.getElementById('dotUnsaved');
         if (labelFileName) labelFileName.textContent = current.name;
         if (dotUnsaved) dotUnsaved.classList.toggle('hidden', !current.isModified);
-        updateAddressBreadcrumb(current);
+        updateAddressHeader(current);
       }
     }
 
@@ -2132,7 +2130,7 @@
           if (confirmModal) confirmModal.classList.remove('hidden');
           return;
         } else {
-          showSavedSuccessModal(`Device Storage > ${cur.name}`);
+          showSavedSuccessModal(cur.filePath || `/storage/emulated/0/${cur.name}`);
           return;
         }
       }
@@ -2156,10 +2154,10 @@
             cur.name = handle.name || cleanName;
             cur.isModified = false;
             cur.isNewFile = false;
-            cur.sourceOrigin = 'Device Storage';
+            cur.filePath = `/storage/emulated/0/${cur.name}`;
             renderTabStrip();
             await storeSave('workspace_tabs', fileTabs);
-            showSavedSuccessModal(`Device Storage > ${cur.name}`);
+            showSavedSuccessModal(cur.filePath);
             return true;
           } catch (err) {
             if (err.name === 'AbortError') return false;
@@ -2181,10 +2179,10 @@
 
           cur.isModified = false;
           cur.isNewFile = false;
-          cur.sourceOrigin = 'Downloads';
+          cur.filePath = `/storage/emulated/0/Download/${cleanName}`;
           renderTabStrip();
           await storeSave('workspace_tabs', fileTabs);
-          showSavedSuccessModal(`Downloads > ${cleanName}`);
+          showSavedSuccessModal(cur.filePath);
           return true;
         } catch (e) {
           return false;
@@ -2194,7 +2192,7 @@
       cur.isModified = false;
       renderTabStrip();
       await storeSave('workspace_tabs', fileTabs);
-      showSavedSuccessModal(`Workspace Sandbox > ${cur.name}`);
+      showSavedSuccessModal(cur.filePath || `/storage/emulated/0/${cur.name}`);
       return true;
     }
 
@@ -2210,7 +2208,7 @@
         cur.isModified = false;
         renderTabStrip();
         await storeSave('workspace_tabs', fileTabs);
-        showSavedSuccessModal(`Updated: ${cur.name}`);
+        showSavedSuccessModal(cur.filePath || `/storage/emulated/0/${cur.name}`);
       } catch (err) {
         if (err.name === 'AbortError') return;
         triggerToast("Failed to overwrite file on device");
@@ -2229,6 +2227,7 @@
           });
           const file = await handle.getFile();
           const text = await file.text();
+          const fullPath = `/storage/emulated/0/${file.name}`;
 
           const newTab = {
             id: 'tab-' + Date.now(),
@@ -2237,7 +2236,7 @@
             isModified: false,
             fileHandle: handle,
             isNewFile: false,
-            sourceOrigin: 'Device Storage'
+            filePath: fullPath
           };
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
@@ -2763,7 +2762,7 @@
                 isModified: false,
                 fileHandle: null,
                 isNewFile: false,
-                sourceOrigin: 'ZIP Project'
+                filePath: `/storage/emulated/0/${f.name}`
               });
             });
 
@@ -2969,6 +2968,7 @@
             const cur = fileTabs.find(t => t.id === activeFileId);
             if (cur) {
               cur.name = val;
+              cur.filePath = `/storage/emulated/0/${val}`;
               renderTabStrip();
               scheduleAutoSave();
               triggerToast(`Renamed to ${val}`);
@@ -3004,7 +3004,7 @@
       if (btnConfirmNew && modalNew && inputNew) {
         btnConfirmNew.addEventListener('click', () => {
           const val = inputNew.value.trim() || `file-${fileTabs.length + 1}.html`;
-          const newTab = createFreshBlankTab(val, '');
+          const newTab = createFreshBlankTab(val, '', `/storage/emulated/0/${val}`);
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
           modalNew.classList.add('hidden');
@@ -3470,7 +3470,7 @@
               isModified: false,
               fileHandle: null,
               isNewFile: false,
-              sourceOrigin: 'Storage'
+              filePath: `/storage/emulated/0/${file.name}`
             };
             fileTabs.push(newTab);
             handleSwitchTab(newTab.id);
@@ -3511,6 +3511,7 @@
       if (window.lucide) lucide.createIcons();
       registerServiceWorker();
       setupPwaInstallFlow();
+      setupLaunchQueueReceiver();
       await initIndexedDB();
       requestPersistentStorage();
 
@@ -3580,7 +3581,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('action') === 'new') {
           const newName = `file-${fileTabs.length + 1}.html`;
-          const newTab = createFreshBlankTab(newName, '');
+          const newTab = createFreshBlankTab(newName, '', `/storage/emulated/0/${newName}`);
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
           triggerToast(`Created ${newName}`);

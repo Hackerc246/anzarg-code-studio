@@ -73,7 +73,6 @@
       --gutter-bg: #0d1117;
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
-      --active-line-bg: rgba(255, 255, 255, 0.03);
 
       /* Prism Dynamic Tokens (Dark Slate) */
       --syn-tag: #7ee787;
@@ -102,7 +101,6 @@
       --gutter-bg: #f8fafc;
       --gutter-text: #64748b;
       --gutter-border: #e2e8f0;
-      --active-line-bg: #f0fdf4;
 
       /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
       --syn-tag: #0369a1;
@@ -129,7 +127,6 @@
       --gutter-bg: #180033;
       --gutter-text: #b580ff;
       --gutter-border: #5a189a;
-      --active-line-bg: rgba(255, 0, 127, 0.08);
 
       --syn-tag: #ff007f;
       --syn-attr-name: #00f2fe;
@@ -196,8 +193,8 @@
       border-right: 1.5px solid var(--gutter-border);
       color: var(--gutter-text);
       font-family: var(--code-font);
-      font-size: 13px;
-      line-height: 1.55;
+      font-size: 13px !important;
+      line-height: 1.55 !important;
       padding: 10px 8px 10px 0;
       text-align: right;
       user-select: none;
@@ -205,7 +202,7 @@
       overflow: hidden;
       flex-shrink: 0;
       font-weight: 500;
-      letter-spacing: -0.5px;
+      letter-spacing: normal !important;
       white-space: pre;
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
@@ -222,15 +219,23 @@
       transition: background-color 0.2s ease;
     }
 
-    /* Prism Token Bindings */
-    #syntaxHighlightPre {
+    /* Unified Rendering Box Metrics for Zero-Desync & Zero-Shake */
+    #syntaxHighlightPre, textarea#codeTextarea {
       position: absolute;
       inset: 0;
       margin: 0;
-      padding: 10px 12px;
+      padding: 10px 12px !important;
       font-family: var(--code-font) !important;
       font-size: 13px !important;
       line-height: 1.55 !important;
+      letter-spacing: normal !important;
+      tab-size: 4 !important;
+      border: none !important;
+      outline: none !important;
+      box-sizing: border-box !important;
+    }
+
+    #syntaxHighlightPre {
       background: transparent !important;
       color: var(--editor-text) !important;
       white-space: pre;
@@ -239,41 +244,32 @@
       user-select: none;
       -webkit-user-select: none;
       z-index: 1;
-      border: none;
-      border-radius: 0;
     }
 
     #syntaxHighlightCode {
-      font-family: var(--code-font) !important;
-      font-size: 13px !important;
-      line-height: 1.55 !important;
+      font-family: inherit !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      letter-spacing: inherit !important;
       background: transparent !important;
       text-shadow: none !important;
     }
 
-    .token.tag, .token.selector { color: var(--syn-tag) !important; font-weight: 600; }
-    .token.attr-name, .token.property { color: var(--syn-attr-name) !important; }
-    .token.attr-value, .token.string { color: var(--syn-string) !important; }
-    .token.keyword, .token.rule { color: var(--syn-keyword) !important; font-weight: 600; }
+    .token.tag, .token.selector { color: var(--syn-tag) !important; font-weight: normal !important; }
+    .token.attr-name, .token.property { color: var(--syn-attr-name) !important; font-weight: normal !important; }
+    .token.attr-value, .token.string { color: var(--syn-string) !important; font-weight: normal !important; }
+    .token.keyword, .token.rule { color: var(--syn-keyword) !important; font-weight: normal !important; }
     .token.comment { color: var(--syn-comment) !important; font-style: italic; }
     .token.punctuation { color: var(--syn-punct) !important; }
     .token.number, .token.boolean { color: var(--syn-number) !important; }
     .token.operator { color: var(--syn-punct) !important; }
 
     textarea#codeTextarea {
-      position: absolute;
-      inset: 0;
       height: 100% !important;
       width: 100% !important;
       min-height: 0;
       min-width: 0;
-      border: none;
-      outline: none;
       resize: none;
-      padding: 10px 12px;
-      font-family: var(--code-font);
-      font-size: 13px;
-      line-height: 1.55;
       background: transparent;
       color: transparent;
       caret-color: var(--accent);
@@ -284,7 +280,6 @@
       -webkit-overflow-scrolling: touch;
       user-select: text !important;
       -webkit-user-select: text !important;
-      tab-size: 4;
       display: block;
       z-index: 2;
     }
@@ -323,7 +318,7 @@
       z-index: 60;
     }
 
-    /* Modern Material Elevation Architecture */
+    /* Modern In-App Material Elevation Cards */
     .material-card-elevated {
       background-color: var(--surface);
       border: 1px solid var(--surface-border);
@@ -332,7 +327,7 @@
       transition: all 0.2s ease;
     }
 
-    /* 60FPS Slide Drawer */
+    /* Hardware Accelerated Slide Drawer Architecture */
     #drawerNav {
       position: fixed;
       top: 0;
@@ -541,13 +536,11 @@
     </button>
   </div>
 
-  <!-- MAIN EDITOR AREA (DOUBLE-LAYER HIGH CONTRAST ENGINE) -->
+  <!-- MAIN EDITOR AREA -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
     <div id="editorStage">
-      <!-- Layer 1: High Contrast Syntax Highlighter -->
-      <pre id="syntaxHighlightPre" aria-hidden="true"><code id="syntaxHighlightCode" class="language-html"></code></pre>
-      <!-- Layer 2: Transparent Interactive Typing -->
+      <pre id="syntaxHighlightPre" aria-hidden="true"><code id="syntaxHighlightCode" class="language-markup"></code></pre>
       <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
     </div>
 
@@ -683,7 +676,6 @@
       </button>
     </div>
 
-    <!-- Hidden Native Inputs -->
     <input type="file" id="fallbackFileInput" class="hidden" accept=".html,.htm,.css,.js,.json,.txt,.md,.py">
     <input type="file" id="fallbackZipInput" class="hidden" accept=".zip,application/zip,application/x-zip-compressed">
 
@@ -1278,7 +1270,7 @@
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '5.9',
+      version: '6.0',
       edition: 'Professional Edition'
     };
 
@@ -1968,6 +1960,7 @@
           if (count > 0) {
             textarea.value = textarea.value.replace(re, rep);
             updateLineNumbers();
+            updateSyntaxHighlighting();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
@@ -2147,6 +2140,7 @@
       isExiting = true;
       window.removeEventListener('popstate', handlePopStateExit);
 
+      // Saare open modals aur backdrops turant hide karein
       document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
       closeDrawerPanel();
       triggerToast("Closing Application...");

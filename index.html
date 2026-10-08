@@ -55,6 +55,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
   <style>
+    /* =========================================================================
+       UNIVERSAL TOKEN ENGINE (AUTO-SYNC ACROSS ALL THEMES & CONTRASTS)
+       ========================================================================= */
     :root {
       --bg-base: #0d1117;
       --surface: #161b22;
@@ -71,6 +74,7 @@
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
 
+      /* Prism Dynamic Tokens (Dark Slate) */
       --syn-tag: #7ee787;
       --syn-attr-name: #79c0ff;
       --syn-string: #a5d6ff;
@@ -98,6 +102,7 @@
       --gutter-text: #64748b;
       --gutter-border: #e2e8f0;
 
+      /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
       --syn-tag: #0369a1;
       --syn-attr-name: #6b21a8;
       --syn-string: #15803d;
@@ -212,6 +217,7 @@
       transition: background-color 0.2s ease;
     }
 
+    /* ZERO-JITTER METRICS BINDING */
     #syntaxHighlightPre, textarea#codeTextarea {
       position: absolute;
       inset: 0;
@@ -502,7 +508,7 @@
     </div>
   </header>
 
-  <!-- ADDRESS & PATH BREADCRUMB BAR (QuickEdit Standard Path View) -->
+  <!-- ADDRESS & PATH BREADCRUMB BAR -->
   <div id="fileAddressBar" class="h-6 bg-[var(--surface)] border-b border-[var(--surface-border)] px-3 flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] shrink-0 select-none">
     <div class="flex items-center space-x-1.5 truncate">
       <i data-lucide="folder" class="w-3 h-3 text-cyan-400 shrink-0"></i>
@@ -581,7 +587,6 @@
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
 
-    <!-- Expand/Collapse Floating Key Switch -->
     <button id="btnToggleAccessoryBar" title="Minimize Keyboard Strip" class="px-2 h-7 bg-black/5 hover:bg-black/15 text-[var(--text-muted)] rounded-lg text-xs font-bold active:scale-90 transition">
       ▼
     </button>
@@ -815,7 +820,7 @@
     </div>
   </div>
 
-  <!-- SAVED SUCCESSFULLY MATERIAL CARD (TRANSPARENT LOCATION FEEDBACK) -->
+  <!-- SAVED SUCCESSFULLY MATERIAL CARD -->
   <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-center">
       <div class="w-14 h-14 mx-auto mb-3.5 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-emerald-500/10">
@@ -839,7 +844,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.3 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.4 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1292,7 +1297,7 @@
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '6.3',
+      version: '6.4',
       edition: 'Professional Edition'
     };
 
@@ -1419,11 +1424,7 @@
       miniBar: true
     };
 
-    let currentSearchQuery = "";
-    let currentSearchMatches = [];
-    let currentMatchPointer = -1;
     let deferredInstallPrompt = null;
-
     let isCtrlPressed = false;
     let isAltPressed = false;
 
@@ -1528,6 +1529,7 @@
 
     function triggerToast(text) {
       const toast = document.getElementById('appToast');
+      if (!toast) return;
       toast.textContent = text;
       toast.classList.remove('hidden');
       clearTimeout(window._tTimer);
@@ -1535,6 +1537,7 @@
     }
 
     function recordHistory() {
+      if (!textarea) return;
       const val = textarea.value;
       const selStart = textarea.selectionStart;
       const selEnd = textarea.selectionEnd;
@@ -1556,7 +1559,7 @@
     }
 
     function performUndo() {
-      if (historyIndex > 0) {
+      if (historyIndex > 0 && textarea) {
         historyIndex--;
         const state = historyStack[historyIndex];
         textarea.value = state.val;
@@ -1568,7 +1571,7 @@
     }
 
     function performRedo() {
-      if (historyIndex < historyStack.length - 1) {
+      if (historyIndex < historyStack.length - 1 && textarea) {
         historyIndex++;
         const state = historyStack[historyIndex];
         textarea.value = state.val;
@@ -1581,7 +1584,7 @@
 
     let lastRenderedLinesCount = 0;
     function updateLineNumbers() {
-      if (!userSettings.lineNumbers) return;
+      if (!userSettings.lineNumbers || !textarea || !gutter) return;
       const lines = textarea.value.split('\n').length;
 
       if (lines > 9999) {
@@ -1625,10 +1628,11 @@
 
     function markActiveModified() {
       const cur = fileTabs.find(t => t.id === activeFileId);
-      if (cur) {
+      if (cur && textarea) {
         cur.content = textarea.value;
         cur.isModified = true;
-        document.getElementById('dotUnsaved').classList.remove('hidden');
+        const dot = document.getElementById('dotUnsaved');
+        if (dot) dot.classList.remove('hidden');
         scheduleAutoSave();
       }
     }
@@ -1660,10 +1664,14 @@
       syntaxCode = document.getElementById('syntaxHighlightCode');
       syntaxPre = document.getElementById('syntaxHighlightPre');
 
+      if (!textarea) return;
+
       textarea.addEventListener('scroll', () => {
-        gutter.scrollTop = textarea.scrollTop;
-        syntaxPre.scrollTop = textarea.scrollTop;
-        syntaxPre.scrollLeft = textarea.scrollLeft;
+        if (gutter) gutter.scrollTop = textarea.scrollTop;
+        if (syntaxPre) {
+          syntaxPre.scrollTop = textarea.scrollTop;
+          syntaxPre.scrollLeft = textarea.scrollLeft;
+        }
       });
 
       let lineDebounce = null;
@@ -1704,13 +1712,14 @@
       const previewAddr = document.getElementById('labelPreviewAddress');
       
       const origin = tab.sourceOrigin || (tab.fileHandle ? 'Device Storage' : 'Local Sandbox');
-      breadcrumb.textContent = `${origin} > ${tab.name}`;
-      badge.textContent = tab.fileHandle ? 'Device' : (tab.isNewFile ? 'New' : 'Sandbox');
+      if (breadcrumb) breadcrumb.textContent = `${origin} > ${tab.name}`;
+      if (badge) badge.textContent = tab.fileHandle ? 'Device' : (tab.isNewFile ? 'New' : 'Sandbox');
       if (previewAddr) previewAddr.textContent = `live://${tab.name}`;
     }
 
     function renderTabStrip() {
       const container = document.getElementById('tabStrip');
+      if (!container) return;
       container.innerHTML = '';
 
       fileTabs.forEach(tab => {
@@ -1742,8 +1751,10 @@
 
       const current = fileTabs.find(t => t.id === activeFileId);
       if (current) {
-        document.getElementById('labelFileName').textContent = current.name;
-        document.getElementById('dotUnsaved').classList.toggle('hidden', !current.isModified);
+        const labelFileName = document.getElementById('labelFileName');
+        const dotUnsaved = document.getElementById('dotUnsaved');
+        if (labelFileName) labelFileName.textContent = current.name;
+        if (dotUnsaved) dotUnsaved.classList.toggle('hidden', !current.isModified);
         updateAddressBreadcrumb(current);
       }
     }
@@ -1783,7 +1794,7 @@
         const next = Math.max(0, idx - 1);
         activeFileId = fileTabs[next].id;
         const nextTab = fileTabs[next];
-        textarea.value = nextTab.content || '';
+        if (textarea) textarea.value = nextTab.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
         updateSyntaxHighlighting();
@@ -1793,6 +1804,7 @@
     }
 
     function insertTextAtCursor(text) {
+      if (!textarea) return;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       textarea.setRangeText(text, start, end, 'end');
@@ -1812,99 +1824,122 @@
       const btnLeft = document.getElementById('btnKeyArrowLeft');
       const btnRight = document.getElementById('btnKeyArrowRight');
 
-      btnCtrl.addEventListener('click', () => {
-        isCtrlPressed = !isCtrlPressed;
-        btnCtrl.classList.toggle('vkey-mod-active', isCtrlPressed);
-        triggerToast(isCtrlPressed ? "CTRL Active" : "CTRL Released");
-      });
+      if (btnCtrl) {
+        btnCtrl.addEventListener('click', () => {
+          isCtrlPressed = !isCtrlPressed;
+          btnCtrl.classList.toggle('vkey-mod-active', isCtrlPressed);
+          triggerToast(isCtrlPressed ? "CTRL Active" : "CTRL Released");
+        });
+      }
 
-      btnAlt.addEventListener('click', () => {
-        isAltPressed = !isAltPressed;
-        btnAlt.classList.toggle('vkey-mod-active', isAltPressed);
-        triggerToast(isAltPressed ? "ALT Active" : "ALT Released");
-      });
+      if (btnAlt) {
+        btnAlt.addEventListener('click', () => {
+          isAltPressed = !isAltPressed;
+          btnAlt.classList.toggle('vkey-mod-active', isAltPressed);
+          triggerToast(isAltPressed ? "ALT Active" : "ALT Released");
+        });
+      }
 
-      btnSelectAll.addEventListener('click', () => {
-        textarea.focus();
-        textarea.select();
-        triggerToast("Selected All");
-      });
+      if (btnSelectAll) {
+        btnSelectAll.addEventListener('click', () => {
+          if (!textarea) return;
+          textarea.focus();
+          textarea.select();
+          triggerToast("Selected All");
+        });
+      }
 
-      btnCopy.addEventListener('click', async () => {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const textToCopy = (start !== end) ? textarea.value.substring(start, end) : textarea.value;
-        if (!textToCopy) {
-          triggerToast("Nothing to copy");
-          return;
-        }
-        try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(textToCopy);
-          } else {
-            document.execCommand('copy');
+      if (btnCopy) {
+        btnCopy.addEventListener('click', async () => {
+          if (!textarea) return;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const textToCopy = (start !== end) ? textarea.value.substring(start, end) : textarea.value;
+          if (!textToCopy) {
+            triggerToast("Nothing to copy");
+            return;
           }
-          triggerToast("Copied to Clipboard 📋");
-        } catch(e) {
-          triggerToast("Copy action ready");
-        }
-      });
-
-      btnPaste.addEventListener('click', async () => {
-        textarea.focus();
-        try {
-          if (navigator.clipboard && navigator.clipboard.readText) {
-            const clipText = await navigator.clipboard.readText();
-            if (clipText) {
-              insertTextAtCursor(clipText);
-              triggerToast("Pasted 📋");
-              return;
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(textToCopy);
+            } else {
+              document.execCommand('copy');
             }
+            triggerToast("Copied to Clipboard 📋");
+          } catch(e) {
+            triggerToast("Copy action ready");
           }
-          document.execCommand('paste');
-        } catch(e) {
-          triggerToast("Long press in editor to paste");
-        }
-      });
+        });
+      }
 
-      btnLeft.addEventListener('click', () => {
-        textarea.focus();
-        const start = textarea.selectionStart;
-        if (start > 0) {
-          textarea.setSelectionRange(start - 1, start - 1);
-        }
-      });
+      if (btnPaste) {
+        btnPaste.addEventListener('click', async () => {
+          if (!textarea) return;
+          textarea.focus();
+          try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+              const clipText = await navigator.clipboard.readText();
+              if (clipText) {
+                insertTextAtCursor(clipText);
+                triggerToast("Pasted 📋");
+                return;
+              }
+            }
+            document.execCommand('paste');
+          } catch(e) {
+            triggerToast("Long press in editor to paste");
+          }
+        });
+      }
 
-      btnRight.addEventListener('click', () => {
-        textarea.focus();
-        const end = textarea.selectionEnd;
-        if (end < textarea.value.length) {
-          textarea.setSelectionRange(end + 1, end + 1);
-        }
-      });
+      if (btnLeft) {
+        btnLeft.addEventListener('click', () => {
+          if (!textarea) return;
+          textarea.focus();
+          const start = textarea.selectionStart;
+          if (start > 0) {
+            textarea.setSelectionRange(start - 1, start - 1);
+          }
+        });
+      }
 
-      // Collapse / Expand Strip Handlers
+      if (btnRight) {
+        btnRight.addEventListener('click', () => {
+          if (!textarea) return;
+          textarea.focus();
+          const end = textarea.selectionEnd;
+          if (end < textarea.value.length) {
+            textarea.setSelectionRange(end + 1, end + 1);
+          }
+        });
+      }
+
       const accessoryRow = document.getElementById('accessoryBar');
       const btnToggle = document.getElementById('btnToggleAccessoryBar');
       const btnRestore = document.getElementById('btnRestoreAccessoryBar');
 
-      btnToggle.addEventListener('click', () => {
-        accessoryRow.classList.add('hidden');
-        btnRestore.classList.remove('hidden');
-        userSettings.miniBar = false;
-        document.getElementById('settingCheckAccessory').checked = false;
-        scheduleAutoSave();
-      });
+      if (btnToggle && accessoryRow) {
+        btnToggle.addEventListener('click', () => {
+          accessoryRow.classList.add('hidden');
+          if (btnRestore) btnRestore.classList.remove('hidden');
+          userSettings.miniBar = false;
+          const chk = document.getElementById('settingCheckAccessory');
+          if (chk) chk.checked = false;
+          scheduleAutoSave();
+        });
+      }
 
-      btnRestore.addEventListener('click', () => {
-        accessoryRow.classList.remove('hidden');
-        btnRestore.classList.add('hidden');
-        userSettings.miniBar = true;
-        document.getElementById('settingCheckAccessory').checked = true;
-        scheduleAutoSave();
-      });
+      if (btnRestore && accessoryRow) {
+        btnRestore.addEventListener('click', () => {
+          accessoryRow.classList.remove('hidden');
+          btnRestore.classList.add('hidden');
+          userSettings.miniBar = true;
+          const chk = document.getElementById('settingCheckAccessory');
+          if (chk) chk.checked = true;
+          scheduleAutoSave();
+        });
+      }
 
-      // Symbol Keys
       document.querySelectorAll('.vkey').forEach(btn => {
         btn.addEventListener('click', () => {
           const val = btn.textContent.trim();
@@ -1916,38 +1951,49 @@
         });
       });
 
-      document.getElementById('btnKeyIndent').addEventListener('click', () => {
-        insertTextAtCursor('  ');
-      });
+      const btnIndent = document.getElementById('btnKeyIndent');
+      if (btnIndent) btnIndent.addEventListener('click', () => insertTextAtCursor('  '));
 
-      document.getElementById('btnKeyUnindent').addEventListener('click', () => {
-        const start = textarea.selectionStart;
-        const val = textarea.value;
-        if (val.substring(start - 2, start) === '  ') {
-          textarea.value = val.substring(0, start - 2) + val.substring(start);
-          textarea.setSelectionRange(start - 2, start - 2);
-          updateLineNumbers();
-          updateSyntaxHighlighting();
-          markActiveModified();
-        }
-      });
+      const btnUnindent = document.getElementById('btnKeyUnindent');
+      if (btnUnindent) {
+        btnUnindent.addEventListener('click', () => {
+          if (!textarea) return;
+          const start = textarea.selectionStart;
+          const val = textarea.value;
+          if (val.substring(start - 2, start) === '  ') {
+            textarea.value = val.substring(0, start - 2) + val.substring(start);
+            textarea.setSelectionRange(start - 2, start - 2);
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            markActiveModified();
+          }
+        });
+      }
 
-      document.getElementById('btnKeyCloseTag').addEventListener('click', () => {
-        const cur = textarea.selectionStart;
-        const line = textarea.value.slice(0, cur);
-        const match = line.match(/<([a-zA-Z0-9\-]+)(?:\s+[^>]*)?$/);
-        if (match) {
-          const tag = match[1];
-          insertTextAtCursor(`></${tag}>`);
-          textarea.setSelectionRange(cur + 1, cur + 1);
-        } else {
-          insertTextAtCursor('</>');
-        }
-      });
+      const btnCloseTag = document.getElementById('btnKeyCloseTag');
+      if (btnCloseTag) {
+        btnCloseTag.addEventListener('click', () => {
+          if (!textarea) return;
+          const cur = textarea.selectionStart;
+          const line = textarea.value.slice(0, cur);
+          const match = line.match(/<([a-zA-Z0-9\-]+)(?:\s+[^>]*)?$/);
+          if (match) {
+            const tag = match[1];
+            insertTextAtCursor(`></${tag}>`);
+            textarea.setSelectionRange(cur + 1, cur + 1);
+          } else {
+            insertTextAtCursor('</>');
+          }
+        });
+      }
 
-      document.getElementById('btnKeyColor').addEventListener('click', () => {
-        document.getElementById('modalColor').classList.remove('hidden');
-      });
+      const btnColor = document.getElementById('btnKeyColor');
+      if (btnColor) {
+        btnColor.addEventListener('click', () => {
+          const m = document.getElementById('modalColor');
+          if (m) m.classList.remove('hidden');
+        });
+      }
     }
 
     function setupQuickEditSearch() {
@@ -1956,194 +2002,116 @@
       const inputReplace = document.getElementById('inputModalReplace');
       const checkCase = document.getElementById('checkModalCase');
       const checkRegex = document.getElementById('checkModalRegex');
-      const checkWrap = document.getElementById('checkModalWrap');
 
-      const mainHeader = document.getElementById('mainAppHeader');
-      const navBar = document.getElementById('quickSearchNavBar');
-      const labelText = document.getElementById('labelQuickSearchText');
-      const labelCount = document.getElementById('labelQuickSearchCount');
+      if (!modal || !inputFind) return;
 
-      function calculateMatches() {
-        const q = inputFind.value;
-        if (!q) return [];
-        const text = textarea.value;
-        const matches = [];
-
-        try {
-          let flags = checkCase.checked ? 'g' : 'gi';
-          let pattern = checkRegex.checked ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          let re = new RegExp(pattern, flags);
-          let m;
-          while ((m = re.exec(text)) !== null) {
-            matches.push({ index: m.index, length: m[0].length });
-            if (m.index === re.lastIndex) re.lastIndex++;
+      const btnSearchModal = document.getElementById('btnModalSearch');
+      if (btnSearchModal) {
+        btnSearchModal.addEventListener('click', () => {
+          const q = inputFind.value.trim();
+          if (!q) {
+            triggerToast("Enter search text");
+            return;
           }
-        } catch(e) {
-          return [];
-        }
-        return matches;
+          const text = textarea ? textarea.value : "";
+          const flags = (checkCase && checkCase.checked) ? 'g' : 'gi';
+          try {
+            const pattern = (checkRegex && checkRegex.checked) ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(pattern, flags);
+            const match = regex.exec(text);
+            if (match && textarea) {
+              textarea.focus();
+              textarea.setSelectionRange(match.index, match.index + match[0].length);
+              modal.classList.add('hidden');
+              triggerToast("Found match!");
+            } else {
+              triggerToast("Text not found!");
+            }
+          } catch(e) {
+            triggerToast("Invalid search pattern");
+          }
+        });
       }
 
-      function highlightMatch(index) {
-        if (!currentSearchMatches.length || index < 0 || index >= currentSearchMatches.length) return;
-        currentMatchPointer = index;
-        const target = currentSearchMatches[currentMatchPointer];
-
-        textarea.focus();
-        textarea.setSelectionRange(target.index, target.index + target.length);
-
-        const beforeText = textarea.value.substring(0, target.index);
-        const lineNumber = beforeText.split('\n').length;
-        const lineHeight = userSettings.fontSize * 1.55;
-        const targetScroll = Math.max(0, (lineNumber * lineHeight) - (textarea.clientHeight / 2));
-        textarea.scrollTop = targetScroll;
-        gutter.scrollTop = targetScroll;
-
-        labelCount.textContent = `${currentMatchPointer + 1}/${currentSearchMatches.length}`;
+      const btnReplace = document.getElementById('btnModalReplace');
+      if (btnReplace && inputReplace) {
+        btnReplace.addEventListener('click', () => {
+          const q = inputFind.value;
+          const rep = inputReplace.value;
+          if (!q || !textarea) return;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const selText = textarea.value.substring(start, end);
+          if (selText.toLowerCase() === q.toLowerCase()) {
+            textarea.setRangeText(rep, start, end, 'end');
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            markActiveModified();
+            recordHistory();
+            triggerToast("Replaced!");
+          }
+        });
       }
 
-      function executeSearch() {
-        const q = inputFind.value.trim();
-        if (!q) {
-          triggerToast("Enter search text first");
-          return;
-        }
-
-        currentSearchQuery = q;
-        currentSearchMatches = calculateMatches();
-
-        if (currentSearchMatches.length === 0) {
-          triggerToast("Text not found!");
-          return;
-        }
-
-        modal.classList.add('hidden');
-        mainHeader.classList.add('hidden');
-        navBar.classList.remove('hidden');
-        labelText.textContent = q;
-
-        highlightMatch(0);
-      }
-
-      document.getElementById('btnModalSearch').addEventListener('click', executeSearch);
-
-      document.getElementById('btnQuickSearchNext').addEventListener('click', () => {
-        if (!currentSearchMatches.length) return;
-        let nextIdx = currentMatchPointer + 1;
-        if (nextIdx >= currentSearchMatches.length) {
-          if (checkWrap.checked) nextIdx = 0;
-          else { triggerToast("End of matches"); return; }
-        }
-        highlightMatch(nextIdx);
-      });
-
-      document.getElementById('btnQuickSearchPrev').addEventListener('click', () => {
-        if (!currentSearchMatches.length) return;
-        let prevIdx = currentMatchPointer - 1;
-        if (prevIdx < 0) {
-          if (checkWrap.checked) prevIdx = currentSearchMatches.length - 1;
-          else { triggerToast("Start of matches"); return; }
-        }
-        highlightMatch(prevIdx);
-      });
-
-      document.getElementById('btnQuickSearchExit').addEventListener('click', () => {
-        navBar.classList.add('hidden');
-        mainHeader.classList.remove('hidden');
-        currentSearchMatches = [];
-        currentMatchPointer = -1;
-      });
-
-      document.getElementById('btnQuickSearchReopenModal').addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        inputFind.focus();
-      });
-
-      document.getElementById('btnModalReplace').addEventListener('click', () => {
-        const q = inputFind.value;
-        const rep = inputModalReplace.value;
-        if (!q) return;
-
-        const selStart = textarea.selectionStart;
-        const selEnd = textarea.selectionEnd;
-        const selText = textarea.value.substring(selStart, selEnd);
-
-        const match = checkCase.checked ? selText === q : selText.toLowerCase() === q.toLowerCase();
-        if (match) {
-          textarea.setRangeText(rep, selStart, selEnd, 'end');
-          updateLineNumbers();
-          updateSyntaxHighlighting();
-          markActiveModified();
-          recordHistory();
-          triggerToast("Replaced 1 match");
-        }
-        currentSearchMatches = calculateMatches();
-        if (currentSearchMatches.length > 0) {
-          highlightMatch(0);
-        }
-      });
-
-      document.getElementById('btnModalReplaceAll').addEventListener('click', () => {
-        const q = inputFind.value;
-        const rep = inputModalReplace.value;
-        if (!q) {
-          triggerToast("Enter search text first");
-          return;
-        }
-
-        try {
-          let flags = checkCase.checked ? 'g' : 'gi';
-          let pattern = checkRegex.checked ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          let re = new RegExp(pattern, flags);
-          const count = (textarea.value.match(re) || []).length;
-
-          if (count > 0) {
-            textarea.value = textarea.value.replace(re, rep);
+      const btnReplaceAll = document.getElementById('btnModalReplaceAll');
+      if (btnReplaceAll && inputReplace) {
+        btnReplaceAll.addEventListener('click', () => {
+          const q = inputFind.value;
+          const rep = inputReplace.value;
+          if (!q || !textarea) return;
+          const flags = (checkCase && checkCase.checked) ? 'g' : 'gi';
+          try {
+            const pattern = (checkRegex && checkRegex.checked) ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(pattern, flags);
+            textarea.value = textarea.value.replace(regex, rep);
             updateLineNumbers();
             updateSyntaxHighlighting();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
-            triggerToast(`Replaced all ${count} matches!`);
-          } else {
-            triggerToast("Text not found");
+            triggerToast("Replaced All!");
+          } catch(e) {
+            triggerToast("Replace failed");
           }
-        } catch(e) {
-          triggerToast("Invalid regex");
-        }
-      });
+        });
+      }
 
-      document.getElementById('btnModalClose').addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
+      const btnClose = document.getElementById('btnModalClose');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
 
       const openSearch = () => {
         modal.classList.remove('hidden');
         inputFind.focus();
       };
-      document.getElementById('btnHeaderSearch').addEventListener('click', openSearch);
-      document.getElementById('btnBottomSearch').addEventListener('click', openSearch);
+
+      const btnHeaderSearch = document.getElementById('btnHeaderSearch');
+      const btnBottomSearch = document.getElementById('btnBottomSearch');
+      if (btnHeaderSearch) btnHeaderSearch.addEventListener('click', openSearch);
+      if (btnBottomSearch) btnBottomSearch.addEventListener('click', openSearch);
     }
 
     function showSavedSuccessModal(pathLocation, callback) {
       const modal = document.getElementById('modalSavedSuccess');
+      if (!modal) return;
       const pathLabel = document.getElementById('labelSaveSuccessPath');
       if (pathLabel) pathLabel.textContent = pathLocation || 'Saved to Device';
       modal.classList.remove('hidden');
       
       const doneBtn = document.getElementById('btnSavedSuccessDone');
-      const handleDone = () => {
-        modal.classList.add('hidden');
-        doneBtn.removeEventListener('click', handleDone);
-        if (callback) callback();
-      };
-      doneBtn.addEventListener('click', handleDone);
+      if (doneBtn) {
+        const handleDone = () => {
+          modal.classList.add('hidden');
+          doneBtn.removeEventListener('click', handleDone);
+          if (callback) callback();
+        };
+        doneBtn.addEventListener('click', handleDone);
+      }
     }
 
     // 🔒 SMART SAVE & OVERWRITE ENGINE WITH USER SAFETY
     async function executeSaveWorkflow(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
-      if (!cur) return false;
+      if (!cur || !textarea) return false;
 
       const content = textarea.value;
       cur.content = content;
@@ -2155,12 +2123,13 @@
       }
       cur.name = cleanName;
 
-      // Case A: File uploaded from device and modified -> Ask Confirmation Dialog
+      // Case A: File uploaded from device and modified -> Confirm Dialog
       if (cur.fileHandle && !cur.isNewFile && !forceSaveAs) {
         if (cur.isModified) {
           const confirmModal = document.getElementById('modalConfirmOverwrite');
-          document.getElementById('overwriteFileName').textContent = cur.name;
-          confirmModal.classList.remove('hidden');
+          const fileNameEl = document.getElementById('overwriteFileName');
+          if (fileNameEl) fileNameEl.textContent = cur.name;
+          if (confirmModal) confirmModal.classList.remove('hidden');
           return;
         } else {
           showSavedSuccessModal(`Device Storage > ${cur.name}`);
@@ -2168,7 +2137,7 @@
         }
       }
 
-      // Case B: Fresh New File / Pasted Code / Export -> Directly open device storage file picker
+      // Case B: Fresh File / New / Export -> Open device storage file picker
       if (cur.isNewFile || forceSaveAs) {
         if ('showSaveFilePicker' in window) {
           try {
@@ -2194,11 +2163,11 @@
             return true;
           } catch (err) {
             if (err.name === 'AbortError') return false;
-            console.warn("Save picker cancelled, using fallback:", err);
+            console.warn("Save picker cancelled, fallback to download:", err);
           }
         }
 
-        // Fallback for devices without File System Access API
+        // Fallback Download
         try {
           const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
@@ -2222,7 +2191,6 @@
         }
       }
 
-      // Default Workspace fallback
       cur.isModified = false;
       renderTabStrip();
       await storeSave('workspace_tabs', fileTabs);
@@ -2232,7 +2200,7 @@
 
     async function handleDirectFileOverwrite() {
       const cur = fileTabs.find(t => t.id === activeFileId);
-      if (!cur || !cur.fileHandle) return;
+      if (!cur || !cur.fileHandle || !textarea) return;
 
       try {
         const writable = await cur.fileHandle.createWritable();
@@ -2279,7 +2247,8 @@
           if (err.name === 'AbortError') return;
         }
       }
-      document.getElementById('fallbackFileInput').click();
+      const fallbackInput = document.getElementById('fallbackFileInput');
+      if (fallbackInput) fallbackInput.click();
     }
 
     function triggerAppExitDialog() {
@@ -2291,19 +2260,22 @@
       const fileNameSpan = document.getElementById('exitUnsavedFileName');
       const btnSave = document.getElementById('btnExitAndSave');
 
-      fileNameSpan.textContent = cur ? cur.name : 'untitled.html';
+      if (fileNameSpan) fileNameSpan.textContent = cur ? cur.name : 'untitled.html';
 
-      if (hasUnsaved) {
-        desc.textContent = "Following files contain unsaved changes, do you want to save them?";
-        fileBox.classList.remove('hidden');
-        btnSave.classList.remove('hidden');
-      } else {
-        desc.textContent = "All changes are securely saved in local storage. Do you want to exit now?";
-        fileBox.classList.add('hidden');
-        btnSave.classList.add('hidden');
+      if (desc && fileBox && btnSave) {
+        if (hasUnsaved) {
+          desc.textContent = "Following files contain unsaved changes, do you want to save them?";
+          fileBox.classList.remove('hidden');
+          btnSave.classList.remove('hidden');
+        } else {
+          desc.textContent = "All changes are securely saved in local storage. Do you want to exit now?";
+          fileBox.classList.add('hidden');
+          btnSave.classList.add('hidden');
+        }
       }
 
-      document.getElementById('modalExitConfirm').classList.remove('hidden');
+      const modalExit = document.getElementById('modalExitConfirm');
+      if (modalExit) modalExit.classList.remove('hidden');
     }
 
     let isExiting = false;
@@ -2342,12 +2314,12 @@
       const areYouSureModal = document.getElementById('modalExitAreYouSure');
       const exitModal = document.getElementById('modalExitConfirm');
 
-      if (!areYouSureModal.classList.contains('hidden')) {
+      if (areYouSureModal && !areYouSureModal.classList.contains('hidden')) {
         areYouSureModal.classList.add('hidden');
         return;
       }
 
-      if (!exitModal.classList.contains('hidden')) {
+      if (exitModal && !exitModal.classList.contains('hidden')) {
         exitModal.classList.add('hidden');
         return;
       }
@@ -2405,55 +2377,76 @@
       const btnAreYouSureExit = document.getElementById('btnAreYouSureExit');
       const btnAreYouSureLater = document.getElementById('btnAreYouSureLater');
 
-      btnWithoutSave.addEventListener('click', () => {
-        exitModal.classList.add('hidden');
-        const hasUnsaved = fileTabs.some(t => t.isModified);
-        if (hasUnsaved) {
-          areYouSureModal.classList.remove('hidden');
-        } else {
+      if (btnWithoutSave && exitModal) {
+        btnWithoutSave.addEventListener('click', () => {
+          exitModal.classList.add('hidden');
+          const hasUnsaved = fileTabs.some(t => t.isModified);
+          if (hasUnsaved && areYouSureModal) {
+            areYouSureModal.classList.remove('hidden');
+          } else {
+            executeForcefulClose();
+          }
+        });
+      }
+
+      if (btnLater && exitModal) {
+        btnLater.addEventListener('click', () => {
+          exitModal.classList.add('hidden');
+        });
+      }
+
+      if (btnAndSave && exitModal) {
+        btnAndSave.addEventListener('click', async () => {
+          exitModal.classList.add('hidden');
+          const saved = await executeSaveWorkflow(false);
+          if (saved) {
+            executeForcefulClose();
+          }
+        });
+      }
+
+      if (btnAreYouSureExit && areYouSureModal) {
+        btnAreYouSureExit.addEventListener('click', () => {
+          areYouSureModal.classList.add('hidden');
           executeForcefulClose();
-        }
-      });
+        });
+      }
 
-      btnLater.addEventListener('click', () => {
-        exitModal.classList.add('hidden');
-      });
+      if (btnAreYouSureLater && areYouSureModal) {
+        btnAreYouSureLater.addEventListener('click', () => {
+          areYouSureModal.classList.add('hidden');
+        });
+      }
 
-      btnAndSave.addEventListener('click', async () => {
-        exitModal.classList.add('hidden');
-        const saved = await executeSaveWorkflow(false);
-        if (saved) {
-          executeForcefulClose();
-        }
-      });
-
-      btnAreYouSureExit.addEventListener('click', () => {
-        areYouSureModal.classList.add('hidden');
-        executeForcefulClose();
-      });
-
-      btnAreYouSureLater.addEventListener('click', () => {
-        areYouSureModal.classList.add('hidden');
-      });
-
-      document.getElementById('optForceExitApp').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        triggerAppExitDialog();
-      });
+      const btnForceExitApp = document.getElementById('optForceExitApp');
+      if (btnForceExitApp) {
+        btnForceExitApp.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          triggerAppExitDialog();
+        });
+      }
 
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', handlePopStateExit);
     }
 
-    // Overwrite Confirmation Modal Listeners
-    document.getElementById('btnCancelOverwrite').addEventListener('click', () => {
-      document.getElementById('modalConfirmOverwrite').classList.add('hidden');
-    });
+    const btnCancelOverwrite = document.getElementById('btnCancelOverwrite');
+    if (btnCancelOverwrite) {
+      btnCancelOverwrite.addEventListener('click', () => {
+        const m = document.getElementById('modalConfirmOverwrite');
+        if (m) m.classList.add('hidden');
+      });
+    }
 
-    document.getElementById('btnProceedOverwrite').addEventListener('click', async () => {
-      document.getElementById('modalConfirmOverwrite').classList.add('hidden');
-      await handleDirectFileOverwrite();
-    });
+    const btnProceedOverwrite = document.getElementById('btnProceedOverwrite');
+    if (btnProceedOverwrite) {
+      btnProceedOverwrite.addEventListener('click', async () => {
+        const m = document.getElementById('modalConfirmOverwrite');
+        if (m) m.classList.add('hidden');
+        await handleDirectFileOverwrite();
+      });
+    }
 
     // =========================================================================
     // DUAL LOGO + BANNER CROPPER ENGINE
@@ -2462,49 +2455,47 @@
     let cropperInstance = null;
 
     function applyLogoToUI(dataUrl) {
-      if (!dataUrl) {
-        document.getElementById('drawerLogoImg').classList.add('hidden');
-        document.getElementById('drawerLogoFallback').classList.remove('hidden');
-        document.getElementById('settingLogoImg').classList.add('hidden');
-        document.getElementById('settingLogoFallback').classList.remove('hidden');
-        document.getElementById('btnRemoveLogo').classList.add('hidden');
-        return;
-      }
       const dImg = document.getElementById('drawerLogoImg');
       const dFallback = document.getElementById('drawerLogoFallback');
-      dImg.src = dataUrl;
-      dImg.classList.remove('hidden');
-      dFallback.classList.add('hidden');
-
       const sImg = document.getElementById('settingLogoImg');
       const sFallback = document.getElementById('settingLogoFallback');
-      sImg.src = dataUrl;
-      sImg.classList.remove('hidden');
-      sFallback.classList.add('hidden');
-      document.getElementById('btnRemoveLogo').classList.remove('hidden');
+      const btnRemove = document.getElementById('btnRemoveLogo');
+
+      if (!dataUrl) {
+        if (dImg) dImg.classList.add('hidden');
+        if (dFallback) dFallback.classList.remove('hidden');
+        if (sImg) sImg.classList.add('hidden');
+        if (sFallback) sFallback.classList.remove('hidden');
+        if (btnRemove) btnRemove.classList.add('hidden');
+        return;
+      }
+      if (dImg) { dImg.src = dataUrl; dImg.classList.remove('hidden'); }
+      if (dFallback) dFallback.classList.add('hidden');
+      if (sImg) { sImg.src = dataUrl; sImg.classList.remove('hidden'); }
+      if (sFallback) sFallback.classList.add('hidden');
+      if (btnRemove) btnRemove.classList.remove('hidden');
     }
 
     function applyBannerToUI(dataUrl) {
-      if (!dataUrl) {
-        document.getElementById('drawerBannerImg').classList.add('hidden');
-        document.getElementById('drawerBannerOverlay').classList.add('hidden');
-        document.getElementById('settingBannerImg').classList.add('hidden');
-        document.getElementById('settingBannerFallback').classList.remove('hidden');
-        document.getElementById('btnRemoveBanner').classList.add('hidden');
-        return;
-      }
       const bImg = document.getElementById('drawerBannerImg');
       const bOverlay = document.getElementById('drawerBannerOverlay');
-      bImg.src = dataUrl;
-      bImg.classList.remove('hidden');
-      bOverlay.classList.remove('hidden');
-
       const sBanner = document.getElementById('settingBannerImg');
       const sFallback = document.getElementById('settingBannerFallback');
-      sBanner.src = dataUrl;
-      sBanner.classList.remove('hidden');
-      sFallback.classList.add('hidden');
-      document.getElementById('btnRemoveBanner').classList.remove('hidden');
+      const btnRemove = document.getElementById('btnRemoveBanner');
+
+      if (!dataUrl) {
+        if (bImg) bImg.classList.add('hidden');
+        if (bOverlay) bOverlay.classList.add('hidden');
+        if (sBanner) sBanner.classList.add('hidden');
+        if (sFallback) sFallback.classList.remove('hidden');
+        if (btnRemove) btnRemove.classList.add('hidden');
+        return;
+      }
+      if (bImg) { bImg.src = dataUrl; bImg.classList.remove('hidden'); }
+      if (bOverlay) bOverlay.classList.remove('hidden');
+      if (sBanner) { sBanner.src = dataUrl; sBanner.classList.remove('hidden'); }
+      if (sFallback) sFallback.classList.add('hidden');
+      if (btnRemove) btnRemove.classList.remove('hidden');
     }
 
     function setupLogoAndBannerCropperStudio() {
@@ -2514,69 +2505,90 @@
       const cropImage = document.getElementById('cropperImageTarget');
       const titleLabel = document.getElementById('labelCropModalTitle');
 
-      document.getElementById('btnTriggerPhotoUpload').addEventListener('click', () => {
-        currentCropTarget = 'logo';
-        titleLabel.textContent = "Crop & Adjust Studio Logo";
-        logoInput.click();
-      });
-
-      document.getElementById('btnTriggerBannerUpload').addEventListener('click', () => {
-        currentCropTarget = 'banner';
-        titleLabel.textContent = "Crop & Adjust Drawer Banner";
-        bannerInput.click();
-      });
-
-      document.getElementById('settingLogoPreviewClickable').addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
-        if (orig) {
-          openCropperModalWithImage(orig, 'logo');
-        } else {
+      const btnTriggerLogo = document.getElementById('btnTriggerPhotoUpload');
+      if (btnTriggerLogo && logoInput) {
+        btnTriggerLogo.addEventListener('click', () => {
           currentCropTarget = 'logo';
+          if (titleLabel) titleLabel.textContent = "Crop & Adjust Studio Logo";
           logoInput.click();
-        }
-      });
+        });
+      }
 
-      document.getElementById('drawerLogoAvatar').addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
-        if (orig) {
-          openCropperModalWithImage(orig, 'logo');
-        } else {
-          currentCropTarget = 'logo';
-          logoInput.click();
-        }
-      });
-
-      document.getElementById('settingBannerPreviewClickable').addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_banner_orig') || await storeGet('studio_custom_banner');
-        if (orig) {
-          openCropperModalWithImage(orig, 'banner');
-        } else {
+      const btnTriggerBanner = document.getElementById('btnTriggerBannerUpload');
+      if (btnTriggerBanner && bannerInput) {
+        btnTriggerBanner.addEventListener('click', () => {
           currentCropTarget = 'banner';
+          if (titleLabel) titleLabel.textContent = "Crop & Adjust Drawer Banner";
           bannerInput.click();
-        }
-      });
+        });
+      }
 
-      document.getElementById('btnRemoveLogo').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        await storeRemove('studio_custom_logo');
-        await storeRemove('studio_custom_logo_orig');
-        applyLogoToUI(null);
-        triggerToast("Logo Removed! 🗑️");
-      });
+      const logoPreviewClickable = document.getElementById('settingLogoPreviewClickable');
+      if (logoPreviewClickable && logoInput) {
+        logoPreviewClickable.addEventListener('click', async () => {
+          const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
+          if (orig) {
+            openCropperModalWithImage(orig, 'logo');
+          } else {
+            currentCropTarget = 'logo';
+            logoInput.click();
+          }
+        });
+      }
 
-      document.getElementById('btnRemoveBanner').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        await storeRemove('studio_custom_banner');
-        await storeRemove('studio_custom_banner_orig');
-        applyBannerToUI(null);
-        triggerToast("Banner Removed! 🗑️");
-      });
+      const drawerLogoAvatar = document.getElementById('drawerLogoAvatar');
+      if (drawerLogoAvatar && logoInput) {
+        drawerLogoAvatar.addEventListener('click', async () => {
+          const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
+          if (orig) {
+            openCropperModalWithImage(orig, 'logo');
+          } else {
+            currentCropTarget = 'logo';
+            logoInput.click();
+          }
+        });
+      }
+
+      const bannerPreviewClickable = document.getElementById('settingBannerPreviewClickable');
+      if (bannerPreviewClickable && bannerInput) {
+        bannerPreviewClickable.addEventListener('click', async () => {
+          const orig = await storeGet('studio_custom_banner_orig') || await storeGet('studio_custom_banner');
+          if (orig) {
+            openCropperModalWithImage(orig, 'banner');
+          } else {
+            currentCropTarget = 'banner';
+            bannerInput.click();
+          }
+        });
+      }
+
+      const btnRemoveLogo = document.getElementById('btnRemoveLogo');
+      if (btnRemoveLogo) {
+        btnRemoveLogo.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await storeRemove('studio_custom_logo');
+          await storeRemove('studio_custom_logo_orig');
+          applyLogoToUI(null);
+          triggerToast("Logo Removed! 🗑️");
+        });
+      }
+
+      const btnRemoveBanner = document.getElementById('btnRemoveBanner');
+      if (btnRemoveBanner) {
+        btnRemoveBanner.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await storeRemove('studio_custom_banner');
+          await storeRemove('studio_custom_banner_orig');
+          applyBannerToUI(null);
+          triggerToast("Banner Removed! 🗑️");
+        });
+      }
 
       function openCropperModalWithImage(imageSrc, type) {
         currentCropTarget = type;
-        titleLabel.textContent = (type === 'logo') ? "Crop & Adjust Studio Logo" : "Crop & Adjust Drawer Banner";
-        cropImage.src = imageSrc;
-        cropModal.classList.remove('hidden');
+        if (titleLabel) titleLabel.textContent = (type === 'logo') ? "Crop & Adjust Studio Logo" : "Crop & Adjust Drawer Banner";
+        if (cropImage) cropImage.src = imageSrc;
+        if (cropModal) cropModal.classList.remove('hidden');
 
         if (cropperInstance) {
           cropperInstance.destroy();
@@ -2584,19 +2596,21 @@
         }
 
         setTimeout(() => {
-          cropperInstance = new Cropper(cropImage, {
-            aspectRatio: (type === 'logo') ? 1 : (2.4 / 1),
-            viewMode: 1,
-            dragMode: 'move',
-            autoCropArea: 0.95,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: false,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false
-          });
+          if (cropImage) {
+            cropperInstance = new Cropper(cropImage, {
+              aspectRatio: (type === 'logo') ? 1 : (2.4 / 1),
+              viewMode: 1,
+              dragMode: 'move',
+              autoCropArea: 0.95,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false
+            });
+          }
         }, 120);
       }
 
@@ -2615,148 +2629,161 @@
         reader.readAsDataURL(file);
       };
 
-      logoInput.addEventListener('change', (e) => {
-        handleImageSelection(e.target.files[0], 'logo');
-        logoInput.value = '';
-      });
+      if (logoInput) {
+        logoInput.addEventListener('change', (e) => {
+          handleImageSelection(e.target.files[0], 'logo');
+          logoInput.value = '';
+        });
+      }
 
-      bannerInput.addEventListener('change', (e) => {
-        handleImageSelection(e.target.files[0], 'banner');
-        bannerInput.value = '';
-      });
+      if (bannerInput) {
+        bannerInput.addEventListener('change', (e) => {
+          handleImageSelection(e.target.files[0], 'banner');
+          bannerInput.value = '';
+        });
+      }
 
-      document.getElementById('btnCropZoomIn').addEventListener('click', () => {
-        if (cropperInstance) cropperInstance.zoom(0.1);
-      });
-      document.getElementById('btnCropZoomOut').addEventListener('click', () => {
-        if (cropperInstance) cropperInstance.zoom(-0.1);
-      });
-      document.getElementById('btnCropRotate').addEventListener('click', () => {
-        if (cropperInstance) cropperInstance.rotate(90);
-      });
+      const btnZoomIn = document.getElementById('btnCropZoomIn');
+      if (btnZoomIn) btnZoomIn.addEventListener('click', () => { if (cropperInstance) cropperInstance.zoom(0.1); });
 
-      document.getElementById('btnCropReupload').addEventListener('click', () => {
-        if (currentCropTarget === 'logo') {
-          logoInput.click();
-        } else {
-          bannerInput.click();
-        }
-      });
+      const btnZoomOut = document.getElementById('btnCropZoomOut');
+      if (btnZoomOut) btnZoomOut.addEventListener('click', () => { if (cropperInstance) cropperInstance.zoom(-0.1); });
+
+      const btnRotate = document.getElementById('btnCropRotate');
+      if (btnRotate) btnRotate.addEventListener('click', () => { if (cropperInstance) cropperInstance.rotate(90); });
+
+      const btnReupload = document.getElementById('btnCropReupload');
+      if (btnReupload) {
+        btnReupload.addEventListener('click', () => {
+          if (currentCropTarget === 'logo' && logoInput) logoInput.click();
+          else if (bannerInput) bannerInput.click();
+        });
+      }
 
       const closeCropper = () => {
-        cropModal.classList.add('hidden');
+        if (cropModal) cropModal.classList.add('hidden');
         if (cropperInstance) {
           cropperInstance.destroy();
           cropperInstance = null;
         }
       };
 
-      document.getElementById('btnCropCancel').addEventListener('click', closeCropper);
-      document.getElementById('btnCropCancelTop').addEventListener('click', closeCropper);
+      const btnCropCancel = document.getElementById('btnCropCancel');
+      const btnCropCancelTop = document.getElementById('btnCropCancelTop');
+      if (btnCropCancel) btnCropCancel.addEventListener('click', closeCropper);
+      if (btnCropCancelTop) btnCropCancelTop.addEventListener('click', closeCropper);
 
-      document.getElementById('btnCropApply').addEventListener('click', async () => {
-        if (!cropperInstance) return;
+      const btnCropApply = document.getElementById('btnCropApply');
+      if (btnCropApply) {
+        btnCropApply.addEventListener('click', async () => {
+          if (!cropperInstance) return;
 
-        const canvas = cropperInstance.getCroppedCanvas({
-          maxWidth: (currentCropTarget === 'logo') ? 350 : 800,
-          maxHeight: (currentCropTarget === 'logo') ? 350 : 400,
-          imageSmoothingEnabled: true,
-          imageSmoothingQuality: 'high'
+          const canvas = cropperInstance.getCroppedCanvas({
+            maxWidth: (currentCropTarget === 'logo') ? 350 : 800,
+            maxHeight: (currentCropTarget === 'logo') ? 350 : 400,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+          });
+
+          const dataUrl = canvas.toDataURL('image/png', 0.92);
+
+          if (currentCropTarget === 'logo') {
+            await storeSave('studio_custom_logo', dataUrl);
+            applyLogoToUI(dataUrl);
+            triggerToast("Logo Saved Successfully! ✅");
+          } else {
+            await storeSave('studio_custom_banner', dataUrl);
+            applyBannerToUI(dataUrl);
+            triggerToast("Banner Saved Successfully! ✅");
+          }
+
+          closeCropper();
         });
-
-        const dataUrl = canvas.toDataURL('image/png', 0.92);
-
-        if (currentCropTarget === 'logo') {
-          await storeSave('studio_custom_logo', dataUrl);
-          applyLogoToUI(dataUrl);
-          triggerToast("Logo Saved Successfully! ✅");
-        } else {
-          await storeSave('studio_custom_banner', dataUrl);
-          applyBannerToUI(dataUrl);
-          triggerToast("Banner Saved Successfully! ✅");
-        }
-
-        closeCropper();
-      });
+      }
     }
 
     function setupZipImporter() {
       const zipInput = document.getElementById('fallbackZipInput');
+      const btnNavZip = document.getElementById('dNavOpenZip');
 
-      document.getElementById('dNavOpenZip').addEventListener('click', () => {
-        closeDrawerPanel();
-        zipInput.click();
-      });
+      if (btnNavZip && zipInput) {
+        btnNavZip.addEventListener('click', () => {
+          closeDrawerPanel();
+          zipInput.click();
+        });
+      }
 
-      zipInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      if (zipInput) {
+        zipInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
 
-        if (!window.JSZip) {
-          triggerToast("ZIP Engine loading, try again...");
-          return;
-        }
-
-        try {
-          triggerToast("Extracting ZIP project...");
-          const zip = await JSZip.loadAsync(file);
-
-          const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md'];
-          const extractedFiles = [];
-
-          const fileKeys = Object.keys(zip.files).filter(fileName => {
-            const entry = zip.files[fileName];
-            if (entry.dir) return false;
-            if (fileName.includes('__MACOSX') || fileName.startsWith('.')) return false;
-            const lower = fileName.toLowerCase();
-            return validExts.some(ext => lower.endsWith(ext));
-          });
-
-          const targetFiles = fileKeys.slice(0, 4);
-
-          for (let name of targetFiles) {
-            const content = await zip.files[name].async("string");
-            const cleanShortName = name.split('/').pop() || name;
-            extractedFiles.push({
-              name: cleanShortName,
-              content: content
-            });
-          }
-
-          if (extractedFiles.length === 0) {
-            triggerToast("No supported code files found in ZIP!");
+          if (!window.JSZip) {
+            triggerToast("ZIP Engine loading, try again...");
             return;
           }
 
-          fileTabs = [];
-          extractedFiles.forEach((f, idx) => {
-            fileTabs.push({
-              id: 'tab-' + Date.now() + '-' + idx,
-              name: f.name,
-              content: f.content,
-              isModified: false,
-              fileHandle: null,
-              isNewFile: false,
-              sourceOrigin: 'ZIP Project'
+          try {
+            triggerToast("Extracting ZIP project...");
+            const zip = await JSZip.loadAsync(file);
+
+            const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md'];
+            const extractedFiles = [];
+
+            const fileKeys = Object.keys(zip.files).filter(fileName => {
+              const entry = zip.files[fileName];
+              if (entry.dir) return false;
+              if (fileName.includes('__MACOSX') || fileName.startsWith('.')) return false;
+              const lower = fileName.toLowerCase();
+              return validExts.some(ext => lower.endsWith(ext));
             });
-          });
 
-          activeFileId = fileTabs[0].id;
-          textarea.value = fileTabs[0].content;
-          lastRenderedLinesCount = 0;
-          updateLineNumbers();
-          updateSyntaxHighlighting();
-          renderTabStrip();
-          scheduleAutoSave();
+            const targetFiles = fileKeys.slice(0, 4);
 
-          triggerToast(`Loaded ${extractedFiles.length} file(s) from ZIP!`);
-        } catch(err) {
-          console.error("ZIP extract error:", err);
-          triggerToast("Failed to unpack ZIP archive");
-        } finally {
-          zipInput.value = '';
-        }
-      });
+            for (let name of targetFiles) {
+              const content = await zip.files[name].async("string");
+              const cleanShortName = name.split('/').pop() || name;
+              extractedFiles.push({
+                name: cleanShortName,
+                content: content
+              });
+            }
+
+            if (extractedFiles.length === 0) {
+              triggerToast("No supported code files found in ZIP!");
+              return;
+            }
+
+            fileTabs = [];
+            extractedFiles.forEach((f, idx) => {
+              fileTabs.push({
+                id: 'tab-' + Date.now() + '-' + idx,
+                name: f.name,
+                content: f.content,
+                isModified: false,
+                fileHandle: null,
+                isNewFile: false,
+                sourceOrigin: 'ZIP Project'
+              });
+            });
+
+            activeFileId = fileTabs[0].id;
+            if (textarea) textarea.value = fileTabs[0].content;
+            lastRenderedLinesCount = 0;
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            renderTabStrip();
+            scheduleAutoSave();
+
+            triggerToast(`Loaded ${extractedFiles.length} file(s) from ZIP!`);
+          } catch(err) {
+            console.error("ZIP extract error:", err);
+            triggerToast("Failed to unpack ZIP archive");
+          } finally {
+            zipInput.value = '';
+          }
+        });
+      }
     }
 
     async function exportTabAsZip(singleTabOnly = false) {
@@ -2851,270 +2878,385 @@
 
     function setupCustomModals() {
       const modalAbout = document.getElementById('modalAboutSection');
-      document.getElementById('dNavAbout').addEventListener('click', () => {
-        closeDrawerPanel();
-        modalAbout.classList.remove('hidden');
-      });
-      document.getElementById('btnCloseAbout').addEventListener('click', () => {
-        modalAbout.classList.add('hidden');
-      });
+      const dNavAbout = document.getElementById('dNavAbout');
+      const btnCloseAbout = document.getElementById('btnCloseAbout');
+      if (dNavAbout && modalAbout) {
+        dNavAbout.addEventListener('click', () => {
+          closeDrawerPanel();
+          modalAbout.classList.remove('hidden');
+        });
+      }
+      if (btnCloseAbout && modalAbout) {
+        btnCloseAbout.addEventListener('click', () => modalAbout.classList.add('hidden'));
+      }
 
       const modalPrivacy = document.getElementById('modalPrivacyPolicy');
       const openPrivacyBtn = document.getElementById('btnOpenPrivacyPolicyModal');
       const closePrivacyTop = document.getElementById('btnClosePrivacyTop');
       const understoodBtn = document.getElementById('btnUnderstoodPrivacy');
 
-      if (openPrivacyBtn) {
+      if (openPrivacyBtn && modalPrivacy) {
         openPrivacyBtn.addEventListener('click', () => {
-          document.getElementById('modalSettings').classList.add('hidden');
+          const mSet = document.getElementById('modalSettings');
+          if (mSet) mSet.classList.add('hidden');
           modalPrivacy.classList.remove('hidden');
         });
       }
 
-      if (closePrivacyTop) {
-        closePrivacyTop.addEventListener('click', () => {
-          modalPrivacy.classList.add('hidden');
-        });
+      if (closePrivacyTop && modalPrivacy) {
+        closePrivacyTop.addEventListener('click', () => modalPrivacy.classList.add('hidden'));
       }
 
-      if (understoodBtn) {
-        understoodBtn.addEventListener('click', () => {
-          modalPrivacy.classList.add('hidden');
-        });
+      if (understoodBtn && modalPrivacy) {
+        understoodBtn.addEventListener('click', () => modalPrivacy.classList.add('hidden'));
       }
 
       const modalResetConfirm = document.getElementById('modalResetConfirm');
-      document.getElementById('dNavResetWorkspace').addEventListener('click', () => {
-        closeDrawerPanel();
-        modalResetConfirm.classList.remove('hidden');
-      });
-      document.getElementById('btnCancelResetConfirm').addEventListener('click', () => {
-        modalResetConfirm.classList.add('hidden');
-      });
+      const dNavReset = document.getElementById('dNavResetWorkspace');
+      const btnCancelReset = document.getElementById('btnCancelResetConfirm');
+      const btnOkReset = document.getElementById('btnOkResetConfirm');
 
-      document.getElementById('btnOkResetConfirm').addEventListener('click', async () => {
-        modalResetConfirm.classList.add('hidden');
-        clearTimeout(autoDebounceTimer);
-        autoDebounceTimer = null;
+      if (dNavReset && modalResetConfirm) {
+        dNavReset.addEventListener('click', () => {
+          closeDrawerPanel();
+          modalResetConfirm.classList.remove('hidden');
+        });
+      }
+      if (btnCancelReset && modalResetConfirm) {
+        btnCancelReset.addEventListener('click', () => modalResetConfirm.classList.add('hidden'));
+      }
+      if (btnOkReset && modalResetConfirm) {
+        btnOkReset.addEventListener('click', async () => {
+          modalResetConfirm.classList.add('hidden');
+          clearTimeout(autoDebounceTimer);
+          autoDebounceTimer = null;
 
-        try { await storeClearAll(); } catch(e){}
-        try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
+          try { await storeClearAll(); } catch(e){}
+          try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
 
-        triggerToast("Workspace reset completely. Restarting...");
-        setTimeout(() => {
-          try {
-            window.location.replace(window.location.origin + window.location.pathname);
-          } catch(err) {
-            window.location.reload();
-          }
-        }, 300);
-      });
+          triggerToast("Workspace reset completely. Restarting...");
+          setTimeout(() => {
+            try {
+              window.location.replace(window.location.origin + window.location.pathname);
+            } catch(err) {
+              window.location.reload();
+            }
+          }, 300);
+        });
+      }
 
       const modalRename = document.getElementById('modalRename');
       const inputRename = document.getElementById('inputRenameName');
+      const btnHeaderRename = document.getElementById('btnHeaderRename');
+      const btnCancelRename = document.getElementById('btnCancelRename');
+      const btnConfirmRename = document.getElementById('btnConfirmRename');
 
-      document.getElementById('btnHeaderRename').addEventListener('click', () => {
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        if (!cur) return;
-        inputRename.value = cur.name;
-        modalRename.classList.remove('hidden');
-        inputRename.focus();
-      });
-
-      document.getElementById('btnCancelRename').addEventListener('click', () => modalRename.classList.add('hidden'));
-      document.getElementById('btnConfirmRename').addEventListener('click', () => {
-        const val = inputRename.value.trim();
-        if (val) {
+      if (btnHeaderRename && modalRename && inputRename) {
+        btnHeaderRename.addEventListener('click', () => {
           const cur = fileTabs.find(t => t.id === activeFileId);
-          if (cur) {
-            cur.name = val;
-            renderTabStrip();
-            scheduleAutoSave();
-            triggerToast(`Renamed to ${val}`);
+          if (!cur) return;
+          inputRename.value = cur.name;
+          modalRename.classList.remove('hidden');
+          inputRename.focus();
+        });
+      }
+
+      if (btnCancelRename && modalRename) btnCancelRename.addEventListener('click', () => modalRename.classList.add('hidden'));
+      if (btnConfirmRename && modalRename && inputRename) {
+        btnConfirmRename.addEventListener('click', () => {
+          const val = inputRename.value.trim();
+          if (val) {
+            const cur = fileTabs.find(t => t.id === activeFileId);
+            if (cur) {
+              cur.name = val;
+              renderTabStrip();
+              scheduleAutoSave();
+              triggerToast(`Renamed to ${val}`);
+            }
           }
-        }
-        modalRename.classList.add('hidden');
-      });
+          modalRename.classList.add('hidden');
+        });
+      }
 
       const modalNew = document.getElementById('modalNewFile');
       const inputNew = document.getElementById('inputNewFileName');
+      const btnTabPlus = document.getElementById('btnTabPlus');
+      const dNavNew = document.getElementById('dNavNewFile');
+      const btnCancelNew = document.getElementById('btnCancelNewFile');
+      const btnConfirmNew = document.getElementById('btnConfirmNewFile');
 
       function openNewFileModal() {
+        if (!modalNew || !inputNew) return;
         inputNew.value = `file-${fileTabs.length + 1}.html`;
         modalNew.classList.remove('hidden');
         inputNew.focus();
       }
 
-      document.getElementById('btnTabPlus').addEventListener('click', openNewFileModal);
-      document.getElementById('dNavNewFile').addEventListener('click', () => {
-        closeDrawerPanel();
-        openNewFileModal();
-      });
+      if (btnTabPlus) btnTabPlus.addEventListener('click', openNewFileModal);
+      if (dNavNew) {
+        dNavNew.addEventListener('click', () => {
+          closeDrawerPanel();
+          openNewFileModal();
+        });
+      }
 
-      document.getElementById('btnCancelNewFile').addEventListener('click', () => modalNew.classList.add('hidden'));
-      document.getElementById('btnConfirmNewFile').addEventListener('click', () => {
-        const val = inputNew.value.trim() || `file-${fileTabs.length + 1}.html`;
-        const newTab = createFreshBlankTab(val, '');
-        fileTabs.push(newTab);
-        handleSwitchTab(newTab.id);
-        modalNew.classList.add('hidden');
-        triggerToast(`Created ${val}`);
-      });
+      if (btnCancelNew && modalNew) btnCancelNew.addEventListener('click', () => modalNew.classList.add('hidden'));
+      if (btnConfirmNew && modalNew && inputNew) {
+        btnConfirmNew.addEventListener('click', () => {
+          const val = inputNew.value.trim() || `file-${fileTabs.length + 1}.html`;
+          const newTab = createFreshBlankTab(val, '');
+          fileTabs.push(newTab);
+          handleSwitchTab(newTab.id);
+          modalNew.classList.add('hidden');
+          triggerToast(`Created ${val}`);
+        });
+      }
 
       const modalGoToLine = document.getElementById('modalGoToLine');
       const inputGoTo = document.getElementById('inputGoToLineNumber');
       const hintGoTo = document.getElementById('labelGoToHint');
+      const optGoToLine = document.getElementById('optGoToLine');
+      const btnCancelGoTo = document.getElementById('btnCancelGoTo');
+      const btnConfirmGoTo = document.getElementById('btnConfirmGoTo');
 
-      document.getElementById('optGoToLine').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        const lines = textarea.value.split('\n').length;
-        hintGoTo.textContent = `Line (1 to ${lines}):`;
-        inputGoTo.value = 1;
-        modalGoToLine.classList.remove('hidden');
-        inputGoTo.focus();
-      });
+      if (optGoToLine && modalGoToLine && inputGoTo) {
+        optGoToLine.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          const lines = textarea ? textarea.value.split('\n').length : 1;
+          if (hintGoTo) hintGoTo.textContent = `Line (1 to ${lines}):`;
+          inputGoTo.value = 1;
+          modalGoToLine.classList.remove('hidden');
+          inputGoTo.focus();
+        });
+      }
 
-      document.getElementById('btnCancelGoTo').addEventListener('click', () => modalGoToLine.classList.add('hidden'));
-      document.getElementById('btnConfirmGoTo').addEventListener('click', () => {
-        const line = parseInt(inputGoTo.value, 10);
-        const lines = textarea.value.split('\n');
-        if (!isNaN(line) && line >= 1 && line <= lines.length) {
-          let pos = 0;
-          for (let i = 0; i < line - 1; i++) {
-            pos += lines[i].length + 1;
+      if (btnCancelGoTo && modalGoToLine) btnCancelGoTo.addEventListener('click', () => modalGoToLine.classList.add('hidden'));
+      if (btnConfirmGoTo && modalGoToLine && inputGoTo) {
+        btnConfirmGoTo.addEventListener('click', () => {
+          const line = parseInt(inputGoTo.value, 10);
+          const lines = textarea ? textarea.value.split('\n') : [];
+          if (!isNaN(line) && line >= 1 && line <= lines.length && textarea) {
+            let pos = 0;
+            for (let i = 0; i < line - 1; i++) {
+              pos += lines[i].length + 1;
+            }
+            textarea.focus();
+            textarea.setSelectionRange(pos, pos);
+            modalGoToLine.classList.add('hidden');
+          } else {
+            triggerToast("Invalid line number");
           }
-          textarea.focus();
-          textarea.setSelectionRange(pos, pos);
-          modalGoToLine.classList.add('hidden');
-        } else {
-          triggerToast("Invalid line number");
-        }
-      });
+        });
+      }
 
-      document.getElementById('optStats').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        const text = textarea.value;
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        document.getElementById('statFileName').textContent = cur ? cur.name : 'Unknown';
-        document.getElementById('statLines').textContent = text.split('\n').length;
-        document.getElementById('statWords').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
-        document.getElementById('statChars').textContent = text.length;
-        document.getElementById('statSize').textContent = `${(new Blob([text]).size / 1024).toFixed(2)} KB`;
-        document.getElementById('modalStats').classList.remove('hidden');
-      });
-      document.getElementById('btnCloseStats').addEventListener('click', () => {
-        document.getElementById('modalStats').classList.add('hidden');
-      });
+      const modalStats = document.getElementById('modalStats');
+      const optStats = document.getElementById('optStats');
+      const btnCloseStats = document.getElementById('btnCloseStats');
 
-      document.getElementById('optEncoding').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        document.getElementById('modalEncoding').classList.remove('hidden');
-      });
-      document.getElementById('btnCancelEncoding').addEventListener('click', () => {
-        document.getElementById('modalEncoding').classList.add('hidden');
-      });
-      document.getElementById('btnConfirmEncoding').addEventListener('click', () => {
-        const choice = document.querySelector('input[name="encChoice"]:checked')?.value || 'UTF-8';
-        modalEncoding.classList.add('hidden');
-        triggerToast(`Encoding set to ${choice}`);
-      });
+      if (optStats && modalStats) {
+        optStats.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          const text = textarea ? textarea.value : '';
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          const fName = document.getElementById('statFileName');
+          const sLines = document.getElementById('statLines');
+          const sWords = document.getElementById('statWords');
+          const sChars = document.getElementById('statChars');
+          const sSize = document.getElementById('statSize');
+          if (fName) fName.textContent = cur ? cur.name : 'Unknown';
+          if (sLines) sLines.textContent = text.split('\n').length;
+          if (sWords) sWords.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+          if (sChars) sChars.textContent = text.length;
+          if (sSize) sSize.textContent = `${(new Blob([text]).size / 1024).toFixed(2)} KB`;
+          modalStats.classList.remove('hidden');
+        });
+      }
+      if (btnCloseStats && modalStats) btnCloseStats.addEventListener('click', () => modalStats.classList.add('hidden'));
+
+      const modalEncoding = document.getElementById('modalEncoding');
+      const optEncoding = document.getElementById('optEncoding');
+      const btnCancelEnc = document.getElementById('btnCancelEncoding');
+      const btnConfirmEnc = document.getElementById('btnConfirmEncoding');
+
+      if (optEncoding && modalEncoding) {
+        optEncoding.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          modalEncoding.classList.remove('hidden');
+        });
+      }
+      if (btnCancelEnc && modalEncoding) btnCancelEnc.addEventListener('click', () => modalEncoding.classList.add('hidden'));
+      if (btnConfirmEnc && modalEncoding) {
+        btnConfirmEnc.addEventListener('click', () => {
+          const choice = document.querySelector('input[name="encChoice"]:checked')?.value || 'UTF-8';
+          modalEncoding.classList.add('hidden');
+          triggerToast(`Encoding set to ${choice}`);
+        });
+      }
 
       document.querySelectorAll('#colorPaletteGrid div').forEach(swatch => {
         swatch.addEventListener('click', () => {
           const col = swatch.getAttribute('data-color');
-          document.getElementById('inputHexVal').value = col;
-          document.getElementById('nativeColorPicker').value = col;
+          const hexInput = document.getElementById('inputHexVal');
+          const nativePick = document.getElementById('nativeColorPicker');
+          if (hexInput) hexInput.value = col;
+          if (nativePick) nativePick.value = col;
         });
       });
-      document.getElementById('nativeColorPicker').addEventListener('input', (e) => {
-        document.getElementById('inputHexVal').value = e.target.value;
-      });
-      document.getElementById('btnCancelColor').addEventListener('click', () => {
-        document.getElementById('modalColor').classList.add('hidden');
-      });
-      document.getElementById('btnInsertColor').addEventListener('click', () => {
-        const hex = document.getElementById('inputHexVal').value.trim();
-        insertTextAtCursor(hex);
-        document.getElementById('modalColor').classList.add('hidden');
-        triggerToast(`Inserted: ${hex}`);
-      });
 
-      function openSettings() {
-        document.getElementById('settingSelectTheme').value = userSettings.theme;
-        document.getElementById('settingCheckLines').checked = userSettings.lineNumbers;
-        document.getElementById('settingCheckAccessory').checked = userSettings.miniBar;
-        document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
-        document.getElementById('modalSettings').classList.remove('hidden');
+      const nativePick = document.getElementById('nativeColorPicker');
+      if (nativePick) {
+        nativePick.addEventListener('input', (e) => {
+          const hexInput = document.getElementById('inputHexVal');
+          if (hexInput) hexInput.value = e.target.value;
+        });
       }
 
-      document.getElementById('optSettings').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        openSettings();
+      const btnCancelCol = document.getElementById('btnCancelColor');
+      const btnInsertCol = document.getElementById('btnInsertColor');
+      const modalCol = document.getElementById('modalColor');
+
+      if (btnCancelCol && modalCol) btnCancelCol.addEventListener('click', () => modalCol.classList.add('hidden'));
+      if (btnInsertCol && modalCol) {
+        btnInsertCol.addEventListener('click', () => {
+          const hexInput = document.getElementById('inputHexVal');
+          const hex = hexInput ? hexInput.value.trim() : '#00f2fe';
+          insertTextAtCursor(hex);
+          modalCol.classList.add('hidden');
+          triggerToast(`Inserted: ${hex}`);
+        });
+      }
+
+      function openSettings() {
+        const modalSet = document.getElementById('modalSettings');
+        if (!modalSet) return;
+        const selTheme = document.getElementById('settingSelectTheme');
+        const chkLines = document.getElementById('settingCheckLines');
+        const chkAcc = document.getElementById('settingCheckAccessory');
+        const lblFont = document.getElementById('labelSettingFontSize');
+
+        if (selTheme) selTheme.value = userSettings.theme;
+        if (chkLines) chkLines.checked = userSettings.lineNumbers;
+        if (chkAcc) chkAcc.checked = userSettings.miniBar;
+        if (lblFont) lblFont.textContent = `${userSettings.fontSize}px`;
+        modalSet.classList.remove('hidden');
+      }
+
+      const optSettings = document.getElementById('optSettings');
+      const dNavSettings = document.getElementById('dNavSettings');
+      const btnCloseSettings = document.getElementById('btnCloseSettings');
+      const btnDoneSettings = document.getElementById('btnDoneSettings');
+
+      if (optSettings) {
+        optSettings.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          openSettings();
+        });
+      }
+      if (dNavSettings) {
+        dNavSettings.addEventListener('click', () => {
+          closeDrawerPanel();
+          openSettings();
+        });
+      }
+      if (btnCloseSettings) btnCloseSettings.addEventListener('click', () => {
+        const m = document.getElementById('modalSettings');
+        if (m) m.classList.add('hidden');
       });
-      document.getElementById('dNavSettings').addEventListener('click', () => {
-        closeDrawerPanel();
-        openSettings();
-      });
-      document.getElementById('btnCloseSettings').addEventListener('click', () => {
-        document.getElementById('modalSettings').classList.add('hidden');
-      });
-      document.getElementById('btnDoneSettings').addEventListener('click', () => {
-        document.getElementById('modalSettings').classList.add('hidden');
+      if (btnDoneSettings) btnDoneSettings.addEventListener('click', () => {
+        const m = document.getElementById('modalSettings');
+        if (m) m.classList.add('hidden');
       });
 
-      document.getElementById('settingSelectTheme').addEventListener('change', (e) => {
-        userSettings.theme = e.target.value;
-        applyAppTheme(userSettings.theme);
-        scheduleAutoSave();
-      });
+      const selTheme = document.getElementById('settingSelectTheme');
+      if (selTheme) {
+        selTheme.addEventListener('change', (e) => {
+          userSettings.theme = e.target.value;
+          applyAppTheme(userSettings.theme);
+          scheduleAutoSave();
+        });
+      }
 
-      document.getElementById('settingCheckLines').addEventListener('change', (e) => {
-        userSettings.lineNumbers = e.target.checked;
-        gutter.classList.toggle('hidden', !userSettings.lineNumbers);
-        scheduleAutoSave();
-      });
+      const chkLines = document.getElementById('settingCheckLines');
+      if (chkLines) {
+        chkLines.addEventListener('change', (e) => {
+          userSettings.lineNumbers = e.target.checked;
+          if (gutter) gutter.classList.toggle('hidden', !userSettings.lineNumbers);
+          scheduleAutoSave();
+        });
+      }
 
-      document.getElementById('settingCheckAccessory').addEventListener('change', (e) => {
-        userSettings.miniBar = e.target.checked;
-        document.getElementById('accessoryBar').classList.toggle('hidden', !userSettings.miniBar);
-        document.getElementById('btnRestoreAccessoryBar').classList.toggle('hidden', userSettings.miniBar);
-        scheduleAutoSave();
-      });
+      const chkAcc = document.getElementById('settingCheckAccessory');
+      if (chkAcc) {
+        chkAcc.addEventListener('change', (e) => {
+          userSettings.miniBar = e.target.checked;
+          const bar = document.getElementById('accessoryBar');
+          const resBtn = document.getElementById('btnRestoreAccessoryBar');
+          if (bar) bar.classList.toggle('hidden', !userSettings.miniBar);
+          if (resBtn) resBtn.classList.toggle('hidden', userSettings.miniBar);
+          scheduleAutoSave();
+        });
+      }
 
-      document.getElementById('btnSettingFontInc').addEventListener('click', () => {
-        if (userSettings.fontSize < 24) {
-          userSettings.fontSize += 1;
-          document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
+      const btnFontInc = document.getElementById('btnSettingFontInc');
+      const btnFontDec = document.getElementById('btnSettingFontDec');
+
+      if (btnFontInc) {
+        btnFontInc.addEventListener('click', () => {
+          if (userSettings.fontSize < 24) {
+            userSettings.fontSize += 1;
+            const l = document.getElementById('labelSettingFontSize');
+            if (l) l.textContent = `${userSettings.fontSize}px`;
+            applySettingsStyles();
+            scheduleAutoSave();
+          }
+        });
+      }
+      if (btnFontDec) {
+        btnFontDec.addEventListener('click', () => {
+          if (userSettings.fontSize > 11) {
+            userSettings.fontSize -= 1;
+            const l = document.getElementById('labelSettingFontSize');
+            if (l) l.textContent = `${userSettings.fontSize}px`;
+            applySettingsStyles();
+            scheduleAutoSave();
+          }
+        });
+      }
+
+      const optWordWrap = document.getElementById('optWordWrap');
+      if (optWordWrap) {
+        optWordWrap.addEventListener('click', () => {
+          userSettings.wordWrap = !userSettings.wordWrap;
+          const chk = document.getElementById('checkWordWrapState');
+          if (chk) chk.checked = userSettings.wordWrap;
           applySettingsStyles();
           scheduleAutoSave();
-        }
-      });
-      document.getElementById('btnSettingFontDec').addEventListener('click', () => {
-        if (userSettings.fontSize > 11) {
-          userSettings.fontSize -= 1;
-          document.getElementById('labelSettingFontSize').textContent = `${userSettings.fontSize}px`;
-          applySettingsStyles();
-          scheduleAutoSave();
-        }
-      });
+        });
+      }
 
-      document.getElementById('optWordWrap').addEventListener('click', () => {
-        userSettings.wordWrap = !userSettings.wordWrap;
-        document.getElementById('checkWordWrapState').checked = userSettings.wordWrap;
-        applySettingsStyles();
-        scheduleAutoSave();
-      });
+      const optReadOnly = document.getElementById('optReadOnly');
+      if (optReadOnly) {
+        optReadOnly.addEventListener('click', () => {
+          if (!textarea) return;
+          textarea.readOnly = !textarea.readOnly;
+          const chk = document.getElementById('checkReadOnlyState');
+          if (chk) chk.checked = textarea.readOnly;
+          triggerToast(textarea.readOnly ? "Read Only enabled" : "Editing unlocked");
+        });
+      }
 
-      document.getElementById('optReadOnly').addEventListener('click', () => {
-        textarea.readOnly = !textarea.readOnly;
-        document.getElementById('checkReadOnlyState').checked = textarea.readOnly;
-        triggerToast(textarea.readOnly ? "Read Only enabled" : "Editing unlocked");
-      });
-
-      document.getElementById('optExportSingleZip').addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown').classList.add('hidden');
-        exportTabAsZip(true);
-      });
+      const optExportSingleZip = document.getElementById('optExportSingleZip');
+      if (optExportSingleZip) {
+        optExportSingleZip.addEventListener('click', () => {
+          const menu = document.getElementById('menuOverflowDropdown');
+          if (menu) menu.classList.add('hidden');
+          exportTabAsZip(true);
+        });
+      }
     }
 
     function applySettingsStyles() {
@@ -3122,7 +3264,7 @@
       const sizeStr = `${userSettings.fontSize}px`;
       
       textarea.style.fontSize = sizeStr;
-      gutter.style.fontSize = sizeStr;
+      if (gutter) gutter.style.fontSize = sizeStr;
       syntaxPre.style.fontSize = sizeStr;
       syntaxCode.style.fontSize = sizeStr;
       
@@ -3130,7 +3272,7 @@
       textarea.style.whiteSpace = wrapMode;
       syntaxPre.style.whiteSpace = wrapMode;
 
-      gutter.classList.toggle('hidden', !userSettings.lineNumbers);
+      if (gutter) gutter.classList.toggle('hidden', !userSettings.lineNumbers);
       lastRenderedLinesCount = 0;
       updateLineNumbers();
       updateSyntaxHighlighting();
@@ -3144,7 +3286,10 @@
       const tray = document.getElementById('previewConsoleTray');
       const logsBox = document.getElementById('consoleLogsBox');
 
+      if (!modal || !frame) return;
+
       function appendLog(type, msg) {
+        if (!logsBox) return;
         if (logsBox.children.length === 1 && logsBox.children[0].textContent.includes('No console logs')) {
           logsBox.innerHTML = '';
         }
@@ -3190,14 +3335,14 @@
           activePreviewBlobUrl = null;
         }
 
-        const source = buildInjectedSource(textarea.value);
+        const source = buildInjectedSource(textarea ? textarea.value : '');
         const blob = new Blob([source], { type: 'text/html' });
         activePreviewBlobUrl = URL.createObjectURL(blob);
         frame.src = activePreviewBlobUrl;
       }
 
       function launchPreview() {
-        logsBox.innerHTML = '<div class="text-slate-500 italic">Console ready...</div>';
+        if (logsBox) logsBox.innerHTML = '<div class="text-slate-500 italic">Console ready...</div>';
         modal.classList.remove('hidden');
 
         requestAnimationFrame(() => {
@@ -3207,121 +3352,154 @@
         });
       }
 
-      document.getElementById('btnHeaderRun').addEventListener('click', launchPreview);
-      document.getElementById('btnBottomRun').addEventListener('click', launchPreview);
+      const btnHeaderRun = document.getElementById('btnHeaderRun');
+      const btnBottomRun = document.getElementById('btnBottomRun');
+      if (btnHeaderRun) btnHeaderRun.addEventListener('click', launchPreview);
+      if (btnBottomRun) btnBottomRun.addEventListener('click', launchPreview);
 
-      document.getElementById('btnPreviewRefresh').addEventListener('click', () => {
-        injectCodeToIframe();
-        triggerToast("Refreshed Preview");
-      });
+      const btnRefresh = document.getElementById('btnPreviewRefresh');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => {
+          injectCodeToIframe();
+          triggerToast("Refreshed Preview");
+        });
+      }
 
-      document.getElementById('btnPreviewClose').addEventListener('click', () => {
-        modal.classList.add('hidden');
-        frame.src = 'about:blank';
-        if (activePreviewBlobUrl) {
-          URL.revokeObjectURL(activePreviewBlobUrl);
-          activePreviewBlobUrl = null;
-        }
-      });
+      const btnClosePreview = document.getElementById('btnPreviewClose');
+      if (btnClosePreview) {
+        btnClosePreview.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          frame.src = 'about:blank';
+          if (activePreviewBlobUrl) {
+            URL.revokeObjectURL(activePreviewBlobUrl);
+            activePreviewBlobUrl = null;
+          }
+        });
+      }
 
-      document.getElementById('btnPreviewConsoleToggle').addEventListener('click', () => {
-        tray.classList.toggle('hidden');
-      });
+      const btnConsoleToggle = document.getElementById('btnPreviewConsoleToggle');
+      if (btnConsoleToggle && tray) {
+        btnConsoleToggle.addEventListener('click', () => tray.classList.toggle('hidden'));
+      }
 
-      document.getElementById('btnClearConsoleLogs').addEventListener('click', () => {
-        logsBox.innerHTML = '';
-      });
+      const btnClearLogs = document.getElementById('btnClearConsoleLogs');
+      if (btnClearLogs && logsBox) {
+        btnClearLogs.addEventListener('click', () => logsBox.innerHTML = '');
+      }
     }
 
     function openDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
-      overlay.classList.add('overlay-active');
-      drawer.classList.add('drawer-open');
+      if (overlay) overlay.classList.add('overlay-active');
+      if (drawer) drawer.classList.add('drawer-open');
     }
 
     function closeDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
-      drawer.classList.remove('drawer-open');
-      overlay.classList.remove('overlay-active');
+      if (drawer) drawer.classList.remove('drawer-open');
+      if (overlay) overlay.classList.remove('overlay-active');
     }
 
     function setupDrawerAndEvents() {
       const overlay = document.getElementById('drawerOverlay');
+      const btnOpenDrawer = document.getElementById('btnOpenDrawer');
 
-      document.getElementById('btnOpenDrawer').addEventListener('click', (e) => {
-        e.stopPropagation();
-        openDrawerPanel();
-      });
-      overlay.addEventListener('click', closeDrawerPanel);
+      if (btnOpenDrawer) {
+        btnOpenDrawer.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDrawerPanel();
+        });
+      }
+      if (overlay) overlay.addEventListener('click', closeDrawerPanel);
 
       const overflowBtn = document.getElementById('btnHeaderMore');
       const overflowMenu = document.getElementById('menuOverflowDropdown');
-      overflowBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        overflowMenu.classList.toggle('hidden');
-      });
-      document.addEventListener('click', (e) => {
-        if (!overflowMenu.contains(e.target) && e.target !== overflowBtn) {
-          overflowMenu.classList.add('hidden');
-        }
-      });
+      if (overflowBtn && overflowMenu) {
+        overflowBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          overflowMenu.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!overflowMenu.contains(e.target) && e.target !== overflowBtn) {
+            overflowMenu.classList.add('hidden');
+          }
+        });
+      }
 
-      document.getElementById('btnHeaderSave').addEventListener('click', async () => {
-        await executeSaveWorkflow(false);
-      });
-      document.getElementById('btnBottomSave').addEventListener('click', async () => {
-        await executeSaveWorkflow(false);
-      });
-      document.getElementById('dNavSaveFile').addEventListener('click', async () => {
-        closeDrawerPanel();
-        await executeSaveWorkflow(false);
-      });
-      document.getElementById('optSaveAs').addEventListener('click', async () => {
-        overflowMenu.classList.add('hidden');
-        await executeSaveWorkflow(true);
-      });
+      const btnHeaderSave = document.getElementById('btnHeaderSave');
+      const btnBottomSave = document.getElementById('btnBottomSave');
+      const dNavSave = document.getElementById('dNavSaveFile');
+      const optSaveAs = document.getElementById('optSaveAs');
 
-      document.getElementById('dNavOpenFile').addEventListener('click', () => {
-        closeDrawerPanel();
-        handleOpenFileNative();
-      });
+      if (btnHeaderSave) btnHeaderSave.addEventListener('click', async () => await executeSaveWorkflow(false));
+      if (btnBottomSave) btnBottomSave.addEventListener('click', async () => await executeSaveWorkflow(false));
+      if (dNavSave) {
+        dNavSave.addEventListener('click', async () => {
+          closeDrawerPanel();
+          await executeSaveWorkflow(false);
+        });
+      }
+      if (optSaveAs) {
+        optSaveAs.addEventListener('click', async () => {
+          if (overflowMenu) overflowMenu.classList.add('hidden');
+          await executeSaveWorkflow(true);
+        });
+      }
 
-      document.getElementById('fallbackFileInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const newTab = {
-            id: 'tab-' + Date.now(),
-            name: file.name,
-            content: evt.target.result,
-            isModified: false,
-            fileHandle: null,
-            isNewFile: false,
-            sourceOrigin: 'Storage'
+      const dNavOpenFile = document.getElementById('dNavOpenFile');
+      if (dNavOpenFile) {
+        dNavOpenFile.addEventListener('click', () => {
+          closeDrawerPanel();
+          handleOpenFileNative();
+        });
+      }
+
+      const fallbackInput = document.getElementById('fallbackFileInput');
+      if (fallbackInput) {
+        fallbackInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const newTab = {
+              id: 'tab-' + Date.now(),
+              name: file.name,
+              content: evt.target.result,
+              isModified: false,
+              fileHandle: null,
+              isNewFile: false,
+              sourceOrigin: 'Storage'
+            };
+            fileTabs.push(newTab);
+            handleSwitchTab(newTab.id);
+            triggerToast(`Opened ${file.name}`);
           };
-          fileTabs.push(newTab);
-          handleSwitchTab(newTab.id);
-          triggerToast(`Opened ${file.name}`);
-        };
-        reader.readAsText(file);
-      });
+          reader.readAsText(file);
+        });
+      }
 
-      document.getElementById('btnHeaderUndo').addEventListener('click', performUndo);
-      document.getElementById('btnHeaderRedo').addEventListener('click', performRedo);
-      document.getElementById('btnBottomUndo').addEventListener('click', performUndo);
-      document.getElementById('btnBottomRedo').addEventListener('click', performUndo);
+      const btnHeaderUndo = document.getElementById('btnHeaderUndo');
+      const btnHeaderRedo = document.getElementById('btnHeaderRedo');
+      const btnBottomUndo = document.getElementById('btnBottomUndo');
+      const btnBottomRedo = document.getElementById('btnBottomRedo');
 
-      document.getElementById('btnBottomClose').addEventListener('click', () => {
-        triggerAppExitDialog();
-      });
+      if (btnHeaderUndo) btnHeaderUndo.addEventListener('click', performUndo);
+      if (btnHeaderRedo) btnHeaderRedo.addEventListener('click', performRedo);
+      if (btnBottomUndo) btnBottomUndo.addEventListener('click', performUndo);
+      if (btnBottomRedo) btnBottomRedo.addEventListener('click', performUndo);
 
-      document.getElementById('dNavExportAll').addEventListener('click', () => {
-        closeDrawerPanel();
-        exportTabAsZip(false);
-      });
+      const btnBottomClose = document.getElementById('btnBottomClose');
+      if (btnBottomClose) btnBottomClose.addEventListener('click', () => triggerAppExitDialog());
+
+      const dNavExport = document.getElementById('dNavExportAll');
+      if (dNavExport) {
+        dNavExport.addEventListener('click', () => {
+          closeDrawerPanel();
+          exportTabAsZip(false);
+        });
+      }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -3330,7 +3508,7 @@
         badge.textContent = `v${APP_CONFIG.version} ${APP_CONFIG.edition}`;
       }
 
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
       registerServiceWorker();
       setupPwaInstallFlow();
       await initIndexedDB();
@@ -3344,7 +3522,7 @@
 
       const restoreModal = document.getElementById('modalRestoringSession');
       const hasPreviousSession = savedTabs && savedTabs.length > 0;
-      if (hasPreviousSession) {
+      if (hasPreviousSession && restoreModal) {
         restoreModal.classList.remove('hidden');
       }
 
@@ -3366,16 +3544,12 @@
         activeFileId = fileTabs[0].id;
       }
 
-      if (savedLogo) {
-        applyLogoToUI(savedLogo);
-      }
-      if (savedBanner) {
-        applyBannerToUI(savedBanner);
-      }
+      if (savedLogo) applyLogoToUI(savedLogo);
+      if (savedBanner) applyBannerToUI(savedBanner);
 
       initNativeEditor();
       const currentTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];
-      if (currentTab) {
+      if (currentTab && textarea) {
         textarea.value = currentTab.content || '';
         updateLineNumbers();
         updateSyntaxHighlighting();
@@ -3392,14 +3566,16 @@
       setupLogoAndBannerCropperStudio();
       setupZipImporter();
 
-      if (!userSettings.miniBar) {
-        document.getElementById('accessoryBar').classList.add('hidden');
-        document.getElementById('btnRestoreAccessoryBar').classList.remove('hidden');
+      const accBar = document.getElementById('accessoryBar');
+      const resBtn = document.getElementById('btnRestoreAccessoryBar');
+      if (accBar && resBtn) {
+        accBar.classList.toggle('hidden', !userSettings.miniBar);
+        resBtn.classList.toggle('hidden', userSettings.miniBar);
       }
 
       setTimeout(() => {
-        restoreModal.classList.add('hidden');
-        lucide.createIcons();
+        if (restoreModal) restoreModal.classList.add('hidden');
+        if (window.lucide) lucide.createIcons();
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('action') === 'new') {

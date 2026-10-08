@@ -152,7 +152,7 @@
       overflow: hidden;
     }
 
-    /* Professional Code Gutter (Line Numbers) */
+    /* Professional Code Gutter */
     #lineNumbersGutter {
       width: 48px;
       height: 100%;
@@ -173,7 +173,7 @@
       white-space: pre;
     }
 
-    /* Double Layer Syntax Highlighter Engine */
+    /* Dual Layer Syntax Engine */
     #editorStage {
       flex: 1 1 0%;
       position: relative;
@@ -227,7 +227,7 @@
       font-size: 13px;
       line-height: 1.55;
       background: transparent;
-      color: transparent; /* Makes text transparent so colored syntax layer underneath shines through */
+      color: transparent;
       caret-color: var(--accent);
       white-space: pre;
       overflow-wrap: normal;
@@ -272,20 +272,48 @@
       background-color: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
+      z-index: 60;
     }
 
-    /* Fixed Drawer Sliding Architecture */
+    /* Hardware Accelerated Slide Drawer Architecture */
     #drawerNav {
-      transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      transform: translateX(-100%);
-      z-index: 60 !important;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 18rem;
+      background-color: var(--surface);
+      border-right: 1px solid var(--surface-border);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      z-index: 80 !important;
+      transform: translate3d(-100%, 0, 0);
+      -webkit-transform: translate3d(-100%, 0, 0);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
     }
+
     #drawerNav.drawer-open {
-      transform: translateX(0px) !important;
+      transform: translate3d(0, 0, 0) !important;
+      -webkit-transform: translate3d(0, 0, 0) !important;
     }
 
     #drawerOverlay {
-      z-index: 55 !important;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 75 !important;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    #drawerOverlay.overlay-active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
     }
 
     .spinner-ring {
@@ -536,9 +564,9 @@
     </button>
   </footer>
 
-  <!-- DRAWER -->
-  <div id="drawerOverlay" class="fixed inset-0 modal-backdrop hidden"></div>
-  <aside id="drawerNav" class="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--surface-border)] flex flex-col shadow-2xl">
+  <!-- DRAWER OVERLAY & ASIDE PANEL (FLAWLESS 60FPS TRANSITION) -->
+  <div id="drawerOverlay"></div>
+  <aside id="drawerNav">
     
     <!-- DRAWER HEADER WITH DYNAMIC BANNER & LOGO -->
     <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
@@ -614,7 +642,7 @@
   </aside>
 
   <!-- RESTORING SESSION SPINNER -->
-  <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
       <div class="spinner-ring shrink-0"></div>
       <div>
@@ -625,7 +653,7 @@
   </div>
 
   <!-- PWA INSTALL POPUP -->
-  <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-3xl w-full max-w-sm p-6 shadow-2xl pwa-glow-card relative">
       <div class="flex items-center space-x-3.5 mb-3">
         <img src="./icon-192.png" alt="App Icon" class="w-14 h-14 rounded-2xl shadow-md border border-slate-200/20 object-cover">
@@ -654,7 +682,7 @@
   </div>
 
   <!-- EXACT QUICKEDIT STYLE UNIFIED EXIT MODAL (POPUP 1) -->
-  <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
       <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
       <p id="labelExitDescription" class="text-xs text-[var(--text-main)] mb-3 leading-relaxed">Following files contain unsaved changes, do you want to save them?</p>
@@ -679,7 +707,7 @@
   </div>
 
   <!-- EXACT QUICKEDIT "ARE YOU SURE?" CONFIRMATION MODAL (POPUP 2) -->
-  <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
       <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
       <p id="labelAreYouSureDesc" class="text-xs text-[var(--text-main)] mb-6 leading-relaxed">Unsaved changes will be lost. Are you sure you want to exit?</p>
@@ -696,7 +724,7 @@
   </div>
 
   <!-- RESET CONFIRMATION MODAL -->
-  <div id="modalResetConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalResetConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center">
       <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
         <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-500"></i>
@@ -715,7 +743,7 @@
   </div>
 
   <!-- SAVED SUCCESSFULLY POPUP -->
-  <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center">
       <div class="w-14 h-14 mx-auto mb-3 rounded-full border-2 border-emerald-500 flex items-center justify-center">
         <i data-lucide="check" class="w-8 h-8 text-emerald-500 stroke-[2.5]"></i>
@@ -728,7 +756,7 @@
   </div>
 
   <!-- ABOUT & DETAILS POLICY MODAL -->
-  <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
         <div class="flex items-center space-x-2">
@@ -737,7 +765,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.6 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.7 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -775,7 +803,7 @@
   </div>
 
   <!-- 🔒 PLAY STORE COMPLIANT PRIVACY POLICY MODAL -->
-  <div id="modalPrivacyPolicy" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalPrivacyPolicy" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
         <div class="flex items-center space-x-2">
@@ -817,7 +845,7 @@
   </div>
 
   <!-- SEARCH MODAL POPUP -->
-  <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-6 shadow-2xl text-[var(--text-main)]">
       <h2 class="text-xl font-bold text-emerald-500 mb-4">Search</h2>
 
@@ -852,7 +880,7 @@
   </div>
 
   <!-- Rename Modal -->
-  <div id="modalRename" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalRename" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="edit-3" class="w-4 h-4 text-cyan-500"></i>
@@ -867,7 +895,7 @@
   </div>
 
   <!-- New File Modal -->
-  <div id="modalNewFile" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalNewFile" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="file-plus" class="w-4 h-4 text-emerald-500"></i>
@@ -882,7 +910,7 @@
   </div>
 
   <!-- Go To Line Modal -->
-  <div id="modalGoToLine" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalGoToLine" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-1 flex items-center space-x-2">
         <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
@@ -898,7 +926,7 @@
   </div>
 
   <!-- Encoding Modal -->
-  <div id="modalEncoding" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalEncoding" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
         <i data-lucide="binary" class="w-4 h-4 text-amber-500"></i>
@@ -926,7 +954,7 @@
   </div>
 
   <!-- File Statistics Modal -->
-  <div id="modalStats" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalStats" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
         <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
@@ -946,7 +974,7 @@
   </div>
 
   <!-- Color Picker Modal -->
-  <div id="modalColor" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalColor" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i>
@@ -981,7 +1009,7 @@
   </div>
 
   <!-- SETTINGS MODAL -->
-  <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+  <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
         <h3 class="text-sm font-bold text-[var(--text-main)] flex items-center space-x-2">
@@ -1107,7 +1135,7 @@
   </div>
 
   <!-- ADVANCED CROPPER MODAL (FOR SELFIES & CUSTOM RATIOS) -->
-  <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
+  <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3">
     <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
         <h3 class="text-sm font-bold text-cyan-500 flex items-center space-x-1.5">
@@ -1194,7 +1222,7 @@
     // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
     // ==========================================
     const APP_CONFIG = {
-      version: '5.7',
+      version: '5.8',
       edition: 'Professional Edition'
     };
 
@@ -1503,7 +1531,6 @@
       gutter.textContent = numbersStr;
     }
 
-    // Dynamic Syntax Highlighter Rendering Engine
     function updateSyntaxHighlighting() {
       if (!syntaxCode || !textarea) return;
       const code = textarea.value;
@@ -1558,7 +1585,6 @@
       syntaxCode = document.getElementById('syntaxHighlightCode');
       syntaxPre = document.getElementById('syntaxHighlightPre');
 
-      // Scroll synchronization
       textarea.addEventListener('scroll', () => {
         gutter.scrollTop = textarea.scrollTop;
         syntaxPre.scrollTop = textarea.scrollTop;
@@ -1937,7 +1963,7 @@
       }
       cur.name = cleanName;
 
-      // Handle overwrite
+      // Overwrite file
       if (cur.fileHandle && !forceSaveAs && !cur.isNewFile) {
         try {
           const writable = await cur.fileHandle.createWritable();
@@ -1949,7 +1975,7 @@
           return true;
         } catch (err) {
           if (err.name === 'AbortError') return false;
-          console.warn("Handle overwrite failed, fallback to picker:", err);
+          console.warn("Handle overwrite fallback:", err);
         }
       }
 
@@ -2066,24 +2092,22 @@
       window.removeEventListener('popstate', handlePopStateExit);
 
       // Saare open modals aur backdrops turant hide karein
-      document.querySelectorAll('.fixed').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
+      closeDrawerPanel();
       triggerToast("Closing Application...");
 
       setTimeout(() => {
-        // 1. Direct browser / PWA window close
         try {
           window.open('', '_self', '');
           window.close();
         } catch(e){}
 
-        // 2. Android Cordova / Webview direct termination
         try {
           if (navigator.app && navigator.app.exitApp) {
             navigator.app.exitApp();
           }
         } catch(e){}
 
-        // 3. Clean history dismissal without loop
         if (window.history.length > 1) {
           window.history.go(-window.history.length);
         } else {
@@ -2137,7 +2161,7 @@
       }
 
       const drawer = document.getElementById('drawerNav');
-      if (drawer && (drawer.classList.contains('drawer-open'))) {
+      if (drawer && drawer.classList.contains('drawer-open')) {
         closeDrawerPanel();
         closedAny = true;
       }
@@ -2162,9 +2186,8 @@
 
       // EXIT button (Popup 1)
       btnWithoutSave.addEventListener('click', () => {
-        const hasUnsaved = fileTabs.some(t => t.isModified);
         exitModal.classList.add('hidden');
-
+        const hasUnsaved = fileTabs.some(t => t.isModified);
         if (hasUnsaved) {
           areYouSureModal.classList.remove('hidden');
         } else {
@@ -2204,15 +2227,14 @@
         triggerAppExitDialog();
       });
 
-      // Back Button Listener Setup
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', handlePopStateExit);
     }
 
     // =========================================================================
-    // DUAL LOGO + BANNER CROPPER ENGINE (SELFIES, ANY RATIO, DRAG & ZOOM)
+    // DUAL LOGO + BANNER CROPPER ENGINE
     // =========================================================================
-    let currentCropTarget = 'logo'; // 'logo' | 'banner'
+    let currentCropTarget = 'logo';
     let cropperInstance = null;
 
     function applyLogoToUI(dataUrl) {
@@ -2268,7 +2290,6 @@
       const cropImage = document.getElementById('cropperImageTarget');
       const titleLabel = document.getElementById('labelCropModalTitle');
 
-      // Trigger from Settings & Drawer Header
       document.getElementById('btnTriggerPhotoUpload').addEventListener('click', () => {
         currentCropTarget = 'logo';
         titleLabel.textContent = "Crop & Adjust Studio Logo";
@@ -2281,7 +2302,6 @@
         bannerInput.click();
       });
 
-      // Tap to re-adjust existing image
       document.getElementById('settingLogoPreviewClickable').addEventListener('click', async () => {
         const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
         if (orig) {
@@ -2312,7 +2332,6 @@
         }
       });
 
-      // Remove Buttons
       document.getElementById('btnRemoveLogo').addEventListener('click', async (e) => {
         e.stopPropagation();
         await storeRemove('studio_custom_logo');
@@ -2382,7 +2401,6 @@
         bannerInput.value = '';
       });
 
-      // Controls
       document.getElementById('btnCropZoomIn').addEventListener('click', () => {
         if (cropperInstance) cropperInstance.zoom(0.1);
       });
@@ -2412,7 +2430,6 @@
       document.getElementById('btnCropCancel').addEventListener('click', closeCropper);
       document.getElementById('btnCropCancelTop').addEventListener('click', closeCropper);
 
-      // Save Cropped Result
       document.getElementById('btnCropApply').addEventListener('click', async () => {
         if (!cropperInstance) return;
 
@@ -2990,10 +3007,11 @@
       });
     }
 
+    // 📱 HARDWARE-ACCELERATED ULTRA SMOOTH DRAWER CONTROLLER
     function openDrawerPanel() {
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
-      overlay.classList.remove('hidden');
+      overlay.classList.add('overlay-active');
       drawer.classList.add('drawer-open');
     }
 
@@ -3001,7 +3019,7 @@
       const drawer = document.getElementById('drawerNav');
       const overlay = document.getElementById('drawerOverlay');
       drawer.classList.remove('drawer-open');
-      setTimeout(() => overlay.classList.add('hidden'), 200);
+      overlay.classList.remove('overlay-active');
     }
 
     function setupDrawerAndEvents() {

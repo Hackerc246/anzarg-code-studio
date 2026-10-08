@@ -48,7 +48,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <!-- Prism.js Syntax Highlighter Core & Languages -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
@@ -56,6 +55,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
   <style>
+    /* =========================================================================
+       UNIVERSAL TOKEN ENGINE (AUTO-SYNC ACROSS ALL THEMES & CONTRASTS)
+       ========================================================================= */
     :root {
       --bg-base: #0d1117;
       --surface: #161b22;
@@ -66,29 +68,50 @@
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
       --editor-text: #e6edf3;
-      --editor-highlight: rgba(0, 242, 254, 0.25);
+      --editor-highlight: rgba(0, 242, 254, 0.28);
       
       --gutter-bg: #0d1117;
       --gutter-text: #6e7681;
       --gutter-border: #21262d;
+      --active-line-bg: rgba(255, 255, 255, 0.03);
+
+      /* Prism Dynamic Tokens (Dark Slate) */
+      --syn-tag: #7ee787;
+      --syn-attr-name: #79c0ff;
+      --syn-string: #a5d6ff;
+      --syn-keyword: #ff7b72;
+      --syn-comment: #8b949e;
+      --syn-punct: #d2a8ff;
+      --syn-number: #f2cc60;
+
       --code-font: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
     }
 
     body.theme-light {
       --bg-base: #f8fafc;
       --surface: #ffffff;
-      --surface-border: #cbd5e1;
+      --surface-border: #e2e8f0;
       --editor-bg: #ffffff;
       --accent: #0284c7;
       --accent-secondary: #059669;
       --text-main: #0f172a;
-      --text-muted: #475569;
+      --text-muted: #64748b;
       --editor-text: #0f172a;
-      --editor-highlight: #bae6fd;
+      --editor-highlight: rgba(16, 185, 129, 0.28); /* QuickEdit Natural Mint Contrast */
       
-      --gutter-bg: #f1f5f9;
+      --gutter-bg: #f8fafc;
       --gutter-text: #64748b;
-      --gutter-border: #cbd5e1;
+      --gutter-border: #e2e8f0;
+      --active-line-bg: #f0fdf4;
+
+      /* Prism Dynamic Tokens (Clean Crisp Light High-Contrast) */
+      --syn-tag: #0369a1;
+      --syn-attr-name: #6b21a8;
+      --syn-string: #15803d;
+      --syn-keyword: #b91c1c;
+      --syn-comment: #94a3b8;
+      --syn-punct: #475569;
+      --syn-number: #d97706;
     }
 
     body.theme-cyberpunk {
@@ -101,9 +124,20 @@
       --text-main: #ff9e00;
       --text-muted: #c77dff;
       --editor-text: #ffe5ec;
+      --editor-highlight: rgba(255, 0, 127, 0.35);
+      
       --gutter-bg: #180033;
       --gutter-text: #b580ff;
       --gutter-border: #5a189a;
+      --active-line-bg: rgba(255, 0, 127, 0.08);
+
+      --syn-tag: #ff007f;
+      --syn-attr-name: #00f2fe;
+      --syn-string: #ffbe0b;
+      --syn-keyword: #70e000;
+      --syn-comment: #9d4edd;
+      --syn-punct: #ff9e00;
+      --syn-number: #38b000;
     }
 
     * {
@@ -121,6 +155,7 @@
       background-color: var(--bg-base);
       color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     body {
@@ -130,6 +165,7 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
+    /* Universal Selection Highlighter */
     ::selection {
       background-color: var(--editor-highlight) !important;
       color: inherit !important;
@@ -152,7 +188,7 @@
       overflow: hidden;
     }
 
-    /* Professional Code Gutter */
+    /* Gutter Bar */
     #lineNumbersGutter {
       width: 48px;
       height: 100%;
@@ -171,9 +207,9 @@
       font-weight: 500;
       letter-spacing: -0.5px;
       white-space: pre;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Dual Layer Syntax Engine */
     #editorStage {
       flex: 1 1 0%;
       position: relative;
@@ -183,8 +219,10 @@
       min-width: 0;
       overflow: hidden;
       background-color: var(--editor-bg);
+      transition: background-color 0.2s ease;
     }
 
+    /* Prism Token Bindings */
     #syntaxHighlightPre {
       position: absolute;
       inset: 0;
@@ -194,6 +232,7 @@
       font-size: 13px !important;
       line-height: 1.55 !important;
       background: transparent !important;
+      color: var(--editor-text) !important;
       white-space: pre;
       overflow: hidden;
       pointer-events: none;
@@ -211,6 +250,15 @@
       background: transparent !important;
       text-shadow: none !important;
     }
+
+    .token.tag, .token.selector { color: var(--syn-tag) !important; font-weight: 600; }
+    .token.attr-name, .token.property { color: var(--syn-attr-name) !important; }
+    .token.attr-value, .token.string { color: var(--syn-string) !important; }
+    .token.keyword, .token.rule { color: var(--syn-keyword) !important; font-weight: 600; }
+    .token.comment { color: var(--syn-comment) !important; font-style: italic; }
+    .token.punctuation { color: var(--syn-punct) !important; }
+    .token.number, .token.boolean { color: var(--syn-number) !important; }
+    .token.operator { color: var(--syn-punct) !important; }
 
     textarea#codeTextarea {
       position: absolute;
@@ -269,13 +317,22 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     .modal-backdrop {
-      background-color: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
       z-index: 60;
     }
 
-    /* Hardware Accelerated Slide Drawer Architecture */
+    /* Modern Material Elevation Architecture */
+    .material-card-elevated {
+      background-color: var(--surface);
+      border: 1px solid var(--surface-border);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+      border-radius: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    /* 60FPS Slide Drawer */
     #drawerNav {
       position: fixed;
       top: 0;
@@ -329,10 +386,6 @@
       to { transform: rotate(360deg); }
     }
 
-    .pwa-glow-card {
-      box-shadow: 0 0 25px rgba(0, 242, 254, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-    }
-
     .ticker-viewport {
       height: 18px;
       overflow: hidden;
@@ -362,7 +415,7 @@
 <body>
 
   <!-- TOP HEADER -->
-  <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm">
+  <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
     <div class="flex items-center space-x-1.5 overflow-hidden flex-1 mr-2">
       <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
@@ -481,20 +534,20 @@
   </header>
 
   <!-- TAB STRIP -->
-  <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none">
+  <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none transition-colors">
     <div id="tabStrip" class="flex-1 flex items-center space-x-1 overflow-x-auto no-scrollbar h-full py-1"></div>
     <button id="btnTabPlus" title="Create New Tab" class="h-7 w-7 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
       <i data-lucide="plus" class="w-4 h-4"></i>
     </button>
   </div>
 
-  <!-- MAIN EDITOR AREA (DOUBLE-LAYER SYNTAX ENGINE) -->
+  <!-- MAIN EDITOR AREA (DOUBLE-LAYER HIGH CONTRAST ENGINE) -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
     <div id="editorStage">
-      <!-- Layer 1: Colored Syntax Highlighter -->
+      <!-- Layer 1: High Contrast Syntax Highlighter -->
       <pre id="syntaxHighlightPre" aria-hidden="true"><code id="syntaxHighlightCode" class="language-html"></code></pre>
-      <!-- Layer 2: Interactive Editing Area -->
+      <!-- Layer 2: Transparent Interactive Typing -->
       <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
     </div>
 
@@ -505,7 +558,7 @@
   </main>
 
   <!-- ACCESSORY SYMBOL KEYS BAR (Row 1) -->
-  <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20">
+  <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 transition-colors">
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
     <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
@@ -543,7 +596,7 @@
   </div>
 
   <!-- QUICKEDIT NAVIGATION BAR (Row 2) -->
-  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20">
+  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20 transition-colors">
     <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
       <i data-lucide="undo-2" class="w-5 h-5"></i>
     </button>
@@ -564,11 +617,10 @@
     </button>
   </footer>
 
-  <!-- DRAWER OVERLAY & ASIDE PANEL (FLAWLESS 60FPS TRANSITION) -->
+  <!-- DRAWER OVERLAY & ASIDE PANEL -->
   <div id="drawerOverlay"></div>
   <aside id="drawerNav">
     
-    <!-- DRAWER HEADER WITH DYNAMIC BANNER & LOGO -->
     <div id="drawerHeaderWrapper" class="h-36 relative select-none overflow-hidden flex flex-col justify-end p-4 border-b border-[var(--surface-border)] bg-gradient-to-br from-cyan-800 to-emerald-800">
       <img id="drawerBannerImg" class="absolute inset-0 w-full h-full object-cover hidden z-0 opacity-90 transition-opacity" alt="Banner">
       <div id="drawerBannerOverlay" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20 z-1 hidden"></div>
@@ -643,7 +695,7 @@
 
   <!-- RESTORING SESSION SPINNER -->
   <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm px-6 py-5 shadow-2xl flex items-center space-x-4">
+    <div class="material-card-elevated w-full max-w-sm px-6 py-5 flex items-center space-x-4">
       <div class="spinner-ring shrink-0"></div>
       <div>
         <p class="text-sm font-semibold text-[var(--text-main)]">Restoring previous session...</p>
@@ -654,7 +706,7 @@
 
   <!-- PWA INSTALL POPUP -->
   <div id="modalInstallPrompt" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-3xl w-full max-w-sm p-6 shadow-2xl pwa-glow-card relative">
+    <div class="material-card-elevated w-full max-w-sm p-6 relative">
       <div class="flex items-center space-x-3.5 mb-3">
         <img src="./icon-192.png" alt="App Icon" class="w-14 h-14 rounded-2xl shadow-md border border-slate-200/20 object-cover">
         <div>
@@ -670,7 +722,7 @@
         Bina browser kholiye direct code likhne, offline project run karne aur lightning-fast workflow ke liye app install karein!
       </p>
       <div class="flex items-center space-x-3">
-        <button id="btnPwaCancel" class="flex-1 py-2.5 bg-black/10 hover:bg-black/15 text-[var(--text-main)] font-bold text-xs rounded-xl transition">
+        <button id="btnPwaCancel" class="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-[var(--text-main)] font-bold text-xs rounded-xl transition">
           Baad Mein
         </button>
         <button id="btnPwaConfirm" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center space-x-1.5">
@@ -681,43 +733,47 @@
     </div>
   </div>
 
-  <!-- EXACT QUICKEDIT STYLE UNIFIED EXIT MODAL (POPUP 1) -->
+  <!-- MATERIAL 3 DIALOG: UNIFIED EXIT MODAL (POPUP 1) -->
   <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
-      <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
-      <p id="labelExitDescription" class="text-xs text-[var(--text-main)] mb-3 leading-relaxed">Following files contain unsaved changes, do you want to save them?</p>
+    <div class="material-card-elevated w-full max-w-xs p-6 text-left">
+      <h3 class="text-lg font-bold text-[var(--text-main)] mb-1.5 tracking-tight">Exit Studio?</h3>
+      <p id="labelExitDescription" class="text-xs text-[var(--text-muted)] mb-4 leading-relaxed">
+        Following files contain unsaved changes, do you want to save them?
+      </p>
       
-      <div id="boxExitFileInfo" class="flex items-center space-x-2 py-2 px-2.5 rounded-lg bg-black/5 mb-5 border border-[var(--surface-border)]">
-        <i data-lucide="file-text" class="w-4 h-4 text-slate-400 shrink-0"></i>
+      <div id="boxExitFileInfo" class="flex items-center space-x-2.5 py-2 px-3 rounded-xl bg-black/5 mb-6 border border-[var(--surface-border)]">
+        <i data-lucide="file-code" class="w-4 h-4 text-cyan-500 shrink-0"></i>
         <span id="exitUnsavedFileName" class="text-xs font-mono font-medium text-[var(--text-main)] truncate">untitled.html</span>
       </div>
 
-      <div class="flex items-center justify-end space-x-4 text-xs font-bold tracking-wide">
-        <button id="btnExitWithoutSave" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
-          EXIT
+      <div class="flex items-center justify-end space-x-2 text-xs font-semibold">
+        <button id="btnExitLater" class="px-3.5 py-2 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-xl transition">
+          Cancel
         </button>
-        <button id="btnExitLater" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
-          LATER
+        <button id="btnExitWithoutSave" class="px-3.5 py-2 text-rose-500 hover:bg-rose-500/10 rounded-xl transition">
+          Discard
         </button>
-        <button id="btnExitAndSave" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
-          SAVE
+        <button id="btnExitAndSave" class="px-4 py-2 bg-[var(--accent-secondary)] text-white font-bold rounded-xl shadow-md transition active:scale-95">
+          Save & Exit
         </button>
       </div>
     </div>
   </div>
 
-  <!-- EXACT QUICKEDIT "ARE YOU SURE?" CONFIRMATION MODAL (POPUP 2) -->
+  <!-- MATERIAL 3 DIALOG: ARE YOU SURE? (POPUP 2) -->
   <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-left">
-      <h3 class="text-base font-bold text-emerald-500 mb-2">Exit</h3>
-      <p id="labelAreYouSureDesc" class="text-xs text-[var(--text-main)] mb-6 leading-relaxed">Unsaved changes will be lost. Are you sure you want to exit?</p>
+    <div class="material-card-elevated w-full max-w-xs p-6 text-left">
+      <h3 class="text-lg font-bold text-rose-500 mb-1.5 tracking-tight">Discard Changes?</h3>
+      <p id="labelAreYouSureDesc" class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">
+        Unsaved changes will be lost permanently. Are you sure you want to quit?
+      </p>
       
-      <div class="flex items-center justify-end space-x-4 text-xs font-bold tracking-wide">
-        <button id="btnAreYouSureExit" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
-          EXIT
+      <div class="flex items-center justify-end space-x-2 text-xs font-semibold">
+        <button id="btnAreYouSureLater" class="px-4 py-2 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-xl transition">
+          Keep Editing
         </button>
-        <button id="btnAreYouSureLater" class="text-emerald-500 hover:opacity-80 py-1 uppercase transition">
-          LATER
+        <button id="btnAreYouSureExit" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-md transition active:scale-95">
+          Yes, Exit
         </button>
       </div>
     </div>
@@ -725,7 +781,7 @@
 
   <!-- RESET CONFIRMATION MODAL -->
   <div id="modalResetConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-5 shadow-2xl text-center">
+    <div class="material-card-elevated w-full max-w-xs p-6 text-center">
       <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
         <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-500"></i>
       </div>
@@ -742,22 +798,23 @@
     </div>
   </div>
 
-  <!-- SAVED SUCCESSFULLY POPUP -->
+  <!-- SAVED SUCCESSFULLY MATERIAL CARD -->
   <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center">
-      <div class="w-14 h-14 mx-auto mb-3 rounded-full border-2 border-emerald-500 flex items-center justify-center">
-        <i data-lucide="check" class="w-8 h-8 text-emerald-500 stroke-[2.5]"></i>
+    <div class="material-card-elevated w-full max-w-xs p-6 text-center">
+      <div class="w-14 h-14 mx-auto mb-3.5 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-emerald-500/10">
+        <i data-lucide="check" class="w-7 h-7 text-emerald-500 stroke-[2.5]"></i>
       </div>
-      <p class="text-base font-semibold text-[var(--text-main)] mb-6">Saved Successfully.</p>
-      <button id="btnSavedSuccessDone" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl tracking-wider uppercase transition shadow-md">
-        DONE
+      <h3 class="text-base font-bold text-[var(--text-main)] mb-1">Saved Successfully</h3>
+      <p class="text-xs text-[var(--text-muted)] mb-5">Workspace updated in IndexedDB storage.</p>
+      <button id="btnSavedSuccessDone" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl uppercase tracking-wider transition shadow-md active:scale-95">
+        Done
       </button>
     </div>
   </div>
 
-  <!-- ABOUT & DETAILS POLICY MODAL -->
+  <!-- ABOUT & POLICY MODAL -->
   <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
+    <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
         <div class="flex items-center space-x-2">
           <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
@@ -765,7 +822,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.7 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v5.9 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -804,7 +861,7 @@
 
   <!-- 🔒 PLAY STORE COMPLIANT PRIVACY POLICY MODAL -->
   <div id="modalPrivacyPolicy" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
+    <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
         <div class="flex items-center space-x-2">
           <div class="p-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
@@ -846,7 +903,7 @@
 
   <!-- SEARCH MODAL POPUP -->
   <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-6 shadow-2xl text-[var(--text-main)]">
+    <div class="material-card-elevated w-full max-w-sm p-6 text-[var(--text-main)]">
       <h2 class="text-xl font-bold text-emerald-500 mb-4">Search</h2>
 
       <label class="block text-xs font-semibold text-[var(--text-muted)] mb-1">Search text:</label>
@@ -881,7 +938,7 @@
 
   <!-- Rename Modal -->
   <div id="modalRename" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+    <div class="material-card-elevated w-full max-w-xs p-4">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="edit-3" class="w-4 h-4 text-cyan-500"></i>
         <span>Rename Active File</span>
@@ -896,7 +953,7 @@
 
   <!-- New File Modal -->
   <div id="modalNewFile" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+    <div class="material-card-elevated w-full max-w-xs p-4">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="file-plus" class="w-4 h-4 text-emerald-500"></i>
         <span>Create New File</span>
@@ -911,7 +968,7 @@
 
   <!-- Go To Line Modal -->
   <div id="modalGoToLine" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+    <div class="material-card-elevated w-full max-w-xs p-4">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-1 flex items-center space-x-2">
         <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
         <span>Go to Line</span>
@@ -927,7 +984,7 @@
 
   <!-- Encoding Modal -->
   <div id="modalEncoding" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+    <div class="material-card-elevated w-full max-w-xs p-4">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
         <i data-lucide="binary" class="w-4 h-4 text-amber-500"></i>
         <span>Select File Encoding</span>
@@ -955,7 +1012,7 @@
 
   <!-- File Statistics Modal -->
   <div id="modalStats" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
+    <div class="material-card-elevated w-full max-w-xs p-4 text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-3 flex items-center space-x-2">
         <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
         <span>File Statistics</span>
@@ -975,7 +1032,7 @@
 
   <!-- Color Picker Modal -->
   <div id="modalColor" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-xs p-4 shadow-2xl text-xs">
+    <div class="material-card-elevated w-full max-w-xs p-4 text-xs">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
         <i data-lucide="palette" class="w-4 h-4 text-amber-500"></i>
         <span>Color Picker</span>
@@ -1010,7 +1067,7 @@
 
   <!-- SETTINGS MODAL -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-5 shadow-2xl max-h-[85vh] overflow-y-auto text-xs">
+    <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
         <h3 class="text-sm font-bold text-[var(--text-main)] flex items-center space-x-2">
           <i data-lucide="sliders" class="w-4 h-4 text-cyan-500"></i>
@@ -1134,9 +1191,9 @@
     </div>
   </div>
 
-  <!-- ADVANCED CROPPER MODAL (FOR SELFIES & CUSTOM RATIOS) -->
+  <!-- ADVANCED CROPPER MODAL -->
   <div id="modalCropStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3">
-    <div class="bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col text-[var(--text-main)]">
+    <div class="material-card-elevated w-full max-w-sm p-4 flex flex-col text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] mb-3">
         <h3 class="text-sm font-bold text-cyan-500 flex items-center space-x-1.5">
           <i data-lucide="crop" class="w-4 h-4"></i>
@@ -1147,7 +1204,6 @@
         </button>
       </div>
 
-      <!-- Cropper Image Container -->
       <div class="w-full h-64 bg-black/90 rounded-xl overflow-hidden relative flex items-center justify-center border border-[var(--surface-border)] select-none">
         <img id="cropperImageTarget" src="" class="max-w-full max-h-full block" alt="Target Image">
       </div>
@@ -1219,10 +1275,10 @@
 
   <script>
     // ==========================================
-    // CENTRALIZED APP CONFIG (AUTO-SYNC ENGINE)
+    // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '5.8',
+      version: '5.9',
       edition: 'Professional Edition'
     };
 
@@ -1537,8 +1593,9 @@
       const cur = fileTabs.find(t => t.id === activeFileId);
       const fileName = cur ? cur.name.toLowerCase() : 'untitled.html';
 
-      let lang = 'html';
-      if (fileName.endsWith('.js') || fileName.endsWith('.json')) lang = 'javascript';
+      let lang = 'markup';
+      if (fileName.endsWith('.js')) lang = 'javascript';
+      else if (fileName.endsWith('.json')) lang = 'json';
       else if (fileName.endsWith('.css')) lang = 'css';
       
       syntaxCode.className = `language-${lang}`;
@@ -1911,7 +1968,6 @@
           if (count > 0) {
             textarea.value = textarea.value.replace(re, rep);
             updateLineNumbers();
-            updateSyntaxHighlighting();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
@@ -2091,7 +2147,6 @@
       isExiting = true;
       window.removeEventListener('popstate', handlePopStateExit);
 
-      // Saare open modals aur backdrops turant hide karein
       document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
       closeDrawerPanel();
       triggerToast("Closing Application...");
@@ -2600,6 +2655,7 @@
       triggerToast(singleTabOnly ? "Exported single tab as ZIP" : "Exported all files as ZIP");
     }
 
+    // Dynamic Zero-Lag Theme Switch Function
     function applyAppTheme(themeName) {
       document.body.classList.remove('theme-light', 'theme-cyberpunk');
       let effectiveTheme = themeName;
@@ -2614,6 +2670,8 @@
       } else if (effectiveTheme === 'cyberpunk') {
         document.body.classList.add('theme-cyberpunk');
       }
+
+      updateSyntaxHighlighting();
     }
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

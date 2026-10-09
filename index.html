@@ -3,7 +3,7 @@
   ANZARG CODE STUDIO - PROFESSIONAL MOBILE CODE EDITOR
   Copyright (c) 2026 ANZARG (All Rights Reserved)
   Developed by: AnzarG
-  Version: 6.6 Professional Edition (Clean Final Build - Zero Loss)
+  Version: 6.8 Master Edition (Dual Cyber Dock � Smart Diagnostics � Lag-Free)
 ===================================================================================
 -->
 <!DOCTYPE html>
@@ -155,6 +155,7 @@
       color: inherit !important;
     }
 
+    /*  HARDWARE ACCELERATED HIGH PERFORMANCE EDITOR CONTAINER */
     main#editorContainer {
       flex: 1 1 0%;
       display: flex;
@@ -166,6 +167,7 @@
       position: relative;
       background-color: var(--editor-bg);
       overflow: hidden;
+      contain: layout paint;
     }
 
     #lineNumbersGutter {
@@ -186,6 +188,7 @@
       font-weight: 500;
       letter-spacing: normal !important;
       white-space: pre;
+      will-change: scroll-position;
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
@@ -238,10 +241,10 @@
       text-shadow: none !important;
     }
 
-    .token.tag, .token.selector { color: var(--syn-tag) !important; font-weight: normal !important; }
-    .token.attr-name, .token.property { color: var(--syn-attr-name) !important; font-weight: normal !important; }
-    .token.attr-value, .token.string { color: var(--syn-string) !important; font-weight: normal !important; }
-    .token.keyword, .token.rule { color: var(--syn-keyword) !important; font-weight: normal !important; }
+    .token.tag, .token.selector { color: var(--syn-tag) !important; }
+    .token.attr-name, .token.property { color: var(--syn-attr-name) !important; }
+    .token.attr-value, .token.string { color: var(--syn-string) !important; }
+    .token.keyword, .token.rule { color: var(--syn-keyword) !important; }
     .token.comment { color: var(--syn-comment) !important; font-style: italic; }
     .token.punctuation { color: var(--syn-punct) !important; }
     .token.number, .token.boolean { color: var(--syn-number) !important; }
@@ -250,8 +253,6 @@
     textarea#codeTextarea {
       height: 100% !important;
       width: 100% !important;
-      min-height: 0;
-      min-width: 0;
       resize: none;
       background: transparent;
       color: transparent;
@@ -295,7 +296,7 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     .modal-backdrop {
-      background-color: rgba(0, 0, 0, 0.65);
+      background-color: rgba(0, 0, 0, 0.68);
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
       z-index: 60;
@@ -304,7 +305,7 @@
     .material-card-elevated {
       background-color: var(--surface);
       border: 1px solid var(--surface-border);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.65);
       border-radius: 1.5rem;
       transition: all 0.2s ease;
     }
@@ -360,35 +361,54 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .ticker-viewport {
-      height: 18px;
-      overflow: hidden;
-      display: inline-block;
-      vertical-align: middle;
-      position: relative;
-    }
-    .ticker-track {
-      display: flex;
-      flex-direction: column;
-      animation: verticalTicker 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
-    }
-    .ticker-item {
-      height: 18px;
-      line-height: 18px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    @keyframes verticalTicker {
-      0%, 42% { transform: translateY(0); }
-      50%, 92% { transform: translateY(-18px); }
-      100% { transform: translateY(0); }
-    }
-
     .vkey-mod-active {
       background-color: var(--accent) !important;
       color: #000000 !important;
       box-shadow: 0 0 10px var(--accent);
+    }
+
+    /*  HACKER CYBER ANIMATIONS ENGINE (GPU ACCELERATED) */
+    .anim-cyber-sweep {
+      animation: cyberSweep 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: left center;
+    }
+    @keyframes cyberSweep {
+      0% {
+        opacity: 0;
+        clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+        transform: translate3d(-15px, 0, 0);
+      }
+      100% {
+        opacity: 1;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    .anim-matrix-stagger > * {
+      animation: matrixDrop 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    }
+    @keyframes matrixDrop {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    /* Bottom Action Bar Smooth Slide */
+    .action-bar-transition {
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, max-height 0.24s ease;
+      will-change: transform, opacity;
+    }
+    .action-bar-minimized {
+      transform: translate3d(0, 100%, 0) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      max-height: 0 !important;
     }
   </style>
 </head>
@@ -409,16 +429,6 @@
     </div>
 
     <div class="flex items-center space-x-0.5">
-      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
-        <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
-        <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
-          <div class="ticker-track">
-            <span class="ticker-item text-cyan-300">Get App</span>
-            <span class="ticker-item text-emerald-300">Install App</span>
-          </div>
-        </div>
-      </button>
-
       <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="undo-2" class="w-4 h-4"></i>
       </button>
@@ -441,6 +451,15 @@
         </button>
 
         <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-60 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
+          <button id="optDiagnoseCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-semibold">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            <span>Diagnose & Auto-Fix</span>
+          </button>
+          <button id="optFormatCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-emerald-400">
+            <i data-lucide="wand-2" class="w-4 h-4 text-emerald-400"></i>
+            <span>Auto-Format Code</span>
+          </button>
+          <div class="h-px bg-[var(--surface-border)] my-1"></div>
           <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
             <span>Save As / Export</span>
@@ -497,24 +516,30 @@
     </button>
   </div>
 
-  <!-- 🌟 DEDICATED FULL-WIDTH ADDRESS BAR (QUICKEDIT STYLE) -->
+  <!--  DEDICATED FULL-WIDTH ADDRESS BAR (WITH REALTIME LINE/COL BADGE & WARNING DOT) -->
   <div id="fullWidthAddressBar" class="h-8 bg-[var(--editor-bg)] border-b border-[var(--surface-border)] flex items-center justify-between px-2.5 shrink-0 select-none z-10 text-[11px] font-mono">
-    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 cursor-pointer max-w-[calc(100%-125px)]" title="Click to view folder details">
+    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 cursor-pointer max-w-[calc(100%-195px)]" title="Click to view folder details">
       <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
       <span id="breadcrumbPathDisplay" class="text-[var(--text-muted)] hover:text-cyan-400 whitespace-nowrap transition-colors">/storage/emulated/0/untitled.html</span>
     </div>
     
-    <div class="flex items-center space-x-1 shrink-0 ml-2">
-      <button id="btnQuickCopyPath" title="Copy Full Path" class="px-2 py-0.5 bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 text-[10px] text-cyan-300 border border-cyan-500/40 rounded flex items-center space-x-1 font-bold transition">
+    <div class="flex items-center space-x-1.5 shrink-0 ml-2">
+      <!--  REALTIME CURSOR BADGE WITH DIAGNOSTIC DOT -->
+      <div id="badgeCursorWrapper" class="flex items-center space-x-1 px-1.5 py-0.5 bg-black/10 border border-cyan-500/20 rounded cursor-pointer" title="Tap to diagnose code">
+        <span id="dotDiagnosticWarning" class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+        <span id="badgeLineCol" class="text-[10px] text-cyan-400 font-mono font-bold tracking-tight">Ln 1, Col 1</span>
+      </div>
+      
+      <button id="btnQuickCopyPath" title="Copy Full Path" class="px-1.5 py-0.5 bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 text-[10px] text-cyan-300 border border-cyan-500/40 rounded flex items-center space-x-1 font-bold transition">
         <i data-lucide="copy" class="w-2.5 h-2.5"></i>
         <span>COPY</span>
       </button>
-      <button id="btnViewPathModal" title="Path Details" class="px-2 py-0.5 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 text-[10px] text-emerald-400 font-bold border border-emerald-500/40 rounded transition">
+      <button id="btnViewPathModal" title="Path Details" class="px-1.5 py-0.5 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 text-[10px] text-emerald-400 font-bold border border-emerald-500/40 rounded transition">
         VIEW
       </button>
     </div>
   </div>
-  <!-- MAIN EDITOR AREA -->
+    <!-- MAIN EDITOR AREA -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
     <div id="editorStage">
@@ -528,7 +553,7 @@
     </div>
   </main>
 
-  <!-- SMART DEVELOPER VIRTUAL KEYBOARD STRIP (Row 1) -->
+  <!--  ROW 1: SMART DEVELOPER VIRTUAL KEYBOARD STRIP -->
   <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 transition-colors">
     <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">CTRL</button>
     <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">ALT</button>
@@ -536,8 +561,8 @@
     <button id="btnKeyCopy" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">COPY</button>
     <button id="btnKeyPaste" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent-secondary)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">PASTE</button>
     
-    <button id="btnKeyArrowLeft" title="Cursor Left" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">◀</button>
-    <button id="btnKeyArrowRight" title="Cursor Right" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">▶</button>
+    <button id="btnKeyArrowLeft" title="Cursor Left" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition"></button>
+    <button id="btnKeyArrowRight" title="Cursor Right" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition"></button>
     
     <div class="h-4 w-px bg-[var(--surface-border)] mx-1"></div>
 
@@ -576,18 +601,14 @@
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
 
-    <button id="btnToggleAccessoryBar" title="Minimize Keyboard Strip" class="px-2 h-7 bg-black/5 hover:bg-black/15 text-[var(--text-muted)] rounded-lg text-xs font-bold active:scale-90 transition">
-      ▼
+    <!-- Row 1 Minimize Button -->
+    <button id="btnToggleAccessoryBar" title="Minimize Dev Keys" class="px-2 h-7 bg-black/5 hover:bg-black/15 text-[var(--text-muted)] hover:text-cyan-400 rounded-lg text-xs font-bold active:scale-90 transition">
+      
     </button>
   </div>
 
-  <!-- FLOATING STRIP RESTORE BUTTON -->
-  <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden fixed bottom-12 right-2 p-1.5 bg-[var(--surface)] border border-[var(--surface-border)] rounded-full text-cyan-400 shadow-xl z-20 active:scale-90 transition">
-    ▲
-  </button>
-
-  <!-- QUICKEDIT NAVIGATION BAR (Row 2) -->
-  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20 transition-colors">
+  <!--  ROW 2: QUICKEDIT NAVIGATION BAR (WITH INDEPENDENT MINIMIZE) -->
+  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20 action-bar-transition transition-colors">
     <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
       <i data-lucide="undo-2" class="w-5 h-5"></i>
     </button>
@@ -606,7 +627,25 @@
     <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-500">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
+    <!-- Row 2 Minimize Button -->
+    <button id="btnMinimizeActionBar" title="Minimize Action Bar" class="px-2 h-8 text-[var(--text-muted)] hover:text-rose-400 rounded-lg text-xs font-bold active:scale-90 transition">
+      
+    </button>
   </footer>
+
+  <!--  DUAL FLOATING RESTORE CAPSULES (FOR 100% FULL-SCREEN CODING) -->
+  <div id="floatingDockCapsules" class="fixed bottom-2 right-2 flex flex-col space-y-1.5 z-30 pointer-events-auto">
+    <!-- Restore Dev Keys Capsule -->
+    <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden px-2.5 py-1 bg-[var(--surface)]/90 backdrop-blur-md border border-cyan-500/40 rounded-full text-cyan-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
+      <span></span>
+      <span>DEV</span>
+    </button>
+    <!-- Restore Action Bar Capsule -->
+    <button id="btnRestoreActionBar" title="Show Action Bar" class="hidden px-2.5 py-1 bg-[var(--surface)]/90 backdrop-blur-md border border-emerald-500/40 rounded-full text-emerald-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
+      <span></span>
+      <span>ACT</span>
+    </button>
+  </div>
 
   <!-- DRAWER OVERLAY & ASIDE PANEL -->
   <div id="drawerOverlay"></div>
@@ -623,7 +662,7 @@
         <div class="overflow-hidden">
           <span class="text-base font-bold tracking-tight block truncate uppercase drop-shadow-md">ANZARG CODE STUDIO</span>
           <span class="block text-[10px] text-cyan-200 uppercase tracking-widest font-semibold drop-shadow-sm">Pro Code Studio</span>
-          <p class="text-[11px] text-cyan-100/90 mt-0.5 drop-shadow-sm">100% Offline • Quick Precision</p>
+          <p class="text-[11px] text-cyan-100/90 mt-0.5 drop-shadow-sm">100% Offline � Quick Precision</p>
         </div>
       </div>
     </div>
@@ -652,10 +691,15 @@
       </button>
 
       <div class="h-px bg-[var(--surface-border)] my-2"></div>
-      <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">Preferences & App</div>
+      <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">Diagnostics & Tools</div>
 
-      <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
-        <i data-lucide="download-cloud" class="w-4 h-4 text-cyan-400"></i>
+      <button id="dNavTriggerDiagnosis" class="w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
+        <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+        <span class="font-semibold">Code Diagnostic & Auto-Fix</span>
+      </button>
+
+      <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 active:bg-emerald-500/30">
+        <i data-lucide="download-cloud" class="w-4 h-4 text-emerald-400"></i>
         <span class="font-semibold">Install App on Phone</span>
       </button>
 
@@ -682,7 +726,41 @@
     </div>
   </aside>
 
-  <!-- 🌟 INTERACTIVE [VIEW] PATH INFO MODAL -->
+  <!--  SMART DIAGNOSTIC & 1-TAP AUTO-FIX MODAL -->
+  <div id="modalDiagnosticReport" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
+    <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)]">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[var(--text-main)]">Code Diagnostic Engine</h3>
+            <span class="text-[10px] text-cyan-400 font-mono">1-Tap Auto-Healer</span>
+          </div>
+        </div>
+        <button id="btnCloseDiagnosticModal" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="boxDiagnosticContent" class="space-y-3 mb-4">
+        <!-- Dynamic diagnostic report gets populated here -->
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="btnDiagnosticAutoFix" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition shadow-md">
+          <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+          <span>Auto-Fix Code</span>
+        </button>
+        <button id="btnDiagnosticClose" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-xl font-bold transition active:scale-95">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!--  INTERACTIVE [VIEW] PATH INFO MODAL -->
   <div id="modalPathDetails" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -708,7 +786,7 @@
         <div>
           <div class="flex justify-between items-center mb-0.5">
             <span class="text-[10px] text-[var(--text-muted)] uppercase">Folder / Directory:</span>
-            <button id="btnEditFolderDirect" class="text-[10px] text-amber-400 underline font-semibold">✏️ Edit Folder</button>
+            <button id="btnTriggerCustomFolderModal" class="text-[10px] text-amber-400 underline font-semibold"> Edit Folder</button>
           </div>
           <span id="viewModalFolder" class="text-amber-400 text-xs truncate block font-bold">Internal Storage</span>
         </div>
@@ -734,6 +812,22 @@
     </div>
   </div>
 
+  <!--  IN-APP FOLDER EDIT MODAL (REPLACES BROWSER PROMPT) -->
+  <div id="modalEditFolder" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
+    <div class="material-card-elevated w-full max-w-xs p-5 text-xs text-[var(--text-main)]">
+      <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
+        <i data-lucide="folder-edit" class="w-4 h-4 text-amber-400"></i>
+        <span>Change Folder Directory</span>
+      </h3>
+      <p class="text-[11px] text-[var(--text-muted)] mb-3">Enter directory label for this file:</p>
+      <input type="text" id="inputEditFolderName" placeholder="e.g. Sevak AI, whiteboard" class="w-full px-3 py-2 text-xs bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-[var(--text-main)] font-mono focus:outline-none focus:border-amber-500 mb-4">
+      <div class="flex justify-end space-x-2">
+        <button id="btnCancelEditFolder" class="px-3.5 py-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg">Cancel</button>
+        <button id="btnConfirmEditFolder" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium active:scale-95 transition">Update</button>
+      </div>
+    </div>
+  </div>
+
   <!-- RESTORING SESSION SPINNER -->
   <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm px-6 py-5 flex items-center space-x-4">
@@ -754,7 +848,7 @@
           <h3 class="text-base font-bold text-[var(--text-main)] leading-tight">ANZARG CODE STUDIO</h3>
           <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-emerald-500 mt-0.5">
             <span>Offline Support</span>
-            <span>•</span>
+            <span>�</span>
             <span>Instant Load</span>
           </div>
         </div>
@@ -885,7 +979,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.6 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.8 Master Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -916,13 +1010,13 @@
         </div>
 
         <div class="pt-3 border-t border-[var(--surface-border)] text-center text-[10px] text-[var(--text-muted)] font-mono">
-          © 2026 ANZARG CODE STUDIO. All Rights Reserved.
+          � 2026 ANZARG CODE STUDIO. All Rights Reserved.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 🔒 PLAY STORE COMPLIANT PRIVACY POLICY MODAL -->
+  <!--  PLAY STORE COMPLIANT PRIVACY POLICY MODAL -->
   <div id="modalPrivacyPolicy" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -958,7 +1052,7 @@
 
       <div class="mt-4 pt-3 border-t border-[var(--surface-border)] flex items-center justify-end">
         <button id="btnUnderstoodPrivacy" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl tracking-wider uppercase transition shadow-md">
-          Understood (سمجھ گیا)
+          Understood (Samajh Gaya)
         </button>
       </div>
     </div>
@@ -1124,7 +1218,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
+  <!--  SETTINGS MODAL (WITH CYBER ANIMATION STYLE SWITCHER) -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
@@ -1147,7 +1241,7 @@
             <div>
               <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
                 <span>Studio Logo</span>
-                <span class="text-[10px] text-cyan-400 font-normal">✏️ Adjust</span>
+                <span class="text-[10px] text-cyan-400 font-normal"> Adjust</span>
               </div>
               <div class="text-[10px] text-[var(--text-muted)]">Upload, Pinch-Zoom & Crop</div>
             </div>
@@ -1171,7 +1265,7 @@
             <div>
               <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
                 <span>Drawer Banner</span>
-                <span class="text-[10px] text-emerald-400 font-normal">✏️ Adjust</span>
+                <span class="text-[10px] text-emerald-400 font-normal"> Adjust</span>
               </div>
               <div class="text-[10px] text-[var(--text-muted)]">Selfie / Photo Cover</div>
             </div>
@@ -1188,6 +1282,19 @@
 
         <input type="file" id="inputProfileFile" accept="image/*" class="hidden">
         <input type="file" id="inputBannerFile" accept="image/*" class="hidden">
+
+        <!--  CYBER ANIMATION SELECTOR -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-[var(--text-main)]">Dock Animation Style</div>
+            <div class="text-[10px] text-[var(--text-muted)]">Keyboard opening animation</div>
+          </div>
+          <select id="settingSelectAnimStyle" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2 py-1 text-[var(--text-main)] focus:outline-none">
+            <option value="sweep">Cyber Terminal Sweep (A)</option>
+            <option value="matrix">Matrix Slide & Drop (B)</option>
+            <option value="hybrid">Ultra Hybrid (A + B)</option>
+          </select>
+        </div>
 
         <div class="flex items-center justify-between">
           <div>
@@ -1220,14 +1327,6 @@
             <div class="text-[11px] text-[var(--text-muted)]">Left gutter numbering</div>
           </div>
           <input type="checkbox" id="settingCheckLines" checked class="accent-cyan-500 rounded cursor-pointer">
-        </div>
-
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="font-medium text-[var(--text-main)]">Mini Accessory Bar</div>
-            <div class="text-[11px] text-[var(--text-muted)]">Top virtual symbol keys row</div>
-          </div>
-          <input type="checkbox" id="settingCheckAccessory" checked class="accent-cyan-500 rounded cursor-pointer">
         </div>
 
         <div class="p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/20 flex items-center justify-between">
@@ -1328,13 +1427,13 @@
       </div>
     </div>
   </div>
-      <script>
-    // ==========================================
-    // CENTRALIZED APP CONFIG
-    // ==========================================
+    <script>
+    // =========================================================================
+    // ANZARG CODE STUDIO - ULTRA PRECISION JAVASCRIPT ENGINE (v6.8)
+    // =========================================================================
     const APP_CONFIG = {
-      version: '6.6',
-      edition: 'Professional Edition'
+      version: '6.8',
+      edition: 'Master Edition'
     };
 
     const DB_NAME = 'ANZARG_STUDIO_DB';
@@ -1428,7 +1527,7 @@
       }
     }
 
-    // 🌟 SMART FOLDER AUTO-SCANNER ENGINE
+    //  SMART FOLDER AUTO-SCANNER ENGINE
     function detectProjectFolder(fileName, content) {
       if (!content) return 'Internal Storage';
       
@@ -1472,6 +1571,7 @@
     let gutter = null;
     let syntaxCode = null;
     let syntaxPre = null;
+    let badgeLineCol = null;
 
     const historyStack = [];
     let historyIndex = -1;
@@ -1482,14 +1582,16 @@
       fontSize: 13,
       lineNumbers: true,
       wordWrap: false,
-      miniBar: true
+      miniBar: true,
+      actionBar: true,
+      animStyle: 'sweep' // 'sweep' | 'matrix' | 'hybrid'
     };
 
     let deferredInstallPrompt = null;
     let isCtrlPressed = false;
     let isAltPressed = false;
 
-    // 🌟 100% RELIABLE ZERO-PERMISSION CLIPBOARD ENGINE (Works on Android Local URIs)
+    //  100% RELIABLE ZERO-PERMISSION CLIPBOARD ENGINE
     function executeClipboardCopy(text) {
       if (!text) return;
       let copied = false;
@@ -1515,7 +1617,24 @@
       triggerToast("Path Copied: " + text);
     }
 
-    // 🚀 ANDROID "OPEN WITH" FILE LAUNCH RECEIVER
+    //  REALTIME CURSOR POSITION BADGE UPDATE (Ln X, Col Y)
+    function updateCursorIndicator() {
+      if (!textarea || !badgeLineCol) return;
+      const pos = textarea.selectionStart;
+      const text = textarea.value.substring(0, pos);
+      const lines = text.split('\n');
+      const currentLine = lines.length;
+      const currentCol = lines[lines.length - 1].length + 1;
+      badgeLineCol.textContent = `Ln ${currentLine}, Col ${currentCol}`;
+
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      if (cur) {
+        cur.cursorPos = pos;
+        cur.scrollTop = textarea.scrollTop;
+      }
+    }
+
+    //  ANDROID "OPEN WITH" FILE LAUNCH RECEIVER
     function setupLaunchQueueReceiver() {
       if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         window.launchQueue.setConsumer(async (launchParams) => {
@@ -1668,7 +1787,8 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
+        updateCursorIndicator();
         markActiveModified();
       }
     }
@@ -1680,7 +1800,8 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
+        updateCursorIndicator();
         markActiveModified();
       }
     }
@@ -1710,7 +1831,9 @@
       gutter.textContent = numbersStr;
     }
 
-    function updateSyntaxHighlighting() {
+    //  FAST INPUT THROTTLE BUFFER (20,000+ Lines Smooth Performance)
+    let syntaxHighlightTimer = null;
+    function updateSyntaxHighlightingFast() {
       if (!syntaxCode || !textarea) return;
       const code = textarea.value;
       const cur = fileTabs.find(t => t.id === activeFileId);
@@ -1724,9 +1847,13 @@
       syntaxCode.className = `language-${lang}`;
       syntaxCode.textContent = code + (code.endsWith('\n') ? ' ' : '');
       
-      if (window.Prism) {
-        Prism.highlightElement(syntaxCode);
-      }
+      clearTimeout(syntaxHighlightTimer);
+      syntaxHighlightTimer = setTimeout(() => {
+        if (window.Prism) {
+          Prism.highlightElement(syntaxCode);
+        }
+        runBackgroundCodeDiagnostics();
+      }, 40);
     }
 
     function markActiveModified() {
@@ -1767,7 +1894,235 @@
         await storeSave('workspace_tabs', serializedTabs);
         await storeSave('workspace_active_id', activeFileId);
         await storeSave('workspace_settings', userSettings);
-      }, 300);
+      }, 400);
+    }
+
+    // =========================================================================
+    //  SMART CODE DIAGNOSTICS & 1-TAP AUTO-FIX ENGINE (LINTER)
+    // =========================================================================
+    let currentDiagnosticFix = null;
+
+    function runBackgroundCodeDiagnostics() {
+      if (!textarea) return;
+      const code = textarea.value;
+      const dotWarn = document.getElementById('dotDiagnosticWarning');
+      
+      const report = analyzeCodeErrors(code);
+      if (dotWarn) {
+        if (report.hasError) {
+          dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 animate-ping';
+        } else {
+          dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0';
+        }
+      }
+    }
+
+    function analyzeCodeErrors(code) {
+      if (!code.trim()) return { hasError: false };
+
+      // Check 1: HTML Tag Hierarchy & Unclosed Tags
+      const tagsOpen = [];
+      const tagRegex = /<\/?([a-zA-Z0-9\-]+)(?:\s+[^>]*)?>/g;
+      let match;
+      const selfClosing = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
+
+      while ((match = tagRegex.exec(code)) !== null) {
+        const fullTag = match[0];
+        const tagName = match[1].toLowerCase();
+
+        if (selfClosing.has(tagName) || fullTag.endsWith('/>')) continue;
+
+        if (fullTag.startsWith('</')) {
+          if (tagsOpen.length > 0 && tagsOpen[tagsOpen.length - 1].tag === tagName) {
+            tagsOpen.pop();
+          } else {
+            const linesBefore = code.substring(0, match.index).split('\n');
+            return {
+              hasError: true,
+              type: 'Unexpected Closing Tag',
+              line: linesBefore.length,
+              col: linesBefore[linesBefore.length - 1].length + 1,
+              message: `Mismatched closing tag </${tagName}>.`,
+              fixType: 'remove_tag',
+              index: match.index,
+              tagLength: fullTag.length
+            };
+          }
+        } else {
+          tagsOpen.push({ tag: tagName, index: match.index });
+        }
+      }
+
+      if (tagsOpen.length > 0) {
+        const lastUnclosed = tagsOpen[tagsOpen.length - 1];
+        const linesBefore = code.substring(0, lastUnclosed.index).split('\n');
+        return {
+          hasError: true,
+          type: 'Unclosed HTML Tag',
+          line: linesBefore.length,
+          col: linesBefore[linesBefore.length - 1].length + 1,
+          message: `Missing closing tag </${lastUnclosed.tag}>.`,
+          fixType: 'append_tag',
+          tagName: lastUnclosed.tag
+        };
+      }
+
+      // Check 2: Bracket Balance ({}, (), [])
+      const bracketStack = [];
+      for (let i = 0; i < code.length; i++) {
+        const char = code[i];
+        if (char === '{' || char === '(' || char === '[') {
+          bracketStack.push({ char, i });
+        } else if (char === '}' || char === ')' || char === ']') {
+          if (bracketStack.length === 0) {
+            const lines = code.substring(0, i).split('\n');
+            return {
+              hasError: true,
+              type: 'Extra Bracket',
+              line: lines.length,
+              col: lines[lines.length - 1].length + 1,
+              message: `Extra unexpected closing bracket '${char}'.`,
+              fixType: 'remove_bracket',
+              index: i
+            };
+          }
+          const last = bracketStack.pop();
+          const matchPair = (last.char === '{' && char === '}') || (last.char === '(' && char === ')') || (last.char === '[' && char === ']');
+          if (!matchPair) {
+            const lines = code.substring(0, i).split('\n');
+            return {
+              hasError: true,
+              type: 'Mismatched Bracket',
+              line: lines.length,
+              col: lines[lines.length - 1].length + 1,
+              message: `Expected matching bracket for '${last.char}', got '${char}'.`,
+              fixType: 'none'
+            };
+          }
+        }
+      }
+
+      if (bracketStack.length > 0) {
+        const unclosedBracket = bracketStack.pop();
+        const expected = unclosedBracket.char === '{' ? '}' : unclosedBracket.char === '(' ? ')' : ']';
+        const lines = code.substring(0, unclosedBracket.i).split('\n');
+        return {
+          hasError: true,
+          type: 'Unclosed Bracket',
+          line: lines.length,
+          col: lines[lines.length - 1].length + 1,
+          message: `Unclosed '${unclosedBracket.char}'. Missing '${expected}'.`,
+          fixType: 'append_bracket',
+          bracket: expected
+        };
+      }
+
+      return { hasError: false };
+    }
+
+    function openDiagnosticModal() {
+      const modal = document.getElementById('modalDiagnosticReport');
+      const box = document.getElementById('boxDiagnosticContent');
+      const btnFix = document.getElementById('btnDiagnosticAutoFix');
+      if (!modal || !box || !textarea) return;
+
+      const report = analyzeCodeErrors(textarea.value);
+      box.innerHTML = '';
+
+      if (!report.hasError) {
+        box.innerHTML = `
+          <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1">
+            <div class="text-sm font-bold text-emerald-400"> Code Clean & 100% Valid</div>
+            <p class="text-[11px] text-[var(--text-muted)]">No unclosed tags, syntax gaps, or bracket errors found!</p>
+          </div>
+        `;
+        if (btnFix) btnFix.classList.add('hidden');
+        currentDiagnosticFix = null;
+      } else {
+        box.innerHTML = `
+          <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl space-y-1 font-mono">
+            <div class="flex justify-between items-center text-rose-400 font-bold">
+              <span> ${report.type}</span>
+              <span class="text-[10px] bg-rose-950/60 px-2 py-0.5 rounded border border-rose-500/40">Ln ${report.line}, Col ${report.col}</span>
+            </div>
+            <p class="text-[11px] text-[var(--text-main)] pt-1">${report.message}</p>
+            <p class="text-[10px] text-amber-400">Impact: Code might fail to render properly in browser preview.</p>
+          </div>
+        `;
+        if (btnFix) {
+          btnFix.classList.remove('hidden');
+          btnFix.innerHTML = `<i data-lucide="wand-2" class="w-3.5 h-3.5"></i><span>1-Tap Auto-Fix (Ln ${report.line})</span>`;
+        }
+        currentDiagnosticFix = report;
+      }
+
+      modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function executeAutoFix() {
+      if (!currentDiagnosticFix || !textarea) return;
+      const modal = document.getElementById('modalDiagnosticReport');
+
+      if (currentDiagnosticFix.fixType === 'append_tag') {
+        insertTextAtCursor(`\n</${currentDiagnosticFix.tagName}>`);
+        triggerToast(`Auto-healed: Added </${currentDiagnosticFix.tagName}>`);
+      } else if (currentDiagnosticFix.fixType === 'remove_tag') {
+        const val = textarea.value;
+        textarea.value = val.substring(0, currentDiagnosticFix.index) + val.substring(currentDiagnosticFix.index + currentDiagnosticFix.tagLength);
+        triggerToast("Auto-healed: Removed extra closing tag");
+      } else if (currentDiagnosticFix.fixType === 'append_bracket') {
+        insertTextAtCursor(currentDiagnosticFix.bracket);
+        triggerToast(`Auto-healed: Added '${currentDiagnosticFix.bracket}'`);
+      } else if (currentDiagnosticFix.fixType === 'remove_bracket') {
+        const val = textarea.value;
+        textarea.value = val.substring(0, currentDiagnosticFix.index) + val.substring(currentDiagnosticFix.index + 1);
+        triggerToast("Auto-healed: Removed extra bracket");
+      }
+
+      updateLineNumbers();
+      updateSyntaxHighlightingFast();
+      updateCursorIndicator();
+      markActiveModified();
+      if (modal) modal.classList.add('hidden');
+    }
+
+    //  1-TAP BEAUTIFY / INDENT SYNTAX FORMATTER
+    function autoFormatCurrentDocument() {
+      if (!textarea) return;
+      let code = textarea.value;
+      if (!code.trim()) return;
+
+      let formatted = '';
+      let indentLevel = 0;
+      const indentStr = '    ';
+      const lines = code.split('\n');
+
+      for (let rawLine of lines) {
+        let line = rawLine.trim();
+        if (!line) {
+          formatted += '\n';
+          continue;
+        }
+
+        if (line.match(/^<\/(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr))/) || line.startsWith('}') || line.startsWith(']')) {
+          indentLevel = Math.max(0, indentLevel - 1);
+        }
+
+        formatted += indentStr.repeat(indentLevel) + line + '\n';
+
+        if (line.match(/<(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr|\/|!))[^>]+[^\/]>/) && !line.includes('</') || line.endsWith('{') || line.endsWith('[')) {
+          indentLevel++;
+        }
+      }
+
+      textarea.value = formatted.trimEnd();
+      updateLineNumbers();
+      updateSyntaxHighlightingFast();
+      updateCursorIndicator();
+      markActiveModified();
+      recordHistory();
+      triggerToast("Code Formatted Cleanly! ");
     }
 
     function initNativeEditor() {
@@ -1775,6 +2130,7 @@
       gutter = document.getElementById('lineNumbersGutter');
       syntaxCode = document.getElementById('syntaxHighlightCode');
       syntaxPre = document.getElementById('syntaxHighlightPre');
+      badgeLineCol = document.getElementById('badgeLineCol');
 
       if (!textarea) return;
 
@@ -1792,7 +2148,8 @@
       let historyTimer = null;
       textarea.addEventListener('input', () => {
         markActiveModified();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
+        updateCursorIndicator();
 
         clearTimeout(lineDebounce);
         lineDebounce = setTimeout(updateLineNumbers, 80);
@@ -1803,6 +2160,12 @@
         }, 400);
       });
 
+      // Realtime Cursor Tracking Listeners
+      textarea.addEventListener('click', updateCursorIndicator);
+      textarea.addEventListener('keyup', updateCursorIndicator);
+      textarea.addEventListener('focus', updateCursorIndicator);
+
+      //  SMART AUTO-CLOSING BRACKETS & TAG HEALER
       textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
           e.preventDefault();
@@ -1810,16 +2173,35 @@
           const end = textarea.selectionEnd;
           textarea.setRangeText("    ", start, end, "end");
           updateLineNumbers();
-          updateSyntaxHighlighting();
+          updateSyntaxHighlightingFast();
+          updateCursorIndicator();
           markActiveModified();
           recordHistory();
+          return;
+        }
+
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[e.key]) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          if (start === end) {
+            e.preventDefault();
+            const closeChar = pairs[e.key];
+            textarea.setRangeText(e.key + closeChar, start, end, 'end');
+            textarea.setSelectionRange(start + 1, start + 1);
+            updateLineNumbers();
+            updateSyntaxHighlightingFast();
+            updateCursorIndicator();
+            markActiveModified();
+            recordHistory();
+          }
         }
       });
 
       applySettingsStyles();
     }
 
-    // 🌟 REALTIME ADDRESS BAR SYNC ENGINE
+    //  REALTIME ADDRESS BAR SYNC ENGINE
     function updateAddressHeader(tab) {
       if (!tab) return;
       const breadcrumb = document.getElementById('breadcrumbPathDisplay');
@@ -1847,7 +2229,7 @@
         }`;
 
         const nameSpan = document.createElement('span');
-        nameSpan.textContent = tab.name + (tab.isModified ? ' •' : '');
+        nameSpan.textContent = tab.name + (tab.isModified ? ' �' : '');
         nameSpan.className = 'max-w-[130px] truncate';
         tabEl.appendChild(nameSpan);
 
@@ -1890,12 +2272,12 @@
         textarea.value = target.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
         historyStack.length = 0;
         historyIndex = -1;
         recordHistory();
 
-        // 🌟 Protected Cursor & Scroll Position
+        //  Tab Switch Cursor & Viewport Precision Restore
         setTimeout(() => {
           const validPos = Math.min(target.cursorPos || 0, textarea.value.length);
           try {
@@ -1904,7 +2286,8 @@
               textarea.scrollTop = target.scrollTop;
             }
           } catch(e){}
-        }, 10);
+          updateCursorIndicator();
+        }, 15);
       }
       renderTabStrip();
       scheduleAutoSave();
@@ -1925,7 +2308,8 @@
         if (textarea) textarea.value = nextTab.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
+        updateCursorIndicator();
       }
       renderTabStrip();
       scheduleAutoSave();
@@ -1938,9 +2322,27 @@
       textarea.setRangeText(text, start, end, 'end');
       textarea.focus();
       updateLineNumbers();
-      updateSyntaxHighlighting();
+      updateSyntaxHighlightingFast();
+      updateCursorIndicator();
       markActiveModified();
       recordHistory();
+    }
+
+    // =========================================================================
+    //  DUAL DOCK INDEPENDENT CONTROLLER (ROW 1 & ROW 2 CYBER ANIMATIONS)
+    // =========================================================================
+    function applyDockAnimation(element, styleType) {
+      element.classList.remove('anim-cyber-sweep', 'anim-matrix-stagger');
+      void element.offsetWidth; // Force DOM Reflow for animation restart
+
+      if (styleType === 'sweep') {
+        element.classList.add('anim-cyber-sweep');
+      } else if (styleType === 'matrix') {
+        element.classList.add('anim-matrix-stagger');
+      } else if (styleType === 'hybrid') {
+        element.classList.add('anim-cyber-sweep');
+        element.classList.add('anim-matrix-stagger');
+      }
     }
 
     function setupAccessoryKeys() {
@@ -2000,7 +2402,7 @@
               const clipText = await navigator.clipboard.readText();
               if (clipText) {
                 insertTextAtCursor(clipText);
-                triggerToast("Pasted 📋");
+                triggerToast("Pasted ");
                 return;
               }
             }
@@ -2017,6 +2419,7 @@
           textarea.focus();
           const start = textarea.selectionStart;
           if (start > 0) textarea.setSelectionRange(start - 1, start - 1);
+          updateCursorIndicator();
         });
       }
 
@@ -2026,17 +2429,19 @@
           textarea.focus();
           const end = textarea.selectionEnd;
           if (end < textarea.value.length) textarea.setSelectionRange(end + 1, end + 1);
+          updateCursorIndicator();
         });
       }
 
+      //  ROW 1 (DEV KEYS) INDEPENDENT MINIMIZE / MAXIMIZE
       const accessoryRow = document.getElementById('accessoryBar');
-      const btnToggle = document.getElementById('btnToggleAccessoryBar');
-      const btnRestore = document.getElementById('btnRestoreAccessoryBar');
+      const btnToggleRow1 = document.getElementById('btnToggleAccessoryBar');
+      const btnRestoreRow1 = document.getElementById('btnRestoreAccessoryBar');
 
-      if (btnToggle && accessoryRow) {
-        btnToggle.addEventListener('click', () => {
+      if (btnToggleRow1 && accessoryRow) {
+        btnToggleRow1.addEventListener('click', () => {
           accessoryRow.classList.add('hidden');
-          if (btnRestore) btnRestore.classList.remove('hidden');
+          if (btnRestoreRow1) btnRestoreRow1.classList.remove('hidden');
           userSettings.miniBar = false;
           const chk = document.getElementById('settingCheckAccessory');
           if (chk) chk.checked = false;
@@ -2044,13 +2449,39 @@
         });
       }
 
-      if (btnRestore && accessoryRow) {
-        btnRestore.addEventListener('click', () => {
+      if (btnRestoreRow1 && accessoryRow) {
+        btnRestoreRow1.addEventListener('click', () => {
           accessoryRow.classList.remove('hidden');
-          btnRestore.classList.add('hidden');
+          btnRestoreRow1.classList.add('hidden');
           userSettings.miniBar = true;
+          applyDockAnimation(accessoryRow, userSettings.animStyle);
           const chk = document.getElementById('settingCheckAccessory');
           if (chk) chk.checked = true;
+          scheduleAutoSave();
+        });
+      }
+
+      //  ROW 2 (ACTION BAR) INDEPENDENT MINIMIZE / MAXIMIZE
+      const bottomBar = document.getElementById('bottomQuickEditBar');
+      const btnMinimizeRow2 = document.getElementById('btnMinimizeActionBar');
+      const btnRestoreRow2 = document.getElementById('btnRestoreActionBar');
+
+      if (btnMinimizeRow2 && bottomBar) {
+        btnMinimizeRow2.addEventListener('click', () => {
+          bottomBar.classList.add('action-bar-minimized');
+          if (btnRestoreRow2) btnRestoreRow2.classList.remove('hidden');
+          userSettings.actionBar = false;
+          scheduleAutoSave();
+          triggerToast("Action bar minimized (Full Code View)");
+        });
+      }
+
+      if (btnRestoreRow2 && bottomBar) {
+        btnRestoreRow2.addEventListener('click', () => {
+          bottomBar.classList.remove('action-bar-minimized');
+          btnRestoreRow2.classList.add('hidden');
+          userSettings.actionBar = true;
+          applyDockAnimation(bottomBar, userSettings.animStyle);
           scheduleAutoSave();
         });
       }
@@ -2079,7 +2510,8 @@
             textarea.value = val.substring(0, start - 2) + val.substring(start);
             textarea.setSelectionRange(start - 2, start - 2);
             updateLineNumbers();
-            updateSyntaxHighlighting();
+            updateSyntaxHighlightingFast();
+            updateCursorIndicator();
             markActiveModified();
           }
         });
@@ -2099,6 +2531,7 @@
           } else {
             insertTextAtCursor('</>');
           }
+          updateCursorIndicator();
         });
       }
 
@@ -2138,6 +2571,7 @@
               textarea.focus();
               textarea.setSelectionRange(match.index, match.index + match[0].length);
               modal.classList.add('hidden');
+              updateCursorIndicator();
               triggerToast("Found match!");
             } else {
               triggerToast("Text not found!");
@@ -2160,7 +2594,8 @@
           if (selText.toLowerCase() === q.toLowerCase()) {
             textarea.setRangeText(rep, start, end, 'end');
             updateLineNumbers();
-            updateSyntaxHighlighting();
+            updateSyntaxHighlightingFast();
+            updateCursorIndicator();
             markActiveModified();
             recordHistory();
             triggerToast("Replaced!");
@@ -2180,7 +2615,8 @@
             const regex = new RegExp(pattern, flags);
             textarea.value = textarea.value.replace(regex, rep);
             updateLineNumbers();
-            updateSyntaxHighlighting();
+            updateSyntaxHighlightingFast();
+            updateCursorIndicator();
             markActiveModified();
             recordHistory();
             modal.classList.add('hidden');
@@ -2223,7 +2659,7 @@
       }
     }
 
-    // 🔒 SMART SAVE & OVERWRITE ENGINE WITH USER SAFETY
+    //  SMART SAVE & OVERWRITE ENGINE WITH USER SAFETY
     async function executeSaveWorkflow(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur || !textarea) return false;
@@ -2470,7 +2906,9 @@
         'modalEncoding',
         'modalStats',
         'modalColor',
-        'modalPathDetails'
+        'modalPathDetails',
+        'modalEditFolder',
+        'modalDiagnosticReport'
       ];
 
       let closedAny = false;
@@ -2699,7 +3137,7 @@
           await storeRemove('studio_custom_logo');
           await storeRemove('studio_custom_logo_orig');
           applyLogoToUI(null);
-          triggerToast("Logo Removed! 🗑️");
+          triggerToast("Logo Removed! ");
         });
       }
 
@@ -2710,7 +3148,7 @@
           await storeRemove('studio_custom_banner');
           await storeRemove('studio_custom_banner_orig');
           applyBannerToUI(null);
-          triggerToast("Banner Removed! 🗑️");
+          triggerToast("Banner Removed! ");
         });
       }
 
@@ -2820,11 +3258,11 @@
           if (currentCropTarget === 'logo') {
             await storeSave('studio_custom_logo', dataUrl);
             applyLogoToUI(dataUrl);
-            triggerToast("Logo Saved Successfully! ✅");
+            triggerToast("Logo Saved Successfully! ");
           } else {
             await storeSave('studio_custom_banner', dataUrl);
             applyBannerToUI(dataUrl);
-            triggerToast("Banner Saved Successfully! ✅");
+            triggerToast("Banner Saved Successfully! ");
           }
 
           closeCropper();
@@ -2907,7 +3345,8 @@
             if (textarea) textarea.value = fileTabs[0].content;
             lastRenderedLinesCount = 0;
             updateLineNumbers();
-            updateSyntaxHighlighting();
+            updateSyntaxHighlightingFast();
+            updateCursorIndicator();
             renderTabStrip();
             scheduleAutoSave();
 
@@ -3003,7 +3442,7 @@
         document.body.classList.add('theme-cyberpunk');
       }
 
-      updateSyntaxHighlighting();
+      updateSyntaxHighlightingFast();
     }
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -3012,7 +3451,7 @@
       }
     });
 
-    // 🌟 SETUP [VIEW] MODAL & GUARANTEED COPY ACTIONS
+    //  SETUP [VIEW] MODAL & PURE IN-APP FOLDER EDIT ACTIONS
     function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
       const btnClose = document.getElementById('btnClosePathModal');
@@ -3021,7 +3460,12 @@
       const btnQuickCopy = document.getElementById('btnQuickCopyPath');
       const btnViewTrigger = document.getElementById('btnViewPathModal');
       const breadcrumbWrap = document.getElementById('addressBreadcrumbWrapper');
-      const btnEditFolder = document.getElementById('btnEditFolderDirect');
+      
+      const btnTriggerEditFolder = document.getElementById('btnTriggerCustomFolderModal');
+      const modalEditFolder = document.getElementById('modalEditFolder');
+      const inputEditFolder = document.getElementById('inputEditFolderName');
+      const btnCancelEditFolder = document.getElementById('btnCancelEditFolder');
+      const btnConfirmEditFolder = document.getElementById('btnConfirmEditFolder');
 
       const openInspector = () => {
         const cur = fileTabs.find(t => t.id === activeFileId);
@@ -3060,19 +3504,36 @@
       if (btnCopyModal) btnCopyModal.addEventListener('click', copyCurrentPath);
       if (btnQuickCopy) btnQuickCopy.addEventListener('click', copyCurrentPath);
 
-      if (btnEditFolder) {
-        btnEditFolder.addEventListener('click', () => {
+      if (btnTriggerEditFolder && modalEditFolder && inputEditFolder) {
+        btnTriggerEditFolder.addEventListener('click', () => {
           const cur = fileTabs.find(t => t.id === activeFileId);
           if (!cur) return;
-          const newFolder = prompt("Enter Folder Name (e.g., Sevak AI, whiteboard):", cur.folderName);
-          if (newFolder !== null && newFolder.trim() !== '') {
-            cur.folderName = newFolder.trim();
-            cur.filePath = `/storage/emulated/0/${cur.folderName}/${cur.name}`;
-            updateAddressHeader(cur);
-            openInspector();
-            scheduleAutoSave();
-            triggerToast(`Folder updated to: ${cur.folderName}`);
-          }
+          inputEditFolder.value = (cur.folderName && cur.folderName !== 'Internal Storage') ? cur.folderName : '';
+          modalEditFolder.classList.remove('hidden');
+          inputEditFolder.focus();
+        });
+      }
+
+      if (btnCancelEditFolder && modalEditFolder) {
+        btnCancelEditFolder.addEventListener('click', () => {
+          modalEditFolder.classList.add('hidden');
+        });
+      }
+
+      if (btnConfirmEditFolder && modalEditFolder && inputEditFolder) {
+        btnConfirmEditFolder.addEventListener('click', () => {
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          if (!cur) return;
+          const val = inputEditFolder.value.trim() || 'Internal Storage';
+          cur.folderName = val;
+          const folderPrefix = (val !== 'Internal Storage') ? `${val}/` : '';
+          cur.filePath = `/storage/emulated/0/${folderPrefix}${cur.name}`;
+          
+          updateAddressHeader(cur);
+          openInspector();
+          modalEditFolder.classList.add('hidden');
+          scheduleAutoSave();
+          triggerToast(`Folder updated to: ${val}`);
         });
       }
     }
@@ -3253,6 +3714,7 @@
             textarea.focus();
             textarea.setSelectionRange(pos, pos);
             modalGoToLine.classList.add('hidden');
+            updateCursorIndicator();
           } else {
             triggerToast("Invalid line number");
           }
@@ -3345,11 +3807,13 @@
         const chkLines = document.getElementById('settingCheckLines');
         const chkAcc = document.getElementById('settingCheckAccessory');
         const lblFont = document.getElementById('labelSettingFontSize');
+        const selAnim = document.getElementById('settingSelectAnimStyle');
 
         if (selTheme) selTheme.value = userSettings.theme;
         if (chkLines) chkLines.checked = userSettings.lineNumbers;
         if (chkAcc) chkAcc.checked = userSettings.miniBar;
         if (lblFont) lblFont.textContent = `${userSettings.fontSize}px`;
+        if (selAnim) selAnim.value = userSettings.animStyle;
         modalSet.classList.remove('hidden');
       }
 
@@ -3379,6 +3843,15 @@
         const m = document.getElementById('modalSettings');
         if (m) m.classList.add('hidden');
       });
+
+      const selAnimStyle = document.getElementById('settingSelectAnimStyle');
+      if (selAnimStyle) {
+        selAnimStyle.addEventListener('change', (e) => {
+          userSettings.animStyle = e.target.value;
+          scheduleAutoSave();
+          triggerToast(`Animation: ${e.target.options[e.target.selectedIndex].text}`);
+        });
+      }
 
       const selTheme = document.getElementById('settingSelectTheme');
       if (selTheme) {
@@ -3466,6 +3939,43 @@
           exportTabAsZip(true);
         });
       }
+
+      // Diagnostic & Formatter Menus
+      const optDiagnose = document.getElementById('optDiagnoseCode');
+      const dNavDiagnose = document.getElementById('dNavTriggerDiagnosis');
+      const badgeDiagnose = document.getElementById('badgeCursorWrapper');
+      const optFormat = document.getElementById('optFormatCode');
+
+      if (optDiagnose) optDiagnose.addEventListener('click', () => {
+        const menu = document.getElementById('menuOverflowDropdown');
+        if (menu) menu.classList.add('hidden');
+        openDiagnosticModal();
+      });
+
+      if (dNavDiagnose) dNavDiagnose.addEventListener('click', () => {
+        closeDrawerPanel();
+        openDiagnosticModal();
+      });
+
+      if (badgeDiagnose) badgeDiagnose.addEventListener('click', openDiagnosticModal);
+
+      if (optFormat) optFormat.addEventListener('click', () => {
+        const menu = document.getElementById('menuOverflowDropdown');
+        if (menu) menu.classList.add('hidden');
+        autoFormatCurrentDocument();
+      });
+
+      const btnCloseDiag = document.getElementById('btnCloseDiagnosticModal');
+      const btnCloseDiag2 = document.getElementById('btnDiagnosticClose');
+      const btnFixDiag = document.getElementById('btnDiagnosticAutoFix');
+
+      if (btnCloseDiag) btnCloseDiag.addEventListener('click', () => {
+        document.getElementById('modalDiagnosticReport').classList.add('hidden');
+      });
+      if (btnCloseDiag2) btnCloseDiag2.addEventListener('click', () => {
+        document.getElementById('modalDiagnosticReport').classList.add('hidden');
+      });
+      if (btnFixDiag) btnFixDiag.addEventListener('click', executeAutoFix);
     }
 
     function applySettingsStyles() {
@@ -3484,7 +3994,7 @@
       if (gutter) gutter.classList.toggle('hidden', !userSettings.lineNumbers);
       lastRenderedLinesCount = 0;
       updateLineNumbers();
-      updateSyntaxHighlighting();
+      updateSyntaxHighlightingFast();
     }
 
     let activePreviewBlobUrl = null;
@@ -3777,19 +4287,21 @@
       if (currentTab && textarea) {
         textarea.value = currentTab.content || '';
         updateLineNumbers();
-        updateSyntaxHighlighting();
+        updateSyntaxHighlightingFast();
         recordHistory();
 
-        // 🌟 Auto-Session Tab Restore with Protected Cursor & Scroll
+        //  100% RELIABLE AUTO-SESSION CURSOR & SCROLL RESTORE (140ms Protected Delay)
         setTimeout(() => {
           const validPos = Math.min(currentTab.cursorPos || 0, textarea.value.length);
           try {
+            textarea.focus();
             textarea.setSelectionRange(validPos, validPos);
             if (currentTab.scrollTop !== undefined) {
               textarea.scrollTop = currentTab.scrollTop;
             }
           } catch(e){}
-        }, 30);
+          updateCursorIndicator();
+        }, 140);
       }
 
       renderTabStrip();
@@ -3803,11 +4315,21 @@
       setupLogoAndBannerCropperStudio();
       setupZipImporter();
 
+      // Dual Dock Bars Initialization & State Sync
       const accBar = document.getElementById('accessoryBar');
-      const resBtn = document.getElementById('btnRestoreAccessoryBar');
-      if (accBar && resBtn) {
+      const resBtnRow1 = document.getElementById('btnRestoreAccessoryBar');
+      if (accBar && resBtnRow1) {
         accBar.classList.toggle('hidden', !userSettings.miniBar);
-        resBtn.classList.toggle('hidden', userSettings.miniBar);
+        resBtnRow1.classList.toggle('hidden', userSettings.miniBar);
+        if (userSettings.miniBar) applyDockAnimation(accBar, userSettings.animStyle);
+      }
+
+      const bottomBar = document.getElementById('bottomQuickEditBar');
+      const resBtnRow2 = document.getElementById('btnRestoreActionBar');
+      if (bottomBar && resBtnRow2) {
+        bottomBar.classList.toggle('action-bar-minimized', !userSettings.actionBar);
+        resBtnRow2.classList.toggle('hidden', userSettings.actionBar);
+        if (userSettings.actionBar) applyDockAnimation(bottomBar, userSettings.animStyle);
       }
 
       setTimeout(() => {

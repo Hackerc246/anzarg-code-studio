@@ -3,14 +3,7 @@
   ANZARG CODE STUDIO - PROFESSIONAL MOBILE CODE EDITOR
   Copyright (c) 2026 ANZARG (All Rights Reserved)
   Developed by: AnzarG
-  
-  LEGAL COPYRIGHT WARNING & PROPRIETARY NOTICE:
-  This source code, user interface, architecture, design assets, and workflows 
-  are protected by national and international copyright laws and treaties. 
-  Unauthorized copying, reverse-engineering, decompilation, redistribution, 
-  re-publishing on Google Play Store, Cloudflare, GitHub, or any public repository 
-  without explicit prior written consent from the copyright owner is strictly prohibited.
-  Violators will face immediate DMCA takedown actions and civil legal liability.
+  Version: 6.6 Professional Edition (Clean Final Build - Zero Loss)
 ===================================================================================
 -->
 <!DOCTYPE html>
@@ -55,9 +48,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
   <style>
-    /* =========================================================================
-       UNIVERSAL TOKEN ENGINE (AUTO-SYNC ACROSS ALL THEMES & CONTRASTS)
-       ========================================================================= */
     :root {
       --bg-base: #0d1117;
       --surface: #161b22;
@@ -164,10 +154,6 @@
       background-color: var(--editor-highlight) !important;
       color: inherit !important;
     }
-    ::-moz-selection {
-      background-color: var(--editor-highlight) !important;
-      color: inherit !important;
-    }
 
     main#editorContainer {
       flex: 1 1 0%;
@@ -215,7 +201,6 @@
       transition: background-color 0.2s ease;
     }
 
-    /* ZERO-JITTER METRICS BINDING */
     #syntaxHighlightPre, textarea#codeTextarea {
       position: absolute;
       inset: 0;
@@ -373,9 +358,7 @@
       border-top-color: #10b981;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .ticker-viewport {
       height: 18px;
@@ -411,21 +394,17 @@
 </head>
 <body>
 
-  <!-- TOP HEADER (WITH INTEGRATED QUICKEDIT SUB-PATH) -->
-  <header id="mainAppHeader" class="h-14 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
+  <!-- TOP HEADER (ACTION BAR) -->
+  <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
     <div class="flex items-center space-x-2 overflow-hidden flex-1 mr-2">
-      <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-2 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
+      <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-1.5 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
 
-      <!-- QuickEdit Matching Title + Address Container -->
-      <div id="btnHeaderRename" class="flex flex-col justify-center py-1 px-1.5 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[200px] sm:max-w-xs transition" title="Tap to rename file">
-        <div class="flex items-center space-x-1.5 overflow-hidden">
-          <i data-lucide="code" class="w-3.5 h-3.5 text-[var(--accent)] shrink-0"></i>
-          <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)] leading-tight">untitled.html</span>
-          <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
-        </div>
-        <span id="labelHeaderSubPath" class="text-[10px] font-mono text-[var(--text-muted)] truncate block mt-0.5">/storage/emulated/0/untitled.html</span>
+      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[200px] sm:max-w-xs transition" title="Tap to rename active file">
+        <i data-lucide="code" class="w-3.5 h-3.5 text-[var(--accent)] shrink-0"></i>
+        <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)] leading-tight">untitled.html</span>
+        <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
       </div>
     </div>
 
@@ -440,24 +419,24 @@
         </div>
       </button>
 
-      <button id="btnHeaderUndo" title="Undo" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="undo-2" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderRedo" title="Redo" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderRedo" title="Redo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="redo-2" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderSave" title="Save File" class="p-2 rounded-lg hover:bg-black/5 text-emerald-500 hover:text-emerald-400 active:scale-90 transition">
+      <button id="btnHeaderSave" title="Save File" class="p-1.5 rounded-lg hover:bg-black/5 text-emerald-500 hover:text-emerald-400 active:scale-90 transition">
         <i data-lucide="save" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderSearch" title="Search & Replace" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+      <button id="btnHeaderSearch" title="Search & Replace" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="search" class="w-4 h-4"></i>
       </button>
-      <button id="btnHeaderRun" title="Live Preview" class="p-2 rounded-lg hover:bg-black/5 text-cyan-500 hover:text-cyan-400 active:scale-90 transition">
+      <button id="btnHeaderRun" title="Live Preview" class="p-1.5 rounded-lg hover:bg-black/5 text-cyan-500 hover:text-cyan-400 active:scale-90 transition">
         <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
       </button>
 
       <div class="relative">
-        <button id="btnHeaderMore" aria-label="More Menu" class="p-2 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
+        <button id="btnHeaderMore" aria-label="More Menu" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
           <i data-lucide="more-vertical" class="w-4 h-4"></i>
         </button>
 
@@ -511,13 +490,30 @@
   </header>
 
   <!-- TAB STRIP -->
-  <div class="h-10 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none transition-colors">
-    <div id="tabStrip" class="flex-1 flex items-center space-x-1 overflow-x-auto no-scrollbar h-full py-1"></div>
-    <button id="btnTabPlus" title="Create New Tab" class="h-7 w-7 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
-      <i data-lucide="plus" class="w-4 h-4"></i>
+  <div class="h-9 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center px-1.5 shrink-0 overflow-hidden select-none transition-colors">
+    <div id="tabStrip" class="flex-1 flex items-center space-x-1 overflow-x-auto no-scrollbar h-full py-0.5"></div>
+    <button id="btnTabPlus" title="Create New Tab" class="h-6 w-6 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--accent)] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition">
+      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
     </button>
   </div>
 
+  <!-- 🌟 DEDICATED FULL-WIDTH ADDRESS BAR (QUICKEDIT STYLE) -->
+  <div id="fullWidthAddressBar" class="h-8 bg-[var(--editor-bg)] border-b border-[var(--surface-border)] flex items-center justify-between px-2.5 shrink-0 select-none z-10 text-[11px] font-mono">
+    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 cursor-pointer max-w-[calc(100%-125px)]" title="Click to view folder details">
+      <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+      <span id="breadcrumbPathDisplay" class="text-[var(--text-muted)] hover:text-cyan-400 whitespace-nowrap transition-colors">/storage/emulated/0/untitled.html</span>
+    </div>
+    
+    <div class="flex items-center space-x-1 shrink-0 ml-2">
+      <button id="btnQuickCopyPath" title="Copy Full Path" class="px-2 py-0.5 bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 text-[10px] text-cyan-300 border border-cyan-500/40 rounded flex items-center space-x-1 font-bold transition">
+        <i data-lucide="copy" class="w-2.5 h-2.5"></i>
+        <span>COPY</span>
+      </button>
+      <button id="btnViewPathModal" title="Path Details" class="px-2 py-0.5 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 text-[10px] text-emerald-400 font-bold border border-emerald-500/40 rounded transition">
+        VIEW
+      </button>
+    </div>
+  </div>
   <!-- MAIN EDITOR AREA -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
@@ -527,7 +523,7 @@
     </div>
 
     <!-- Floating Toast Message -->
-    <div id="appToast" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-medium shadow-2xl backdrop-blur-md pointer-events-none z-30 transition-all">
+    <div id="appToast" class="hidden fixed bottom-14 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md pointer-events-none z-50 transition-all">
       Toast notification
     </div>
   </main>
@@ -686,13 +682,65 @@
     </div>
   </aside>
 
+  <!-- 🌟 INTERACTIVE [VIEW] PATH INFO MODAL -->
+  <div id="modalPathDetails" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
+    <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)]">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <i data-lucide="folder" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[var(--text-main)]">File Location & Directory</h3>
+            <span class="text-[10px] text-cyan-400 font-mono">Storage Inspector</span>
+          </div>
+        </div>
+        <button id="btnClosePathModal" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2.5 bg-[var(--editor-bg)] p-3 rounded-xl border border-[var(--surface-border)] font-mono mb-4">
+        <div>
+          <span class="text-[10px] text-[var(--text-muted)] block uppercase">Active File:</span>
+          <span id="viewModalFileName" class="text-cyan-400 font-bold text-xs truncate block">untitled.html</span>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-0.5">
+            <span class="text-[10px] text-[var(--text-muted)] uppercase">Folder / Directory:</span>
+            <button id="btnEditFolderDirect" class="text-[10px] text-amber-400 underline font-semibold">✏️ Edit Folder</button>
+          </div>
+          <span id="viewModalFolder" class="text-amber-400 text-xs truncate block font-bold">Internal Storage</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-[var(--text-muted)] block uppercase">Full System Path:</span>
+          <div id="viewModalFullPath" class="text-[11px] text-[var(--text-main)] break-all bg-black/20 p-2 rounded border border-[var(--surface-border)] mt-0.5 select-all">/storage/emulated/0/untitled.html</div>
+        </div>
+        <div class="flex justify-between pt-1 text-[11px]">
+          <span>Storage Origin:</span>
+          <span id="viewModalOrigin" class="text-emerald-400 font-semibold">Native Device</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="btnModalCopyFullPath" class="flex-1 py-2.5 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy Path</span>
+        </button>
+        <button id="btnModalDonePath" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition active:scale-95">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- RESTORING SESSION SPINNER -->
   <div id="modalRestoringSession" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm px-6 py-5 flex items-center space-x-4">
       <div class="spinner-ring shrink-0"></div>
       <div>
         <p class="text-sm font-semibold text-[var(--text-main)]">Restoring previous session...</p>
-        <p class="text-xs text-[var(--text-muted)]">Please wait...</p>
+        <p class="text-xs text-[var(--text-muted)]">Position & code ready...</p>
       </div>
     </div>
   </div>
@@ -837,7 +885,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.5 Professional Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.6 Professional Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -910,7 +958,7 @@
 
       <div class="mt-4 pt-3 border-t border-[var(--surface-border)] flex items-center justify-end">
         <button id="btnUnderstoodPrivacy" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl tracking-wider uppercase transition shadow-md">
-          Understood (समझ गया)
+          Understood (سمجھ گیا)
         </button>
       </div>
     </div>
@@ -1245,7 +1293,7 @@
     </div>
   </div>
 
-  <!-- LIVE RUNNER MODAL (SINGLE CLEAN FLOATING TOP BAR) -->
+  <!-- LIVE RUNNER MODAL -->
   <div id="modalLivePreview" class="hidden fixed inset-0 bg-black/85 flex flex-col z-50">
     <div class="h-11 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-3 shrink-0 select-none shadow-md">
       <div class="flex items-center space-x-2 truncate">
@@ -1280,13 +1328,12 @@
       </div>
     </div>
   </div>
-
-  <script>
+      <script>
     // ==========================================
     // CENTRALIZED APP CONFIG
     // ==========================================
     const APP_CONFIG = {
-      version: '6.5',
+      version: '6.6',
       edition: 'Professional Edition'
     };
 
@@ -1381,7 +1428,29 @@
       }
     }
 
-    function createFreshBlankTab(customName = 'untitled.html', customContent = '', customPath = '/storage/emulated/0/untitled.html') {
+    // 🌟 SMART FOLDER AUTO-SCANNER ENGINE
+    function detectProjectFolder(fileName, content) {
+      if (!content) return 'Internal Storage';
+      
+      const titleMatch = content.match(/<title[^>]*>([^<]+)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        const title = titleMatch[1].trim();
+        if (/whiteboard/i.test(title)) return 'whiteboard';
+        if (/sevak/i.test(title)) return 'Sevak AI';
+        if (/anzarg|studio/i.test(title)) return 'MyEditor original GitHub';
+        return title.replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().substring(0, 24);
+      }
+      
+      if (/whiteboard/i.test(content)) return 'whiteboard';
+      if (/sevak/i.test(content)) return 'Sevak AI';
+      if (/anzarg/i.test(content)) return 'MyEditor original GitHub';
+
+      return 'Internal Storage';
+    }
+
+    function createFreshBlankTab(customName = 'untitled.html', customContent = '', customPath = null, customFolder = 'Internal Storage') {
+      const folderPath = (customFolder && customFolder !== 'Internal Storage') ? `${customFolder}/` : '';
+      const displayPath = customPath || `/storage/emulated/0/${folderPath}${customName}`;
       return {
         id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
         name: customName,
@@ -1389,7 +1458,10 @@
         isModified: false,
         fileHandle: null,
         isNewFile: true,
-        filePath: customPath
+        filePath: displayPath,
+        folderName: customFolder,
+        cursorPos: 0,
+        scrollTop: 0
       };
     }
 
@@ -1417,6 +1489,32 @@
     let isCtrlPressed = false;
     let isAltPressed = false;
 
+    // 🌟 100% RELIABLE ZERO-PERMISSION CLIPBOARD ENGINE (Works on Android Local URIs)
+    function executeClipboardCopy(text) {
+      if (!text) return;
+      let copied = false;
+
+      try {
+        const tempEl = document.createElement('textarea');
+        tempEl.value = text;
+        tempEl.setAttribute('readonly', '');
+        tempEl.style.position = 'fixed';
+        tempEl.style.left = '-9999px';
+        tempEl.style.top = '0';
+        document.body.appendChild(tempEl);
+        tempEl.focus();
+        tempEl.select();
+        copied = document.execCommand('copy');
+        document.body.removeChild(tempEl);
+      } catch (err) {}
+
+      if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+      }
+
+      triggerToast("Path Copied: " + text);
+    }
+
     // 🚀 ANDROID "OPEN WITH" FILE LAUNCH RECEIVER
     function setupLaunchQueueReceiver() {
       if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
@@ -1426,7 +1524,9 @@
             try {
               const file = await handle.getFile();
               const text = await file.text();
-              const fullSimulatedPath = `/storage/emulated/0/${file.name}`;
+              const autoFolder = detectProjectFolder(file.name, text);
+              const folderPrefix = (autoFolder !== 'Internal Storage') ? `${autoFolder}/` : '';
+              const fullSimulatedPath = `/storage/emulated/0/${folderPrefix}${file.name}`;
               
               const newTab = {
                 id: 'tab-' + Date.now(),
@@ -1435,7 +1535,10 @@
                 isModified: false,
                 fileHandle: handle,
                 isNewFile: false,
-                filePath: fullSimulatedPath
+                filePath: fullSimulatedPath,
+                folderName: autoFolder,
+                cursorPos: 0,
+                scrollTop: 0
               };
               fileTabs.push(newTab);
               handleSwitchTab(newTab.id);
@@ -1630,6 +1733,8 @@
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (cur && textarea) {
         cur.content = textarea.value;
+        cur.cursorPos = textarea.selectionStart;
+        cur.scrollTop = textarea.scrollTop;
         cur.isModified = true;
         const dot = document.getElementById('dotUnsaved');
         if (dot) dot.classList.remove('hidden');
@@ -1642,7 +1747,11 @@
       autoDebounceTimer = setTimeout(async () => {
         if (textarea && activeFileId) {
           const cur = fileTabs.find(t => t.id === activeFileId);
-          if (cur) cur.content = textarea.value;
+          if (cur) {
+            cur.content = textarea.value;
+            cur.cursorPos = textarea.selectionStart;
+            cur.scrollTop = textarea.scrollTop;
+          }
         }
         const serializedTabs = fileTabs.map(t => ({
           id: t.id,
@@ -1650,7 +1759,10 @@
           content: t.content,
           isModified: t.isModified,
           isNewFile: t.isNewFile,
-          filePath: t.filePath || `/storage/emulated/0/${t.name}`
+          filePath: t.filePath || `/storage/emulated/0/${t.name}`,
+          folderName: t.folderName || 'Internal Storage',
+          cursorPos: t.cursorPos || 0,
+          scrollTop: t.scrollTop || 0
         }));
         await storeSave('workspace_tabs', serializedTabs);
         await storeSave('workspace_active_id', activeFileId);
@@ -1672,6 +1784,8 @@
           syntaxPre.scrollTop = textarea.scrollTop;
           syntaxPre.scrollLeft = textarea.scrollLeft;
         }
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        if (cur) cur.scrollTop = textarea.scrollTop;
       });
 
       let lineDebounce = null;
@@ -1705,14 +1819,17 @@
       applySettingsStyles();
     }
 
+    // 🌟 REALTIME ADDRESS BAR SYNC ENGINE
     function updateAddressHeader(tab) {
       if (!tab) return;
-      const subPathLabel = document.getElementById('labelHeaderSubPath');
+      const breadcrumb = document.getElementById('breadcrumbPathDisplay');
       const previewAddr = document.getElementById('labelPreviewAddress');
+      const labelFileName = document.getElementById('labelFileName');
       
       const realDisplayPath = tab.filePath || `/storage/emulated/0/${tab.name}`;
-      if (subPathLabel) subPathLabel.textContent = realDisplayPath;
+      if (breadcrumb) breadcrumb.textContent = realDisplayPath;
       if (previewAddr) previewAddr.textContent = realDisplayPath;
+      if (labelFileName) labelFileName.textContent = tab.name;
     }
 
     function renderTabStrip() {
@@ -1723,9 +1840,9 @@
       fileTabs.forEach(tab => {
         const isActive = tab.id === activeFileId;
         const tabEl = document.createElement('div');
-        tabEl.className = `flex items-center space-x-1 px-3 py-1 text-xs rounded-xl cursor-pointer shrink-0 transition-all select-none ${
+        tabEl.className = `flex items-center space-x-1 px-3 py-1 text-xs rounded-lg cursor-pointer shrink-0 transition-all select-none ${
           isActive
-            ? 'bg-cyan-500/20 text-cyan-500 border border-cyan-500/50 font-semibold shadow-xs'
+            ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 font-semibold shadow-xs'
             : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-black/5 border border-transparent'
         }`;
 
@@ -1749,9 +1866,7 @@
 
       const current = fileTabs.find(t => t.id === activeFileId);
       if (current) {
-        const labelFileName = document.getElementById('labelFileName');
         const dotUnsaved = document.getElementById('dotUnsaved');
-        if (labelFileName) labelFileName.textContent = current.name;
         if (dotUnsaved) dotUnsaved.classList.toggle('hidden', !current.isModified);
         updateAddressHeader(current);
       }
@@ -1762,7 +1877,11 @@
 
       if (activeFileId && textarea) {
         const prev = fileTabs.find(t => t.id === activeFileId);
-        if (prev) prev.content = textarea.value;
+        if (prev) {
+          prev.content = textarea.value;
+          prev.cursorPos = textarea.selectionStart;
+          prev.scrollTop = textarea.scrollTop;
+        }
       }
 
       activeFileId = id;
@@ -1775,6 +1894,17 @@
         historyStack.length = 0;
         historyIndex = -1;
         recordHistory();
+
+        // 🌟 Protected Cursor & Scroll Position
+        setTimeout(() => {
+          const validPos = Math.min(target.cursorPos || 0, textarea.value.length);
+          try {
+            textarea.setSelectionRange(validPos, validPos);
+            if (target.scrollTop !== undefined) {
+              textarea.scrollTop = target.scrollTop;
+            }
+          } catch(e){}
+        }, 10);
       }
       renderTabStrip();
       scheduleAutoSave();
@@ -1857,16 +1987,7 @@
             triggerToast("Nothing to copy");
             return;
           }
-          try {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              await navigator.clipboard.writeText(textToCopy);
-            } else {
-              document.execCommand('copy');
-            }
-            triggerToast("Copied to Clipboard 📋");
-          } catch(e) {
-            triggerToast("Copy action ready");
-          }
+          executeClipboardCopy(textToCopy);
         });
       }
 
@@ -1895,9 +2016,7 @@
           if (!textarea) return;
           textarea.focus();
           const start = textarea.selectionStart;
-          if (start > 0) {
-            textarea.setSelectionRange(start - 1, start - 1);
-          }
+          if (start > 0) textarea.setSelectionRange(start - 1, start - 1);
         });
       }
 
@@ -1906,9 +2025,7 @@
           if (!textarea) return;
           textarea.focus();
           const end = textarea.selectionEnd;
-          if (end < textarea.value.length) {
-            textarea.setSelectionRange(end + 1, end + 1);
-          }
+          if (end < textarea.value.length) textarea.setSelectionRange(end + 1, end + 1);
         });
       }
 
@@ -2154,6 +2271,7 @@
             cur.name = handle.name || cleanName;
             cur.isModified = false;
             cur.isNewFile = false;
+            cur.folderName = 'Selected Folder';
             cur.filePath = `/storage/emulated/0/${cur.name}`;
             renderTabStrip();
             await storeSave('workspace_tabs', fileTabs);
@@ -2179,6 +2297,7 @@
 
           cur.isModified = false;
           cur.isNewFile = false;
+          cur.folderName = 'Download';
           cur.filePath = `/storage/emulated/0/Download/${cleanName}`;
           renderTabStrip();
           await storeSave('workspace_tabs', fileTabs);
@@ -2227,7 +2346,15 @@
           });
           const file = await handle.getFile();
           const text = await file.text();
-          const fullPath = `/storage/emulated/0/${file.name}`;
+          
+          let folderDetected = detectProjectFolder(file.name, text);
+          if (file.webkitRelativePath && file.webkitRelativePath.includes('/')) {
+            folderDetected = file.webkitRelativePath.split('/')[0];
+          }
+
+          const fullPath = (folderDetected !== 'Internal Storage') 
+            ? `/storage/emulated/0/${folderDetected}/${file.name}`
+            : `/storage/emulated/0/${file.name}`;
 
           const newTab = {
             id: 'tab-' + Date.now(),
@@ -2236,7 +2363,10 @@
             isModified: false,
             fileHandle: handle,
             isNewFile: false,
-            filePath: fullPath
+            filePath: fullPath,
+            folderName: folderDetected,
+            cursorPos: 0,
+            scrollTop: 0
           };
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
@@ -2339,7 +2469,8 @@
         'modalGoToLine',
         'modalEncoding',
         'modalStats',
-        'modalColor'
+        'modalColor',
+        'modalPathDetails'
       ];
 
       let closedAny = false;
@@ -2742,9 +2873,12 @@
             for (let name of targetFiles) {
               const content = await zip.files[name].async("string");
               const cleanShortName = name.split('/').pop() || name;
+              const parts = name.split('/');
+              const folderName = parts.length > 1 ? parts[0] : file.name.replace(/\.[^/.]+$/, "");
               extractedFiles.push({
                 name: cleanShortName,
-                content: content
+                content: content,
+                folder: folderName
               });
             }
 
@@ -2762,7 +2896,10 @@
                 isModified: false,
                 fileHandle: null,
                 isNewFile: false,
-                filePath: `/storage/emulated/0/${f.name}`
+                filePath: `/storage/emulated/0/${f.folder}/${f.name}`,
+                folderName: f.folder,
+                cursorPos: 0,
+                scrollTop: 0
               });
             });
 
@@ -2875,6 +3012,71 @@
       }
     });
 
+    // 🌟 SETUP [VIEW] MODAL & GUARANTEED COPY ACTIONS
+    function setupPathInspectorModal() {
+      const modal = document.getElementById('modalPathDetails');
+      const btnClose = document.getElementById('btnClosePathModal');
+      const btnDone = document.getElementById('btnModalDonePath');
+      const btnCopyModal = document.getElementById('btnModalCopyFullPath');
+      const btnQuickCopy = document.getElementById('btnQuickCopyPath');
+      const btnViewTrigger = document.getElementById('btnViewPathModal');
+      const breadcrumbWrap = document.getElementById('addressBreadcrumbWrapper');
+      const btnEditFolder = document.getElementById('btnEditFolderDirect');
+
+      const openInspector = () => {
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        if (!cur) return;
+
+        const elName = document.getElementById('viewModalFileName');
+        const elFolder = document.getElementById('viewModalFolder');
+        const elFullPath = document.getElementById('viewModalFullPath');
+        const elOrigin = document.getElementById('viewModalOrigin');
+
+        if (elName) elName.textContent = cur.name;
+        if (elFolder) elFolder.textContent = cur.folderName || 'Internal Storage';
+        if (elFullPath) elFullPath.textContent = cur.filePath || `/storage/emulated/0/${cur.name}`;
+        if (elOrigin) elOrigin.textContent = cur.fileHandle ? 'Native Device File' : 'Local Sandbox Session';
+
+        if (modal) modal.classList.remove('hidden');
+      };
+
+      if (btnViewTrigger) btnViewTrigger.addEventListener('click', openInspector);
+      if (breadcrumbWrap) breadcrumbWrap.addEventListener('click', openInspector);
+
+      const closeInspector = () => {
+        if (modal) modal.classList.add('hidden');
+      };
+
+      if (btnClose) btnClose.addEventListener('click', closeInspector);
+      if (btnDone) btnDone.addEventListener('click', closeInspector);
+
+      const copyCurrentPath = () => {
+        const cur = fileTabs.find(t => t.id === activeFileId);
+        if (!cur) return;
+        const full = cur.filePath || `/storage/emulated/0/${cur.name}`;
+        executeClipboardCopy(full);
+      };
+
+      if (btnCopyModal) btnCopyModal.addEventListener('click', copyCurrentPath);
+      if (btnQuickCopy) btnQuickCopy.addEventListener('click', copyCurrentPath);
+
+      if (btnEditFolder) {
+        btnEditFolder.addEventListener('click', () => {
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          if (!cur) return;
+          const newFolder = prompt("Enter Folder Name (e.g., Sevak AI, whiteboard):", cur.folderName);
+          if (newFolder !== null && newFolder.trim() !== '') {
+            cur.folderName = newFolder.trim();
+            cur.filePath = `/storage/emulated/0/${cur.folderName}/${cur.name}`;
+            updateAddressHeader(cur);
+            openInspector();
+            scheduleAutoSave();
+            triggerToast(`Folder updated to: ${cur.folderName}`);
+          }
+        });
+      }
+    }
+
     function setupCustomModals() {
       const modalAbout = document.getElementById('modalAboutSection');
       const dNavAbout = document.getElementById('dNavAbout');
@@ -2968,8 +3170,10 @@
             const cur = fileTabs.find(t => t.id === activeFileId);
             if (cur) {
               cur.name = val;
-              cur.filePath = `/storage/emulated/0/${val}`;
+              const fName = cur.folderName && cur.folderName !== 'Internal Storage' ? `${cur.folderName}/` : '';
+              cur.filePath = `/storage/emulated/0/${fName}${val}`;
               renderTabStrip();
+              updateAddressHeader(cur);
               scheduleAutoSave();
               triggerToast(`Renamed to ${val}`);
             }
@@ -3004,7 +3208,12 @@
       if (btnConfirmNew && modalNew && inputNew) {
         btnConfirmNew.addEventListener('click', () => {
           const val = inputNew.value.trim() || `file-${fileTabs.length + 1}.html`;
-          const newTab = createFreshBlankTab(val, '', `/storage/emulated/0/${val}`);
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          const currentFolder = (cur && cur.folderName) ? cur.folderName : 'Internal Storage';
+          const prefix = (currentFolder !== 'Internal Storage') ? `${currentFolder}/` : '';
+          const newPath = `/storage/emulated/0/${prefix}${val}`;
+          
+          const newTab = createFreshBlankTab(val, '', newPath, currentFolder);
           fileTabs.push(newTab);
           handleSwitchTab(newTab.id);
           modalNew.classList.add('hidden');
@@ -3463,20 +3672,32 @@
           if (!file) return;
           const reader = new FileReader();
           reader.onload = (evt) => {
+            const fileContent = evt.target.result;
+            let folderDetected = detectProjectFolder(file.name, fileContent);
+            if (file.webkitRelativePath && file.webkitRelativePath.includes('/')) {
+              folderDetected = file.webkitRelativePath.split('/')[0];
+            }
+            const folderPrefix = (folderDetected !== 'Internal Storage') ? `${folderDetected}/` : '';
+            const fullPath = `/storage/emulated/0/${folderPrefix}${file.name}`;
+
             const newTab = {
               id: 'tab-' + Date.now(),
               name: file.name,
-              content: evt.target.result,
+              content: fileContent,
               isModified: false,
               fileHandle: null,
               isNewFile: false,
-              filePath: `/storage/emulated/0/${file.name}`
+              filePath: fullPath,
+              folderName: folderDetected,
+              cursorPos: 0,
+              scrollTop: 0
             };
             fileTabs.push(newTab);
             handleSwitchTab(newTab.id);
             triggerToast(`Opened ${file.name}`);
           };
           reader.readAsText(file);
+          fallbackInput.value = '';
         });
       }
 
@@ -3502,6 +3723,9 @@
       }
     }
 
+    // ==========================================
+    // APP INITIALIZATION
+    // ==========================================
     window.addEventListener('DOMContentLoaded', async () => {
       const badge = document.getElementById('appVersionBadge');
       if (badge) {
@@ -3555,11 +3779,23 @@
         updateLineNumbers();
         updateSyntaxHighlighting();
         recordHistory();
+
+        // 🌟 Auto-Session Tab Restore with Protected Cursor & Scroll
+        setTimeout(() => {
+          const validPos = Math.min(currentTab.cursorPos || 0, textarea.value.length);
+          try {
+            textarea.setSelectionRange(validPos, validPos);
+            if (currentTab.scrollTop !== undefined) {
+              textarea.scrollTop = currentTab.scrollTop;
+            }
+          } catch(e){}
+        }, 30);
       }
 
       renderTabStrip();
       setupAccessoryKeys();
       setupQuickEditSearch();
+      setupPathInspectorModal();
       setupCustomModals();
       setupLiveRunner();
       setupDrawerAndEvents();

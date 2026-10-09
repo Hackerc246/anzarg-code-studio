@@ -3,7 +3,7 @@
   ANZARG CODE STUDIO - PROFESSIONAL MOBILE CODE EDITOR
   Copyright (c) 2026 ANZARG (All Rights Reserved)
   Developed by: AnzarG
-  Version: 6.9 Ultra Smooth (Lag-Free 6000+ Lines • Animated PWA • Pinned Docks)
+  Version: 7.0 Master Edition (Smart Patch Studio • Zero-Lag 20,000+ Lines)
 ===================================================================================
 -->
 <!DOCTYPE html>
@@ -155,7 +155,7 @@
       color: inherit !important;
     }
 
-    /*  6000+ LINES ULTRA-PERFORMANCE CONTAINMENT */
+    /*  20,000+ LINES HARDWARE ACCELERATED LAYOUT */
     main#editorContainer {
       flex: 1 1 0%;
       display: flex;
@@ -427,7 +427,6 @@
       }
     }
 
-    /* Bottom Action Bar Smooth Slide */
     .action-bar-transition {
       transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, max-height 0.24s ease;
       will-change: transform, opacity;
@@ -439,7 +438,7 @@
       max-height: 0 !important;
     }
 
-    /*  PINNED STICKY MINIMIZE ARROW (Right Edge Par Hamesha Dikhne Wala) */
+    /*  PINNED STICKY MINIMIZE ARROW */
     .sticky-dock-pin {
       position: sticky;
       right: 0;
@@ -501,12 +500,17 @@
         </button>
 
         <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-60 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
-          <button id="optDiagnoseCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-semibold">
-            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+          <!--  SMART CODE INJECTOR & PATCH STUDIO -->
+          <button id="optOpenPatchStudio" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-bold">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+            <span>Smart Code Patch Studio</span>
+          </button>
+          <button id="optDiagnoseCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-emerald-400 font-medium">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
             <span>Diagnose & Auto-Fix</span>
           </button>
-          <button id="optFormatCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-emerald-400">
-            <i data-lucide="wand-2" class="w-4 h-4 text-emerald-400"></i>
+          <button id="optFormatCode" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="wand-2" class="w-4 h-4 text-amber-400"></i>
             <span>Auto-Format Code</span>
           </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
@@ -566,15 +570,21 @@
     </button>
   </div>
 
-  <!--  DEDICATED FULL-WIDTH ADDRESS BAR (WITH REALTIME LINE/COL BADGE & WARNING DOT) -->
+  <!--  DEDICATED FULL-WIDTH ADDRESS BAR (WITH REALTIME LINE/COL BADGE & QUICK PATCH CHIP) -->
   <div id="fullWidthAddressBar" class="h-8 bg-[var(--editor-bg)] border-b border-[var(--surface-border)] flex items-center justify-between px-2.5 shrink-0 select-none z-10 text-[11px] font-mono">
-    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 cursor-pointer max-w-[calc(100%-195px)]" title="Click to view folder details">
+    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 cursor-pointer max-w-[calc(100%-255px)]" title="Click to view folder details">
       <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
       <span id="breadcrumbPathDisplay" class="text-[var(--text-muted)] hover:text-cyan-400 whitespace-nowrap transition-colors">/storage/emulated/0/untitled.html</span>
     </div>
     
-    <div class="flex items-center space-x-1.5 shrink-0 ml-2">
-      <!--  REALTIME CURSOR BADGE WITH DIAGNOSTIC DOT -->
+    <div class="flex items-center space-x-1 shrink-0 ml-1">
+      <!--  QUICK CODE PATCH BUTTON -->
+      <button id="btnHeaderQuickPatch" title="Smart Code Patch Studio" class="px-1.5 py-0.5 bg-cyan-500/15 hover:bg-cyan-500/25 active:scale-95 text-[10px] text-cyan-300 border border-cyan-500/40 rounded flex items-center space-x-1 font-bold transition">
+        <i data-lucide="layers" class="w-2.5 h-2.5"></i>
+        <span>PATCH</span>
+      </button>
+
+      <!-- Realtime Cursor Badge with Diagnostic Dot -->
       <div id="badgeCursorWrapper" class="flex items-center space-x-1 px-1.5 py-0.5 bg-black/10 border border-cyan-500/20 rounded cursor-pointer" title="Tap to diagnose code">
         <span id="dotDiagnosticWarning" class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
         <span id="badgeLineCol" class="text-[10px] text-cyan-400 font-mono font-bold tracking-tight">Ln 1, Col 1</span>
@@ -603,7 +613,7 @@
     </div>
   </main>
 
-  <!--  ROW 1: SMART DEVELOPER VIRTUAL KEYBOARD STRIP (WITH PINNED STICKY MINIMIZE ARROW) -->
+  <!--  ROW 1: SMART DEVELOPER VIRTUAL KEYBOARD STRIP (WITH PINNED MINIMIZE ARROW) -->
   <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 relative transition-colors">
     <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">CTRL</button>
     <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALT</button>
@@ -651,7 +661,7 @@
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
 
-    <!--  PINNED STICKY MINIMIZE ARROW (HAMESHA VISIBLE RAHEGA) -->
+    <!--  PINNED STICKY MINIMIZE ARROW -->
     <div class="sticky-dock-pin flex items-center pl-1 pr-1.5 h-full">
       <button id="btnToggleAccessoryBar" title="Minimize Dev Keys" class="px-2 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs font-bold active:scale-90 transition flex items-center justify-center shadow-md">
         
@@ -688,18 +698,118 @@
     </button>
   </footer>
 
-  <!--  DUAL FLOATING RESTORE CAPSULES (FOR FULL CODE VIEW) -->
+  <!--  DUAL FLOATING RESTORE CAPSULES -->
   <div id="floatingDockCapsules" class="fixed bottom-2 right-2 flex flex-col space-y-1.5 z-30 pointer-events-auto">
-    <!-- Restore Dev Keys Capsule -->
     <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden px-2.5 py-1 bg-[var(--surface)]/95 backdrop-blur-md border border-cyan-500/50 rounded-full text-cyan-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
       <span></span>
       <span>DEV</span>
     </button>
-    <!-- Restore Action Bar Capsule -->
     <button id="btnRestoreActionBar" title="Show Action Bar" class="hidden px-2.5 py-1 bg-[var(--surface)]/95 backdrop-blur-md border border-emerald-500/50 rounded-full text-emerald-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
       <span></span>
       <span>ACT</span>
     </button>
+  </div>
+
+  <!--  SMART CODE INJECTOR & PATCH STUDIO (THE REPLACEMENT BOX) -->
+  <div id="modalPatchStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
+    <div class="material-card-elevated w-full max-w-md p-4 text-xs text-[var(--text-main)] flex flex-col max-h-[92vh]">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-2.5 border-b border-[var(--surface-border)] mb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-cyan-400">Smart Code Patch Studio</h3>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">1-Tap Precision Auto-Injector</span>
+          </div>
+        </div>
+        <button id="btnClosePatchStudio" class="text-[var(--text-muted)] hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="flex items-center space-x-1 p-1 bg-black/20 rounded-xl mb-3 border border-[var(--surface-border)]">
+        <button id="tabModeBatch" class="flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition">
+          Batch Stacking
+        </button>
+        <button id="tabModeTarget" class="flex-1 py-1.5 text-center font-medium text-[11px] rounded-lg text-[var(--text-muted)] hover:text-white transition">
+          Target & Replace
+        </button>
+        <button id="tabModeLine" class="flex-1 py-1.5 text-center font-medium text-[11px] rounded-lg text-[var(--text-muted)] hover:text-white transition">
+          Line Range
+        </button>
+      </div>
+
+      <!-- Mode 1: Batch Sequential Stacking -->
+      <div id="panelModeBatch" class="space-y-2.5 flex-1 overflow-y-auto">
+        <div class="p-2.5 bg-cyan-500/5 border border-cyan-500/20 rounded-xl space-y-1">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-cyan-400 text-[11px]">Auto-Stack Detection:</span>
+            <span id="badgeCurrentBatchStatus" class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-[10px]">Ready for Next Batch</span>
+          </div>
+          <p id="labelBatchAdvice" class="text-[10px] text-[var(--text-muted)]">
+            Paste your Batch code below. The engine will automatically detect where to append it without searching line numbers.
+          </p>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase font-bold text-[var(--text-muted)] mb-1">Paste Batch Code Here:</label>
+          <textarea id="inputBatchCode" rows="6" placeholder="Paste Batch 1, Batch 2 or Batch 3 here..." class="w-full p-2.5 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 resize-none"></textarea>
+        </div>
+        <button id="btnExecuteBatchStack" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Auto-Inject Batch to File</span>
+        </button>
+      </div>
+
+      <!-- Mode 2: Search, Target & 1-Tap Replace -->
+      <div id="panelModeTarget" class="space-y-2.5 hidden flex-1 overflow-y-auto">
+        <div class="p-2 bg-black/10 rounded-xl border border-[var(--surface-border)] text-[10px] text-[var(--text-muted)]">
+          Paste the old code or function name in Box 1, and new code in Box 2. Engine will auto-swap it accurately!
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase font-bold text-rose-400 mb-1">1. Old Code / Function to Replace (Find):</label>
+          <textarea id="inputTargetOld" rows="3" placeholder="Paste old function or snippet..." class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-rose-300 focus:outline-none focus:border-rose-500 resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase font-bold text-emerald-400 mb-1">2. New Code (Replacement):</label>
+          <textarea id="inputTargetNew" rows="4" placeholder="Paste new code here..." class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+        </div>
+        <button id="btnExecuteTargetReplace" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>1-Tap Swap Code Block</span>
+        </button>
+      </div>
+
+      <!-- Mode 3: Direct Line Range Replace -->
+      <div id="panelModeLine" class="space-y-2.5 hidden flex-1 overflow-y-auto">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-[var(--text-muted)] mb-1">From Line:</label>
+            <input type="number" id="inputRangeStart" min="1" placeholder="e.g. 120" class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-[var(--text-muted)] mb-1">To Line:</label>
+            <input type="number" id="inputRangeEnd" min="1" placeholder="e.g. 145" class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase font-bold text-cyan-400 mb-1">New Code to Put in this Range:</label>
+          <textarea id="inputRangeNewCode" rows="5" placeholder="Paste code to insert between lines..." class="w-full p-2.5 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 resize-none"></textarea>
+        </div>
+        <button id="btnExecuteRangeReplace" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>Replace Line Range</span>
+        </button>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="mt-3 pt-2.5 border-t border-[var(--surface-border)] flex items-center justify-between text-[10px] text-[var(--text-muted)]">
+        <span> Automatic Undo Point Created</span>
+        <button id="btnCancelPatchStudio" class="hover:text-white">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- DRAWER OVERLAY & ASIDE PANEL -->
@@ -748,9 +858,14 @@
       <div class="h-px bg-[var(--surface-border)] my-2"></div>
       <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">Diagnostics & Tools</div>
 
-      <button id="dNavTriggerDiagnosis" class="w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
-        <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
-        <span class="font-semibold">Code Diagnostic & Auto-Fix</span>
+      <button id="dNavTriggerPatchStudio" class="w-full px-4 py-2.5 flex items-center space-x-3 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30">
+        <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+        <span class="font-bold">Smart Code Patch Studio</span>
+      </button>
+
+      <button id="dNavTriggerDiagnosis" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+        <span>Code Diagnostic & Auto-Fix</span>
       </button>
 
       <button id="dNavInstallApp" class="hidden w-full px-4 py-2.5 flex items-center space-x-3 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 active:bg-emerald-500/30">
@@ -799,9 +914,7 @@
         </button>
       </div>
 
-      <div id="boxDiagnosticContent" class="space-y-3 mb-4">
-        <!-- Dynamic diagnostic report -->
-      </div>
+      <div id="boxDiagnosticContent" class="space-y-3 mb-4"></div>
 
       <div class="flex items-center space-x-2">
         <button id="btnDiagnosticAutoFix" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition shadow-md">
@@ -867,7 +980,7 @@
     </div>
   </div>
 
-  <!--  IN-APP FOLDER EDIT MODAL (REPLACES BROWSER PROMPT) -->
+  <!--  IN-APP FOLDER EDIT MODAL -->
   <div id="modalEditFolder" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-5 text-xs text-[var(--text-main)]">
       <h3 class="text-sm font-semibold text-[var(--text-main)] mb-2 flex items-center space-x-2">
@@ -923,7 +1036,7 @@
     </div>
   </div>
 
-  <!-- IN-APP CONFIRM OVERWRITE MODAL (SAFETY POPUP) -->
+  <!-- IN-APP CONFIRM OVERWRITE MODAL -->
   <div id="modalConfirmOverwrite" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-left">
       <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-3">
@@ -945,7 +1058,7 @@
     </div>
   </div>
 
-  <!-- MATERIAL 3 DIALOG: UNIFIED EXIT MODAL (POPUP 1) -->
+  <!-- EXIT CONFIRMATION MODALS -->
   <div id="modalExitConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-left">
       <h3 class="text-lg font-bold text-[var(--text-main)] mb-1.5 tracking-tight">Exit Studio?</h3>
@@ -972,7 +1085,6 @@
     </div>
   </div>
 
-  <!-- MATERIAL 3 DIALOG: ARE YOU SURE? (POPUP 2) -->
   <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-left">
       <h3 class="text-lg font-bold text-rose-500 mb-1.5 tracking-tight">Discard Changes?</h3>
@@ -1010,7 +1122,7 @@
     </div>
   </div>
 
-  <!-- SAVED SUCCESSFULLY MATERIAL CARD -->
+  <!-- SAVED SUCCESSFULLY MODAL -->
   <div id="modalSavedSuccess" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-xs p-6 text-center">
       <div class="w-14 h-14 mx-auto mb-3.5 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-emerald-500/10">
@@ -1024,7 +1136,7 @@
     </div>
   </div>
 
-  <!-- ABOUT & POLICY MODAL -->
+  <!-- ABOUT & POLICY MODALS -->
   <div id="modalAboutSection" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -1034,7 +1146,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.9 Master Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v7.0 Master Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1071,7 +1183,6 @@
     </div>
   </div>
 
-  <!--  PLAY STORE COMPLIANT PRIVACY POLICY MODAL -->
   <div id="modalPrivacyPolicy" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs text-[var(--text-main)]">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-3">
@@ -1273,7 +1384,7 @@
     </div>
   </div>
 
-  <!--  SETTINGS MODAL (WITH CYBER ANIMATION STYLE SWITCHER) -->
+  <!-- SETTINGS MODAL -->
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
@@ -1484,11 +1595,11 @@
   </div>
     <script>
     // =========================================================================
-    // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v6.9)
+    // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v7.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '6.9',
-      edition: 'Ultra Smooth Edition'
+      version: '7.0',
+      edition: 'Master Edition'
     };
 
     const DB_NAME = 'ANZARG_STUDIO_DB';
@@ -1639,7 +1750,7 @@
       wordWrap: false,
       miniBar: true,
       actionBar: true,
-      animStyle: 'sweep' // 'sweep' | 'matrix' | 'hybrid'
+      animStyle: 'sweep'
     };
 
     let deferredInstallPrompt = null;
@@ -1738,7 +1849,7 @@
       }
     }
 
-    //  PWA INSTALL FLOW WITH ANIMATED ROLLER TICKER (8-10 SEC ROTATION)
+    //  PWA INSTALL FLOW WITH ANIMATED ROLLER TICKER
     function setupPwaInstallFlow() {
       const headerInstallBtn = document.getElementById('btnHeaderInstall');
       const drawerInstallBtn = document.getElementById('dNavInstallApp');
@@ -1761,7 +1872,6 @@
 
         if (headerInstallBtn) {
           headerInstallBtn.classList.remove('hidden');
-          // 8-10 Second Smooth Animation before compacting
           setTimeout(() => {
             if (tickerWrapper) {
               tickerWrapper.style.maxWidth = '0px';
@@ -1863,7 +1973,7 @@
       }
     }
 
-    //  ULTRA FAST LINE GUTTER RENDERER (6000+ Lines Zero-Lag)
+    //  ULTRA FAST LINE GUTTER RENDERER
     let lastRenderedLinesCount = 0;
     function updateLineNumbers() {
       if (!userSettings.lineNumbers || !textarea || !gutter) return;
@@ -1882,7 +1992,6 @@
       if (lastRenderedLinesCount === lines) return;
       lastRenderedLinesCount = lines;
 
-      // Direct string builder avoids garbage collection pauses
       let numbersStr = '';
       for (let i = 1; i <= lines; i++) {
         numbersStr += i + '\n';
@@ -1910,7 +2019,6 @@
       syntaxCode.textContent = code + (code.endsWith('\n') ? ' ' : '');
 
       clearTimeout(syntaxHighlightTimer);
-      // Adaptive throttle: if code exceeds 2500 lines, debounce gently to protect 60 FPS scrolling
       const debounceDelay = totalLines > 2500 ? 180 : 35;
       
       syntaxHighlightTimer = setTimeout(() => {
@@ -1919,7 +2027,6 @@
         }
       }, debounceDelay);
 
-      // Silent background diagnostics runs only after user stops typing
       clearTimeout(diagnosticTimer);
       diagnosticTimer = setTimeout(() => {
         runBackgroundCodeDiagnostics();
@@ -1968,6 +2075,205 @@
     }
 
     // =========================================================================
+    //  SMART CODE INJECTOR & PATCH STUDIO ENGINE (THE REPLACEMENT BOX)
+    // =========================================================================
+    function setupSmartPatchStudio() {
+      const modal = document.getElementById('modalPatchStudio');
+      const btnOpenHeader = document.getElementById('btnHeaderQuickPatch');
+      const optOpenMore = document.getElementById('optOpenPatchStudio');
+      const dNavOpen = document.getElementById('dNavTriggerPatchStudio');
+      const btnClose = document.getElementById('btnClosePatchStudio');
+      const btnCancel = document.getElementById('btnCancelPatchStudio');
+
+      const tabBatch = document.getElementById('tabModeBatch');
+      const tabTarget = document.getElementById('tabModeTarget');
+      const tabLine = document.getElementById('tabModeLine');
+
+      const panelBatch = document.getElementById('panelModeBatch');
+      const panelTarget = document.getElementById('panelModeTarget');
+      const panelLine = document.getElementById('panelModeLine');
+
+      const badgeStatus = document.getElementById('badgeCurrentBatchStatus');
+      const labelAdvice = document.getElementById('labelBatchAdvice');
+
+      const openStudio = () => {
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        updateBatchStackUI();
+      };
+
+      const closeStudio = () => {
+        if (modal) modal.classList.add('hidden');
+      };
+
+      if (btnOpenHeader) btnOpenHeader.addEventListener('click', openStudio);
+      if (optOpenMore) optOpenMore.addEventListener('click', () => {
+        const menu = document.getElementById('menuOverflowDropdown');
+        if (menu) menu.classList.add('hidden');
+        openStudio();
+      });
+      if (dNavOpen) dNavOpen.addEventListener('click', () => {
+        closeDrawerPanel();
+        openStudio();
+      });
+
+      if (btnClose) btnClose.addEventListener('click', closeStudio);
+      if (btnCancel) btnCancel.addEventListener('click', closeStudio);
+
+      // Switch Modes
+      const setMode = (mode) => {
+        [tabBatch, tabTarget, tabLine].forEach(t => {
+          t.className = 'flex-1 py-1.5 text-center font-medium text-[11px] rounded-lg text-[var(--text-muted)] hover:text-white transition';
+        });
+        [panelBatch, panelTarget, panelLine].forEach(p => p.classList.add('hidden'));
+
+        if (mode === 'batch') {
+          tabBatch.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition';
+          panelBatch.classList.remove('hidden');
+          updateBatchStackUI();
+        } else if (mode === 'target') {
+          tabTarget.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition';
+          panelTarget.classList.remove('hidden');
+        } else if (mode === 'line') {
+          tabLine.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition';
+          panelLine.classList.remove('hidden');
+        }
+      };
+
+      if (tabBatch) tabBatch.addEventListener('click', () => setMode('batch'));
+      if (tabTarget) tabTarget.addEventListener('click', () => setMode('target'));
+      if (tabLine) tabLine.addEventListener('click', () => setMode('line'));
+
+      // Check file status for Batch Stacking
+      function updateBatchStackUI() {
+        if (!textarea) return;
+        const code = textarea.value.trim();
+        const lines = textarea.value.split('\n').length;
+
+        if (!code) {
+          badgeStatus.textContent = 'Ready for Batch 1';
+          badgeStatus.className = 'px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-[10px]';
+          labelAdvice.textContent = 'Editor is empty. Paste Batch 1 below to start fresh building.';
+        } else if (!code.includes('</main>')) {
+          badgeStatus.textContent = `Batch 1 Detected (${lines} Lines)`;
+          badgeStatus.className = 'px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-mono text-[10px]';
+          labelAdvice.textContent = `Batch 1 is present. Paste Batch 2 below — engine will automatically append it at the exact end!`;
+        } else if (!code.includes('</html>')) {
+          badgeStatus.textContent = `Batch 2 Detected (${lines} Lines)`;
+          badgeStatus.className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-mono text-[10px]';
+          labelAdvice.textContent = `Batch 1 & 2 are present. Paste Batch 3 below — engine will seal the file and initialize the app!`;
+        } else {
+          badgeStatus.textContent = `File Complete (${lines} Lines)`;
+          badgeStatus.className = 'px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded font-mono text-[10px]';
+          labelAdvice.textContent = `File is completely assembled with all closing tags. You can append more script or use 'Target & Replace' mode.`;
+        }
+      }
+
+      // Execute Mode 1: Batch Stacking
+      const btnExecBatch = document.getElementById('btnExecuteBatchStack');
+      if (btnExecBatch) {
+        btnExecBatch.addEventListener('click', () => {
+          const input = document.getElementById('inputBatchCode');
+          const batchText = input ? input.value.trim() : '';
+          if (!batchText || !textarea) {
+            triggerToast("Please paste batch code first!");
+            return;
+          }
+
+          recordHistory();
+          if (!textarea.value.trim()) {
+            textarea.value = batchText;
+          } else {
+            textarea.value = textarea.value.trimEnd() + '\n' + batchText;
+          }
+
+          input.value = '';
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          updateCursorIndicator();
+          markActiveModified();
+          closeStudio();
+          triggerToast("Batch Successfully Injected! ");
+        });
+      }
+
+      // Execute Mode 2: Search, Target & 1-Tap Replace
+      const btnExecTarget = document.getElementById('btnExecuteTargetReplace');
+      if (btnExecTarget) {
+        btnExecTarget.addEventListener('click', () => {
+          const oldInput = document.getElementById('inputTargetOld');
+          const newInput = document.getElementById('inputTargetNew');
+          const oldText = oldInput ? oldInput.value.trim() : '';
+          const newText = newInput ? newInput.value.trim() : '';
+
+          if (!oldText || !textarea) {
+            triggerToast("Please paste code to find in Box 1!");
+            return;
+          }
+
+          const currentContent = textarea.value;
+          if (!currentContent.includes(oldText)) {
+            triggerToast("Target code not found in editor! Check exact characters.");
+            return;
+          }
+
+          recordHistory();
+          // Precise 1-Tap Swap
+          textarea.value = currentContent.replace(oldText, newText);
+          if (oldInput) oldInput.value = '';
+          if (newInput) newInput.value = '';
+
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          updateCursorIndicator();
+          markActiveModified();
+          closeStudio();
+          triggerToast("Code Block Replaced Successfully! ");
+        });
+      }
+
+      // Execute Mode 3: Direct Line Range Replace
+      const btnExecRange = document.getElementById('btnExecuteRangeReplace');
+      if (btnExecRange) {
+        btnExecRange.addEventListener('click', () => {
+          const startEl = document.getElementById('inputRangeStart');
+          const endEl = document.getElementById('inputRangeEnd');
+          const newCodeEl = document.getElementById('inputRangeNewCode');
+
+          const startLine = parseInt(startEl.value, 10);
+          const endLine = parseInt(endEl.value, 10);
+          const newSnippet = newCodeEl ? newCodeEl.value : '';
+
+          if (isNaN(startLine) || isNaN(endLine) || startLine > endLine || !textarea) {
+            triggerToast("Invalid Line numbers entered!");
+            return;
+          }
+
+          const lines = textarea.value.split('\n');
+          if (startLine < 1 || endLine > lines.length) {
+            triggerToast(`Line range must be between 1 and ${lines.length}`);
+            return;
+          }
+
+          recordHistory();
+          const before = lines.slice(0, startLine - 1);
+          const after = lines.slice(endLine);
+          const newLinesArray = newSnippet ? newSnippet.split('\n') : [];
+
+          textarea.value = [...before, ...newLinesArray, ...after].join('\n');
+          if (newCodeEl) newCodeEl.value = '';
+
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          updateCursorIndicator();
+          markActiveModified();
+          closeStudio();
+          triggerToast(`Lines ${startLine} to ${endLine} Replaced! `);
+        });
+      }
+    }
+
+    // =========================================================================
     //  SMART CODE DIAGNOSTICS & 1-TAP AUTO-FIX ENGINE (LINTER)
     // =========================================================================
     let currentDiagnosticFix = null;
@@ -1977,7 +2283,6 @@
       const code = textarea.value;
       const dotWarn = document.getElementById('dotDiagnosticWarning');
       
-      // If code is massive (> 3000 lines), analyze up to 40,000 chars to avoid memory lag
       const sampleCode = code.length > 80000 ? code.substring(0, 80000) : code;
       const report = analyzeCodeErrors(sampleCode);
 
@@ -1993,7 +2298,6 @@
     function analyzeCodeErrors(code) {
       if (!code.trim()) return { hasError: false };
 
-      // Check 1: HTML Tag Hierarchy & Unclosed Tags
       const tagsOpen = [];
       const tagRegex = /<\/?([a-zA-Z0-9\-]+)(?:\s+[^>]*)?>/g;
       let match;
@@ -2040,7 +2344,6 @@
         };
       }
 
-      // Check 2: Bracket Balance ({}, (), [])
       const bracketStack = [];
       for (let i = 0; i < code.length; i++) {
         const char = code[i];
@@ -2160,7 +2463,6 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    //  1-TAP BEAUTIFY / INDENT SYNTAX FORMATTER
     function autoFormatCurrentDocument() {
       if (!textarea) return;
       let code = textarea.value;
@@ -2233,12 +2535,10 @@
         }, 400);
       });
 
-      // Realtime Cursor Tracking Listeners
       textarea.addEventListener('click', updateCursorIndicator);
       textarea.addEventListener('keyup', updateCursorIndicator);
       textarea.addEventListener('focus', updateCursorIndicator);
 
-      //  SMART AUTO-CLOSING BRACKETS & TAG HEALER
       textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
           e.preventDefault();
@@ -2350,7 +2650,6 @@
         historyIndex = -1;
         recordHistory();
 
-        //  Tab Switch Cursor & Viewport Precision Restore
         setTimeout(() => {
           const validPos = Math.min(target.cursorPos || 0, textarea.value.length);
           try {
@@ -2406,7 +2705,7 @@
     // =========================================================================
     function applyDockAnimation(element, styleType) {
       element.classList.remove('anim-cyber-sweep', 'anim-matrix-stagger');
-      void element.offsetWidth; // Force Reflow to re-trigger GPU transition
+      void element.offsetWidth;
 
       if (styleType === 'sweep') {
         element.classList.add('anim-cyber-sweep');
@@ -2506,7 +2805,7 @@
         });
       }
 
-      //  ROW 1 (DEV KEYS) PINNED MINIMIZE / MAXIMIZE CONTROLLER
+      // ROW 1 PINNED CONTROLLER
       const accessoryRow = document.getElementById('accessoryBar');
       const btnToggleRow1 = document.getElementById('btnToggleAccessoryBar');
       const btnRestoreRow1 = document.getElementById('btnRestoreAccessoryBar');
@@ -2534,7 +2833,7 @@
         });
       }
 
-      //  ROW 2 (ACTION BAR) PINNED MINIMIZE / MAXIMIZE CONTROLLER
+      // ROW 2 PINNED CONTROLLER
       const bottomBar = document.getElementById('bottomQuickEditBar');
       const btnMinimizeRow2 = document.getElementById('btnMinimizeActionBar');
       const btnRestoreRow2 = document.getElementById('btnRestoreActionBar');
@@ -2732,7 +3031,6 @@
       }
     }
 
-    //  SMART SAVE & OVERWRITE ENGINE WITH USER SAFETY
     async function executeSaveWorkflow(forceSaveAs = false) {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (!cur || !textarea) return false;
@@ -2747,7 +3045,6 @@
       }
       cur.name = cleanName;
 
-      // Case A: File uploaded from device and modified -> Confirm Dialog
       if (cur.fileHandle && !cur.isNewFile && !forceSaveAs) {
         if (cur.isModified) {
           const confirmModal = document.getElementById('modalConfirmOverwrite');
@@ -2761,7 +3058,6 @@
         }
       }
 
-      // Case B: Fresh File / New / Export -> Open device storage file picker
       if (cur.isNewFile || forceSaveAs) {
         if ('showSaveFilePicker' in window) {
           try {
@@ -2792,7 +3088,6 @@
           }
         }
 
-        // Fallback Download
         try {
           const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
@@ -2981,7 +3276,8 @@
         'modalColor',
         'modalPathDetails',
         'modalEditFolder',
-        'modalDiagnosticReport'
+        'modalDiagnosticReport',
+        'modalPatchStudio'
       ];
 
       let closedAny = false;
@@ -3524,7 +3820,6 @@
       }
     });
 
-    //  SETUP [VIEW] MODAL & PURE IN-APP FOLDER EDIT ACTIONS
     function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
       const btnClose = document.getElementById('btnClosePathModal');
@@ -4387,6 +4682,7 @@
       setupExitSystem();
       setupLogoAndBannerCropperStudio();
       setupZipImporter();
+      setupSmartPatchStudio();
 
       // Dual Dock Bars Initialization & State Sync
       const accBar = document.getElementById('accessoryBar');

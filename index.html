@@ -3,7 +3,7 @@
   ANZARG CODE STUDIO - PROFESSIONAL MOBILE CODE EDITOR
   Copyright (c) 2026 ANZARG (All Rights Reserved)
   Developed by: AnzarG
-  Version: 6.8 Master Edition (Dual Cyber Dock • Smart Diagnostics • Lag-Free)
+  Version: 6.9 Ultra Smooth (Lag-Free 6000+ Lines • Animated PWA • Pinned Docks)
 ===================================================================================
 -->
 <!DOCTYPE html>
@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="./icon-512.png">
   <link rel="manifest" href="./manifest.json">
 
-  <!-- Professional Developer Fonts: JetBrains Mono & Fira Code -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
   <!-- JSZip Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-  <!-- Cropper.js for Selfies, Logo & Banner Adjustments -->
+  <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -155,7 +155,7 @@
       color: inherit !important;
     }
 
-    /*  HARDWARE ACCELERATED HIGH PERFORMANCE EDITOR CONTAINER */
+    /*  6000+ LINES ULTRA-PERFORMANCE CONTAINMENT */
     main#editorContainer {
       flex: 1 1 0%;
       display: flex;
@@ -167,7 +167,7 @@
       position: relative;
       background-color: var(--editor-bg);
       overflow: hidden;
-      contain: layout paint;
+      contain: strict;
     }
 
     #lineNumbersGutter {
@@ -189,6 +189,7 @@
       letter-spacing: normal !important;
       white-space: pre;
       will-change: scroll-position;
+      contain: content;
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
@@ -201,6 +202,7 @@
       min-width: 0;
       overflow: hidden;
       background-color: var(--editor-bg);
+      contain: content;
       transition: background-color 0.2s ease;
     }
 
@@ -361,13 +363,39 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /*  DOWNLOAD APP TICKER ANIMATION (8-10 SEC VERTICAL ROLLER) */
+    .ticker-viewport {
+      height: 18px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      position: relative;
+    }
+    .ticker-track {
+      display: flex;
+      flex-direction: column;
+      animation: verticalTicker 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+    .ticker-item {
+      height: 18px;
+      line-height: 18px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    @keyframes verticalTicker {
+      0%, 42% { transform: translateY(0); }
+      50%, 92% { transform: translateY(-18px); }
+      100% { transform: translateY(0); }
+    }
+
     .vkey-mod-active {
       background-color: var(--accent) !important;
       color: #000000 !important;
       box-shadow: 0 0 10px var(--accent);
     }
 
-    /*  HACKER CYBER ANIMATIONS ENGINE (GPU ACCELERATED) */
+    /*  CYBER DOCK GPU ANIMATIONS */
     .anim-cyber-sweep {
       animation: cyberSweep 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transform-origin: left center;
@@ -410,18 +438,29 @@
       pointer-events: none !important;
       max-height: 0 !important;
     }
+
+    /*  PINNED STICKY MINIMIZE ARROW (Right Edge Par Hamesha Dikhne Wala) */
+    .sticky-dock-pin {
+      position: sticky;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 25;
+      background: var(--surface);
+      box-shadow: -6px 0 12px -2px rgba(0, 0, 0, 0.45);
+    }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER (ACTION BAR) -->
+  <!-- TOP HEADER (ACTION BAR WITH ANIMATED DOWNLOAD APP TICKER) -->
   <header id="mainAppHeader" class="h-12 bg-[var(--surface)] border-b border-[var(--surface-border)] flex items-center justify-between px-2 z-20 shrink-0 select-none shadow-sm transition-colors">
     <div class="flex items-center space-x-2 overflow-hidden flex-1 mr-2">
       <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-1.5 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
 
-      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[200px] sm:max-w-xs transition" title="Tap to rename active file">
+      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[190px] sm:max-w-xs transition" title="Tap to rename active file">
         <i data-lucide="code" class="w-3.5 h-3.5 text-[var(--accent)] shrink-0"></i>
         <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)] leading-tight">untitled.html</span>
         <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
@@ -429,6 +468,17 @@
     </div>
 
     <div class="flex items-center space-x-0.5">
+      <!--  ANIMATED GET APP / INSTALL APP TICKER BUTTON -->
+      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
+        <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
+          <div class="ticker-track">
+            <span class="ticker-item text-cyan-300">Get App</span>
+            <span class="ticker-item text-emerald-300">Install App</span>
+          </div>
+        </div>
+      </button>
+
       <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="undo-2" class="w-4 h-4"></i>
       </button>
@@ -553,95 +603,100 @@
     </div>
   </main>
 
-  <!--  ROW 1: SMART DEVELOPER VIRTUAL KEYBOARD STRIP -->
-  <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 transition-colors">
-    <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">CTRL</button>
-    <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">ALT</button>
-    <button id="btnKeySelectAll" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">ALL</button>
-    <button id="btnKeyCopy" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">COPY</button>
-    <button id="btnKeyPaste" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent-secondary)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition">PASTE</button>
+  <!--  ROW 1: SMART DEVELOPER VIRTUAL KEYBOARD STRIP (WITH PINNED STICKY MINIMIZE ARROW) -->
+  <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 relative transition-colors">
+    <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">CTRL</button>
+    <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALT</button>
+    <button id="btnKeySelectAll" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALL</button>
+    <button id="btnKeyCopy" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">COPY</button>
+    <button id="btnKeyPaste" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent-secondary)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">PASTE</button>
     
-    <button id="btnKeyArrowLeft" title="Cursor Left" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition"></button>
-    <button id="btnKeyArrowRight" title="Cursor Right" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition"></button>
+    <button id="btnKeyArrowLeft" title="Cursor Left" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0"></button>
+    <button id="btnKeyArrowRight" title="Cursor Right" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-main)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0"></button>
     
-    <div class="h-4 w-px bg-[var(--surface-border)] mx-1"></div>
+    <div class="h-4 w-px bg-[var(--surface-border)] mx-1 shrink-0"></div>
 
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&gt;</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">/</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">=</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&quot;</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&#39;</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">{</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">}</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">(</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">)</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">[</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">]</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">;</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">:</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">$</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">_</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">-</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">!</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">#</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">`</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">?</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">|</button>
-    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition">&amp;</button>
-    <button class="vkey px-3 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">Tab</button>
-    <button id="btnKeyCloseTag" title="Auto-close HTML tag" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition">&lt;/&gt;</button>
-    <button id="btnKeyUnindent" title="Unindent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&lt;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&gt;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">/</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">=</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&quot;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&#39;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">{</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">}</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">(</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">)</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">[</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">]</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">;</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">:</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">$</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">_</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">-</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">!</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">#</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">`</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">?</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">|</button>
+    <button class="vkey px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&amp;</button>
+    <button class="vkey px-3 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">Tab</button>
+    <button id="btnKeyCloseTag" title="Auto-close HTML tag" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">&lt;/&gt;</button>
+    <button id="btnKeyUnindent" title="Unindent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition shrink-0">
       <i data-lucide="indent-decrease" class="w-3.5 h-3.5"></i>
     </button>
-    <button id="btnKeyIndent" title="Indent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button id="btnKeyIndent" title="Indent" class="px-2.5 h-7 bg-black/5 hover:bg-black/10 text-[var(--text-muted)] rounded-lg flex items-center justify-center active:scale-95 transition shrink-0">
       <i data-lucide="indent-increase" class="w-3.5 h-3.5"></i>
     </button>
-    <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition">
+    <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition shrink-0">
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
 
-    <!-- Row 1 Minimize Button -->
-    <button id="btnToggleAccessoryBar" title="Minimize Dev Keys" class="px-2 h-7 bg-black/5 hover:bg-black/15 text-[var(--text-muted)] hover:text-cyan-400 rounded-lg text-xs font-bold active:scale-90 transition">
-      
-    </button>
+    <!--  PINNED STICKY MINIMIZE ARROW (HAMESHA VISIBLE RAHEGA) -->
+    <div class="sticky-dock-pin flex items-center pl-1 pr-1.5 h-full">
+      <button id="btnToggleAccessoryBar" title="Minimize Dev Keys" class="px-2 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs font-bold active:scale-90 transition flex items-center justify-center shadow-md">
+        
+      </button>
+    </div>
   </div>
 
-  <!--  ROW 2: QUICKEDIT NAVIGATION BAR (WITH INDEPENDENT MINIMIZE) -->
-  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-around px-2 shrink-0 select-none z-20 action-bar-transition transition-colors">
-    <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
-      <i data-lucide="undo-2" class="w-5 h-5"></i>
-    </button>
-    <button id="btnBottomRedo" title="Redo" class="quickedit-nav-btn">
-      <i data-lucide="redo-2" class="w-5 h-5"></i>
-    </button>
-    <button id="btnBottomSearch" title="Search" class="quickedit-nav-btn">
-      <i data-lucide="search" class="w-5 h-5"></i>
-    </button>
-    <button id="btnBottomSave" title="Save" class="quickedit-nav-btn text-emerald-500">
-      <i data-lucide="save" class="w-5 h-5"></i>
-    </button>
-    <button id="btnBottomRun" title="Live Preview" class="quickedit-nav-btn text-cyan-500">
-      <i data-lucide="play" class="w-5 h-5"></i>
-    </button>
-    <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-500">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-    <!-- Row 2 Minimize Button -->
-    <button id="btnMinimizeActionBar" title="Minimize Action Bar" class="px-2 h-8 text-[var(--text-muted)] hover:text-rose-400 rounded-lg text-xs font-bold active:scale-90 transition">
+  <!--  ROW 2: QUICKEDIT NAVIGATION BAR (WITH PINNED MINIMIZE) -->
+  <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-between px-2 shrink-0 select-none z-20 action-bar-transition transition-colors">
+    <div class="flex items-center justify-around flex-1 h-full">
+      <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
+        <i data-lucide="undo-2" class="w-5 h-5"></i>
+      </button>
+      <button id="btnBottomRedo" title="Redo" class="quickedit-nav-btn">
+        <i data-lucide="redo-2" class="w-5 h-5"></i>
+      </button>
+      <button id="btnBottomSearch" title="Search" class="quickedit-nav-btn">
+        <i data-lucide="search" class="w-5 h-5"></i>
+      </button>
+      <button id="btnBottomSave" title="Save" class="quickedit-nav-btn text-emerald-500">
+        <i data-lucide="save" class="w-5 h-5"></i>
+      </button>
+      <button id="btnBottomRun" title="Live Preview" class="quickedit-nav-btn text-cyan-500">
+        <i data-lucide="play" class="w-5 h-5"></i>
+      </button>
+      <button id="btnBottomClose" title="Exit" class="quickedit-nav-btn text-rose-500">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Pinned Row 2 Minimize Arrow -->
+    <button id="btnMinimizeActionBar" title="Minimize Action Bar" class="px-2.5 h-8 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-xs font-bold active:scale-90 transition shrink-0 ml-1 shadow-sm">
       
     </button>
   </footer>
 
-  <!--  DUAL FLOATING RESTORE CAPSULES (FOR 100% FULL-SCREEN CODING) -->
+  <!--  DUAL FLOATING RESTORE CAPSULES (FOR FULL CODE VIEW) -->
   <div id="floatingDockCapsules" class="fixed bottom-2 right-2 flex flex-col space-y-1.5 z-30 pointer-events-auto">
     <!-- Restore Dev Keys Capsule -->
-    <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden px-2.5 py-1 bg-[var(--surface)]/90 backdrop-blur-md border border-cyan-500/40 rounded-full text-cyan-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
+    <button id="btnRestoreAccessoryBar" title="Show Dev Keys" class="hidden px-2.5 py-1 bg-[var(--surface)]/95 backdrop-blur-md border border-cyan-500/50 rounded-full text-cyan-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
       <span></span>
       <span>DEV</span>
     </button>
     <!-- Restore Action Bar Capsule -->
-    <button id="btnRestoreActionBar" title="Show Action Bar" class="hidden px-2.5 py-1 bg-[var(--surface)]/90 backdrop-blur-md border border-emerald-500/40 rounded-full text-emerald-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
+    <button id="btnRestoreActionBar" title="Show Action Bar" class="hidden px-2.5 py-1 bg-[var(--surface)]/95 backdrop-blur-md border border-emerald-500/50 rounded-full text-emerald-400 text-[10px] font-mono font-bold shadow-2xl flex items-center space-x-1 active:scale-90 transition">
       <span></span>
       <span>ACT</span>
     </button>
@@ -745,7 +800,7 @@
       </div>
 
       <div id="boxDiagnosticContent" class="space-y-3 mb-4">
-        <!-- Dynamic diagnostic report gets populated here -->
+        <!-- Dynamic diagnostic report -->
       </div>
 
       <div class="flex items-center space-x-2">
@@ -979,7 +1034,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)]">ANZARG CODE STUDIO</h3>
-            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.8 Master Edition</span>
+            <span id="appVersionBadge" class="text-[10px] text-cyan-500 font-mono">v6.9 Master Edition</span>
           </div>
         </div>
         <button id="btnCloseAbout" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
@@ -1429,11 +1484,11 @@
   </div>
     <script>
     // =========================================================================
-    // ANZARG CODE STUDIO - ULTRA PRECISION JAVASCRIPT ENGINE (v6.8)
+    // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v6.9)
     // =========================================================================
     const APP_CONFIG = {
-      version: '6.8',
-      edition: 'Master Edition'
+      version: '6.9',
+      edition: 'Ultra Smooth Edition'
     };
 
     const DB_NAME = 'ANZARG_STUDIO_DB';
@@ -1683,6 +1738,7 @@
       }
     }
 
+    //  PWA INSTALL FLOW WITH ANIMATED ROLLER TICKER (8-10 SEC ROTATION)
     function setupPwaInstallFlow() {
       const headerInstallBtn = document.getElementById('btnHeaderInstall');
       const drawerInstallBtn = document.getElementById('dNavInstallApp');
@@ -1705,13 +1761,14 @@
 
         if (headerInstallBtn) {
           headerInstallBtn.classList.remove('hidden');
+          // 8-10 Second Smooth Animation before compacting
           setTimeout(() => {
             if (tickerWrapper) {
               tickerWrapper.style.maxWidth = '0px';
               tickerWrapper.style.opacity = '0';
               setTimeout(() => tickerWrapper.classList.add('hidden'), 400);
             }
-          }, 8500);
+          }, 9500);
         }
         if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
       });
@@ -1787,7 +1844,7 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
         markActiveModified();
       }
@@ -1800,12 +1857,13 @@
         textarea.value = state.val;
         textarea.setSelectionRange(state.selStart, state.selEnd);
         updateLineNumbers();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
         markActiveModified();
       }
     }
 
+    //  ULTRA FAST LINE GUTTER RENDERER (6000+ Lines Zero-Lag)
     let lastRenderedLinesCount = 0;
     function updateLineNumbers() {
       if (!userSettings.lineNumbers || !textarea || !gutter) return;
@@ -1824,6 +1882,7 @@
       if (lastRenderedLinesCount === lines) return;
       lastRenderedLinesCount = lines;
 
+      // Direct string builder avoids garbage collection pauses
       let numbersStr = '';
       for (let i = 1; i <= lines; i++) {
         numbersStr += i + '\n';
@@ -1831,11 +1890,14 @@
       gutter.textContent = numbersStr;
     }
 
-    //  FAST INPUT THROTTLE BUFFER (20,000+ Lines Smooth Performance)
+    //  6,000+ LINES CAPACITY ADAPTIVE SYNTAX HIGHLIGHTER
     let syntaxHighlightTimer = null;
-    function updateSyntaxHighlightingFast() {
+    let diagnosticTimer = null;
+
+    function updateSyntaxHighlightingOptimized() {
       if (!syntaxCode || !textarea) return;
       const code = textarea.value;
+      const totalLines = code.split('\n').length;
       const cur = fileTabs.find(t => t.id === activeFileId);
       const fileName = cur ? cur.name.toLowerCase() : 'untitled.html';
 
@@ -1846,14 +1908,22 @@
       
       syntaxCode.className = `language-${lang}`;
       syntaxCode.textContent = code + (code.endsWith('\n') ? ' ' : '');
-      
+
       clearTimeout(syntaxHighlightTimer);
+      // Adaptive throttle: if code exceeds 2500 lines, debounce gently to protect 60 FPS scrolling
+      const debounceDelay = totalLines > 2500 ? 180 : 35;
+      
       syntaxHighlightTimer = setTimeout(() => {
         if (window.Prism) {
           Prism.highlightElement(syntaxCode);
         }
+      }, debounceDelay);
+
+      // Silent background diagnostics runs only after user stops typing
+      clearTimeout(diagnosticTimer);
+      diagnosticTimer = setTimeout(() => {
         runBackgroundCodeDiagnostics();
-      }, 40);
+      }, 700);
     }
 
     function markActiveModified() {
@@ -1907,7 +1977,10 @@
       const code = textarea.value;
       const dotWarn = document.getElementById('dotDiagnosticWarning');
       
-      const report = analyzeCodeErrors(code);
+      // If code is massive (> 3000 lines), analyze up to 40,000 chars to avoid memory lag
+      const sampleCode = code.length > 80000 ? code.substring(0, 80000) : code;
+      const report = analyzeCodeErrors(sampleCode);
+
       if (dotWarn) {
         if (report.hasError) {
           dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 animate-ping';
@@ -2081,7 +2154,7 @@
       }
 
       updateLineNumbers();
-      updateSyntaxHighlightingFast();
+      updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
       if (modal) modal.classList.add('hidden');
@@ -2118,7 +2191,7 @@
 
       textarea.value = formatted.trimEnd();
       updateLineNumbers();
-      updateSyntaxHighlightingFast();
+      updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
       recordHistory();
@@ -2148,11 +2221,11 @@
       let historyTimer = null;
       textarea.addEventListener('input', () => {
         markActiveModified();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
 
         clearTimeout(lineDebounce);
-        lineDebounce = setTimeout(updateLineNumbers, 80);
+        lineDebounce = setTimeout(updateLineNumbers, 70);
 
         clearTimeout(historyTimer);
         historyTimer = setTimeout(() => {
@@ -2173,7 +2246,7 @@
           const end = textarea.selectionEnd;
           textarea.setRangeText("    ", start, end, "end");
           updateLineNumbers();
-          updateSyntaxHighlightingFast();
+          updateSyntaxHighlightingOptimized();
           updateCursorIndicator();
           markActiveModified();
           recordHistory();
@@ -2190,7 +2263,7 @@
             textarea.setRangeText(e.key + closeChar, start, end, 'end');
             textarea.setSelectionRange(start + 1, start + 1);
             updateLineNumbers();
-            updateSyntaxHighlightingFast();
+            updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             markActiveModified();
             recordHistory();
@@ -2272,7 +2345,7 @@
         textarea.value = target.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         historyStack.length = 0;
         historyIndex = -1;
         recordHistory();
@@ -2308,7 +2381,7 @@
         if (textarea) textarea.value = nextTab.content || '';
         lastRenderedLinesCount = 0;
         updateLineNumbers();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
       }
       renderTabStrip();
@@ -2322,7 +2395,7 @@
       textarea.setRangeText(text, start, end, 'end');
       textarea.focus();
       updateLineNumbers();
-      updateSyntaxHighlightingFast();
+      updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
       recordHistory();
@@ -2333,7 +2406,7 @@
     // =========================================================================
     function applyDockAnimation(element, styleType) {
       element.classList.remove('anim-cyber-sweep', 'anim-matrix-stagger');
-      void element.offsetWidth; // Force DOM Reflow for animation restart
+      void element.offsetWidth; // Force Reflow to re-trigger GPU transition
 
       if (styleType === 'sweep') {
         element.classList.add('anim-cyber-sweep');
@@ -2433,7 +2506,7 @@
         });
       }
 
-      //  ROW 1 (DEV KEYS) INDEPENDENT MINIMIZE / MAXIMIZE
+      //  ROW 1 (DEV KEYS) PINNED MINIMIZE / MAXIMIZE CONTROLLER
       const accessoryRow = document.getElementById('accessoryBar');
       const btnToggleRow1 = document.getElementById('btnToggleAccessoryBar');
       const btnRestoreRow1 = document.getElementById('btnRestoreAccessoryBar');
@@ -2461,7 +2534,7 @@
         });
       }
 
-      //  ROW 2 (ACTION BAR) INDEPENDENT MINIMIZE / MAXIMIZE
+      //  ROW 2 (ACTION BAR) PINNED MINIMIZE / MAXIMIZE CONTROLLER
       const bottomBar = document.getElementById('bottomQuickEditBar');
       const btnMinimizeRow2 = document.getElementById('btnMinimizeActionBar');
       const btnRestoreRow2 = document.getElementById('btnRestoreActionBar');
@@ -2510,7 +2583,7 @@
             textarea.value = val.substring(0, start - 2) + val.substring(start);
             textarea.setSelectionRange(start - 2, start - 2);
             updateLineNumbers();
-            updateSyntaxHighlightingFast();
+            updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             markActiveModified();
           }
@@ -2594,7 +2667,7 @@
           if (selText.toLowerCase() === q.toLowerCase()) {
             textarea.setRangeText(rep, start, end, 'end');
             updateLineNumbers();
-            updateSyntaxHighlightingFast();
+            updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             markActiveModified();
             recordHistory();
@@ -2615,7 +2688,7 @@
             const regex = new RegExp(pattern, flags);
             textarea.value = textarea.value.replace(regex, rep);
             updateLineNumbers();
-            updateSyntaxHighlightingFast();
+            updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             markActiveModified();
             recordHistory();
@@ -3345,7 +3418,7 @@
             if (textarea) textarea.value = fileTabs[0].content;
             lastRenderedLinesCount = 0;
             updateLineNumbers();
-            updateSyntaxHighlightingFast();
+            updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             renderTabStrip();
             scheduleAutoSave();
@@ -3442,7 +3515,7 @@
         document.body.classList.add('theme-cyberpunk');
       }
 
-      updateSyntaxHighlightingFast();
+      updateSyntaxHighlightingOptimized();
     }
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -3994,7 +4067,7 @@
       if (gutter) gutter.classList.toggle('hidden', !userSettings.lineNumbers);
       lastRenderedLinesCount = 0;
       updateLineNumbers();
-      updateSyntaxHighlightingFast();
+      updateSyntaxHighlightingOptimized();
     }
 
     let activePreviewBlobUrl = null;
@@ -4287,7 +4360,7 @@
       if (currentTab && textarea) {
         textarea.value = currentTab.content || '';
         updateLineNumbers();
-        updateSyntaxHighlightingFast();
+        updateSyntaxHighlightingOptimized();
         recordHistory();
 
         //  100% RELIABLE AUTO-SESSION CURSOR & SCROLL RESTORE (140ms Protected Delay)

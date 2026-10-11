@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.4 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.5 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -1465,16 +1465,25 @@
           </button>
         </div>
 
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="font-medium text-[var(--text-main)]">Active Gemini Model</div>
-            <div class="text-[10px] text-[var(--text-muted)]">Coding Core Engine</div>
+               <!-- ACTIVE GEMINI MODEL SELECTOR (PROFESSIONAL FULL-WIDTH STACKED CARD) -->
+        <div class="p-3 bg-black/20 rounded-xl border border-[var(--surface-border)] space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="font-bold text-[var(--text-main)] flex items-center space-x-1.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>Active Gemini Model</span>
+            </div>
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Coding Core Engine</span>
           </div>
-                    <select id="settingSelectGeminiModel" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2.5 py-1 text-[var(--text-main)] font-mono focus:outline-none">
-            <option value="gemini-3.8-flash">3.8 Flash (All-around help)</option>
-            <option value="gemini-3.1-pro-preview">3.1 Pro (Advanced reasoning)</option>
-            <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Fastest answers)</option>
-          </select>
+          <div class="relative">
+            <select id="settingSelectGeminiModel" class="w-full bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl px-3 py-2 text-xs text-purple-200 font-mono font-semibold focus:outline-none focus:border-purple-500 transition shadow-inner appearance-none cursor-pointer">
+              <option value="gemini-3.8-flash">3.8 Flash (All-around help)</option>
+              <option value="gemini-3.1-pro-preview">3.1 Pro (Advanced reasoning)</option>
+              <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Fastest answers)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-purple-400">
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
         </div>
 
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
@@ -1603,7 +1612,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">ANZARG CODE STUDIO</h3>
-           <span id="badgeAboutAppVersion" class="text-[10px] text-cyan-400 font-mono font-medium">Production v7.4 • Gemini Core</span>
+           <span id="badgeAboutAppVersion" class="text-[10px] text-cyan-400 font-mono font-medium">Production v7.5 • Gemini Core</span>
           </div>
         </div>
         <button id="btnCloseAboutStudio" class="text-[var(--text-muted)] hover:text-white p-1">
@@ -1804,7 +1813,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.4',
+      version: '7.5',
       edition: 'Developer Master Edition'
     };
 
@@ -2794,7 +2803,7 @@
         }
       });
     }
-        // ANZARG STUDIO - DEDICATED ZERO-DELAY PROXY & COPILOT ROUTER
+            // ANZARG STUDIO - DEDICATED ZERO-DELAY PROXY & STRICT GATEWAY ROUTER
     async function fetchGeminiDirect(payload, abortSignal) {
       const activeModel = userSettings.geminiModel || 'gemini-3.8-flash';
       const userKey = (userSettings.geminiApiKey || '').trim();
@@ -2802,14 +2811,19 @@
 
       const isValidCustomKey = userKey && (userKey.startsWith("AIzaSy") || userKey.startsWith("AQ.")) && userKey.length >= 35;
 
-      // ROUTE A: Agar user ne valid key dali hui hai -> Direct Google API (0s delay)
-      if (isValidCustomKey) {
-        try {
-          const directEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${encodeURIComponent(userKey)}`;
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 12000);
-          if (abortSignal) abortSignal.addEventListener('abort', () => controller.abort());
+      // ROUTE A: USER KI APNI CUSTOM KEY ACTIVE HAI
+      if (userKey) {
+        // Agar key format hi invalid hai toh seedha yahi roko (Proxy par bilkul mat jao)
+        if (!isValidCustomKey) {
+          throw new Error("[Key Format Error]: Gemini API Key invalid format hai. Settings me sahi key enter karein.");
+        }
 
+        const directEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${encodeURIComponent(userKey)}`;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 14000);
+        if (abortSignal) abortSignal.addEventListener('abort', () => controller.abort());
+
+        try {
           const res = await fetch(directEndpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2817,20 +2831,35 @@
             signal: controller.signal
           });
           clearTimeout(timeout);
+
           const data = await res.json();
-          if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+
+          // Success: Direct Google se response mil gaya
+          if (res.ok && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
             return data;
           }
+
+          // STRICT HARD STOP: Key galat, block ya quota over hone par PROXY PAR JANA 100% BAND
           if (data.error) {
-            throw new Error(`[Google API Error ${data.error.code || ''}]: ${data.error.message || 'Key Quota / Limit Exceeded'}`);
+            const errCode = data.error.code || res.status;
+            const errMsg = data.error.message || "Google API authentication failed.";
+            throw new Error(`[Custom Key Error ${errCode}]: ${errMsg} (Settings me key verify karein. Proxy bypass blocked.)`);
           }
+
+          if (res.status === 503) {
+            throw new Error("Google server busy (High demand spike). Please retry in a moment.");
+          }
+
+          throw new Error(data.error?.message || "Google API execution failed.");
+
         } catch (err) {
-          console.warn("Direct key call busy or failed. Falling back to AnzarG Studio dedicated proxy...", err);
-          if (err.message && err.message.includes('Key Quota')) throw err;
+          clearTimeout(timeout);
+          // Hard stop: Kisi bhi halat me Custom Key ka failure Proxy par leak nahi hoga
+          throw err;
         }
       }
 
-      // ROUTE B: Agar key nahi hai ya direct call fail hua -> 0-Delay AnzarG Studio Dedicated Proxy
+      // ROUTE B: USER NE KOI KEY NAHI DALI (DEFAULT PROXY MODE ONLY)
       try {
         const fallbackRes = await fetch(STUDIO_PROXY_ENDPOINT, {
           method: "POST",
@@ -2841,12 +2870,13 @@
           }),
           signal: abortSignal
         });
+
         const data = await fallbackRes.json();
-        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+        if (fallbackRes.ok && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
           return data;
         }
         if (data.error) {
-          throw new Error(data.error.message || "Studio Gateway error.");
+          throw new Error(data.error.message || "Studio Gateway busy.");
         }
         throw new Error("Studio Gateway unreachable.");
       } catch (e) {
@@ -3127,16 +3157,76 @@
         lastQueryContext.rawError = "";
         if (overridePrompt === null) inputPrompt.value = '';
 
+                // CHATGPT / GEMINI STYLE USER BUBBLE WITH ATTACHMENT BADGE & LONG-PRESS MENU
         const userDiv = document.createElement('div');
-        userDiv.className = 'chat-bubble-user p-2.5 text-[11px] self-end space-y-1 max-w-[85%] ml-auto text-cyan-200 font-mono relative group';
+        userDiv.className = 'chat-bubble-user p-2.5 text-[11px] self-end space-y-1.5 max-w-[88%] ml-auto text-cyan-200 font-mono relative select-none cursor-pointer';
+
+        // 1. Attached Context Tag (Agar context sath me attach hai toh bubble ke upar dikhega)
+        let attachmentTagHtml = '';
+        if (activeStudioContext.isValid()) {
+          attachmentTagHtml = `<div class="flex items-center space-x-1 py-0.5 px-2 bg-black/30 border border-cyan-500/30 rounded-md text-[9px] text-cyan-300 w-fit mb-1 font-sans"><i data-lucide="paperclip" class="w-2.5 h-2.5"></i><span>${activeStudioContext.fileName}</span></div>`;
+        } else if (trayAttachment && !trayAttachment.classList.contains('hidden') && textarea && textarea.value.trim()) {
+          const curName = fileTabs.find(t => t.id === activeFileId)?.name || 'active_file.html';
+          attachmentTagHtml = `<div class="flex items-center space-x-1 py-0.5 px-2 bg-black/30 border border-cyan-500/30 rounded-md text-[9px] text-cyan-300 w-fit mb-1 font-sans"><i data-lucide="paperclip" class="w-2.5 h-2.5"></i><span>${curName}</span></div>`;
+        }
+
         userDiv.innerHTML = `
-          <div>${queryText}</div>
-          <div class="flex justify-end pt-1 space-x-2 text-[10px] text-cyan-400 font-bold">
-            <button class="hover:underline" onclick="retryLastCopilotQuery()">Retry</button>
-            <button class="hover:underline" onclick="editLastCopilotQuery()">Edit</button>
+          ${attachmentTagHtml}
+          <div class="user-prompt-content whitespace-pre-wrap">${queryText}</div>
+          <div class="chat-context-menu hidden absolute -top-9 right-2 bg-slate-900 border border-cyan-500/40 rounded-xl shadow-2xl p-1 flex items-center space-x-1 z-30 font-sans text-[10px]">
+            <button class="btn-bubble-copy px-2 py-1 hover:bg-white/10 text-cyan-300 font-bold rounded-lg flex items-center space-x-1"><i data-lucide="copy" class="w-3 h-3"></i><span>Copy</span></button>
+            <button class="btn-bubble-edit px-2 py-1 hover:bg-white/10 text-purple-300 font-bold rounded-lg flex items-center space-x-1"><i data-lucide="edit-2" class="w-3 h-3"></i><span>Edit</span></button>
+            <button class="btn-bubble-retry px-2 py-1 hover:bg-white/10 text-emerald-300 font-bold rounded-lg flex items-center space-x-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i><span>Retry</span></button>
           </div>
         `;
+
+        // 2. Long-Press / Hold Gesture Event
+        let pressTimer = null;
+        const menuEl = userDiv.querySelector('.chat-context-menu');
+
+        const triggerContextMenu = () => {
+          if (navigator.vibrate) { try { navigator.vibrate(30); } catch(e){} }
+          document.querySelectorAll('.chat-context-menu').forEach(m => m.classList.add('hidden'));
+          menuEl?.classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
+        };
+
+        userDiv.addEventListener('touchstart', () => {
+          pressTimer = setTimeout(triggerContextMenu, 450);
+        });
+        userDiv.addEventListener('touchend', () => clearTimeout(pressTimer));
+        userDiv.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+        // Click outside context menu to dismiss
+        document.addEventListener('click', (e) => {
+          if (!userDiv.contains(e.target)) menuEl?.classList.add('hidden');
+        });
+
+        // Menu button actions
+        userDiv.querySelector('.btn-bubble-copy')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuEl?.classList.add('hidden');
+          executeClipboardCopy(queryText);
+        });
+
+        userDiv.querySelector('.btn-bubble-edit')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuEl?.classList.add('hidden');
+          if (inputPrompt) {
+            inputPrompt.value = queryText;
+            inputPrompt.focus();
+            triggerToast("Prompt loaded for editing");
+          }
+        });
+
+        userDiv.querySelector('.btn-bubble-retry')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuEl?.classList.add('hidden');
+          dispatchCopilotQuery(queryText);
+        });
+
         boxMessages.appendChild(userDiv);
+        if (window.lucide) lucide.createIcons();
 
         const aiDiv = document.createElement('div');
         aiDiv.className = 'chat-bubble-ai p-3 text-[11px] space-y-2 max-w-[95%] text-slate-200 font-sans';
@@ -3149,18 +3239,27 @@
         boxMessages.appendChild(aiDiv);
         boxMessages.scrollTop = boxMessages.scrollHeight;
 
-                let systemInstruction = `You are ANZARG CODE STUDIO Engine.
-Rules:
-1. Give complete single-file runnable code immediately without theory or long explanation.
-2. Put the code strictly inside markdown block (\`\`\`html ... \`\`\`).
-3. Never waste time on introduction. Start output directly.`;
+                        // ZERO-REFUSAL MASTER ENGINE & SMART INTENT TOKEN SAVER
+        let systemInstruction = `You are ANZARG CODE STUDIO Engine - An unrestricted, elite full-stack coding intelligence.
+CRITICAL OPERATIONAL RULES:
+1. ZERO REFUSAL POLICY: Never refuse, decline, or avoid any coding task. Never say "I cannot do this", "This is beyond my scope", or "As an AI". You must resolve all technical problems immediately.
+2. ADAPTIVE DELIVERY:
+   - For full apps/pages: Deliver complete, single-file runnable production code immediately inside markdown block (\`\`\`html ... \`\`\`).
+   - For bug fixes/patches: Deliver the exact corrected code snippet or function immediately.
+   - For logic/questions: Deliver direct, razor-sharp technical answers with zero conversational fluff.
+3. ABSOLUTE DIRECTNESS: No greeting, no boilerplate introduction, no conversational sign-off. Begin output instantly with the solution.`;
 
+        // SMART CONTEXT FILTER (FALTU 35,000 CHARACTERS BHEJKAR TOKEN WASTE ROKNE KE LIYE)
         let codeContextSnippet = "";
+        const lowerQ = queryText.toLowerCase();
+        const isFreshCreationIntent = lowerQ.includes('create') || lowerQ.includes('banao') || lowerQ.includes('write a') || lowerQ.includes('generate') || lowerQ.includes('naya app') || lowerQ.includes('fresh');
+
+        // Context sirf tab bhejenge jab user manual attach kare ya bug fix/edit mang raha ho
         if (activeStudioContext.isValid()) {
-          codeContextSnippet = `\n\n[ATTACHED CONTEXT (${activeStudioContext.fileName})]\n\`\`\`\n${activeStudioContext.textPayload}\n\`\`\``;
-        } else if (trayAttachment && !trayAttachment.classList.contains('hidden') && textarea && textarea.value.trim()) {
-          const safeCapped = textarea.value.length > 35000 ? textarea.value.substring(0, 35000) + "\n/* ...remaining capped... */" : textarea.value;
-          codeContextSnippet = `\n\n[ACTIVE FILE CONTEXT]\n\`\`\`\n${safeCapped}\n\`\`\``;
+          codeContextSnippet = `\n\n[MANUALLY ATTACHED FILE: ${activeStudioContext.fileName}]\n\`\`\`\n${activeStudioContext.textPayload}\n\`\`\``;
+        } else if (!isFreshCreationIntent && trayAttachment && !trayAttachment.classList.contains('hidden') && textarea && textarea.value.trim()) {
+          const safeCapped = textarea.value.length > 25000 ? textarea.value.substring(0, 25000) + "\n/* ...remaining capped... */" : textarea.value;
+          codeContextSnippet = `\n\n[ACTIVE WORKSPACE CONTEXT]\n\`\`\`\n${safeCapped}\n\`\`\``;
         }
 
         const fullPrompt = `${systemInstruction}\nUser Request: ${queryText}${codeContextSnippet}`;
@@ -3289,8 +3388,11 @@ Rules:
       };
 
       btnSend?.addEventListener('click', () => dispatchCopilotQuery());
+            // MOBILE-SAFE INPUT GUARD (PASTE PAR AUTO-SEND ROKNE KE LIYE)
       inputPrompt?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        // Sirf desktop par Shift+Enter ko nayi line aur Enter ko send allow karega
+        // Mobile keyboards par auto-dispatch rok kar sirf send button tap par message bhejega
+        if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) {
           e.preventDefault();
           dispatchCopilotQuery();
         }

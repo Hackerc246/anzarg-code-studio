@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.1 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.2 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -334,6 +334,16 @@
       0% { opacity: 0; transform: scale(0.9); }
       100% { opacity: 1; transform: scale(1); }
     }
+        @keyframes buttonShakeHaptic {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+    .btn-shake-active {
+      animation: buttonShakeHaptic 0.28s ease-in-out !important;
+    }
 
     #drawerNav {
       position: fixed;
@@ -447,14 +457,9 @@
       <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-1.5 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-
-      <div id="btnHeaderRename" class="flex items-center space-x-1.5 py-1 px-2 rounded-lg hover:bg-black/5 active:scale-98 cursor-pointer overflow-hidden max-w-[155px] sm:max-w-xs transition" title="Tap to rename active file">
-        <i data-lucide="code" class="w-3.5 h-3.5 text-[var(--accent)] shrink-0"></i>
-        <span id="labelFileName" class="text-sm font-semibold truncate text-[var(--text-main)] leading-tight">untitled.html</span>
-        <span id="dotUnsaved" class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 hidden animate-pulse"></span>
-      </div>
+      <div id="btnHeaderRename" class="hidden"></div>
+      <div class="flex-1"></div>
     </div>
-
     <div class="flex items-center space-x-0.5">
       <!-- GET APP TICKER BUTTON -->
       <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
@@ -467,11 +472,8 @@
         </div>
       </button>
 
-      <!-- HEADER COPILOT ICON -->
-      <button id="btnHeaderDirectCopilot" title="Open Gemini AI Copilot" class="p-1.5 rounded-lg bg-gradient-to-r from-purple-500/15 to-cyan-500/15 border border-purple-500/30 text-purple-300 hover:text-white active:scale-90 transition mr-0.5">
-        <i data-lucide="bot" class="w-4 h-4 text-purple-400"></i>
-      </button>
-
+      <button id="btnHeaderDirectCopilot" class="hidden"></button>
+      <div id="slotHeaderCustom" class="w-7 h-7 mr-0.5 pointer-events-none"></div>
       <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
         <i data-lucide="undo-2" class="w-4 h-4"></i>
       </button>
@@ -548,10 +550,6 @@
           <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
             <span>File Statistics</span>
-          </button>
-          <button id="optSettings" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="settings" class="w-4 h-4 text-[var(--text-muted)]"></i>
-            <span>Editor Preferences</span>
           </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
           <button id="optForceExitApp" class="w-full text-left px-3.5 py-2 hover:bg-rose-500/10 flex items-center space-x-2.5 text-rose-400 font-medium">
@@ -1416,14 +1414,14 @@
         <i data-lucide="download-cloud" class="w-4 h-4 text-emerald-400"></i>
         <span class="font-semibold">Install App on Phone</span>
       </button>
-      <button id="dNavSettings" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
-        <i data-lucide="sliders" class="w-4 h-4 text-purple-500"></i>
-        <span>Editor Preferences</span>
+            <button id="dNavSettings" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
+        <i data-lucide="settings" class="w-4 h-4 text-purple-500"></i>
+        <span>Settings</span>
       </button>
-      <button id="dNavResetWorkspace" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
-        <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
-        <span>Clear saved workspace data</span>
-      </button>
+                <button id="dNavResetWorkspace" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition group">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-rose-500"></i>
+            <span>Factory Reset</span>
+          </button>
       <button id="dNavAbout" class="w-full px-4 py-2.5 flex items-center space-x-3 text-[var(--text-main)] hover:bg-black/5 active:bg-black/10">
         <i data-lucide="info" class="w-4 h-4 text-cyan-500"></i>
         <span>About & Policy Details</span>
@@ -1443,9 +1441,9 @@
   <div id="modalSettings" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="material-card-elevated w-full max-w-sm p-5 max-h-[85vh] overflow-y-auto text-xs">
       <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)] mb-4">
-        <h3 class="text-sm font-bold text-[var(--text-main)] flex items-center space-x-2">
-          <i data-lucide="sliders" class="w-4 h-4 text-cyan-500"></i>
-          <span>Editor Preferences</span>
+                <h3 class="text-sm font-bold text-[var(--text-main)] flex items-center space-x-2">
+          <i data-lucide="settings" class="w-4 h-4 text-cyan-500"></i>
+          <span>Settings</span>
         </h3>
         <button id="btnCloseSettings" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -1472,10 +1470,10 @@
             <div class="font-medium text-[var(--text-main)]">Active Gemini Model</div>
             <div class="text-[10px] text-[var(--text-muted)]">Coding Core Engine</div>
           </div>
-          <select id="settingSelectGeminiModel" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2.5 py-1 text-[var(--text-main)] font-mono focus:outline-none">
-            <option value="gemini-3.8-flash">3.8 Flash (All-around)</option>
-            <option value="gemini-3.1-pro-preview">3.1 Pro (Deep Logic)</option>
-            <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Fast)</option>
+                    <select id="settingSelectGeminiModel" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2.5 py-1 text-[var(--text-main)] font-mono focus:outline-none">
+            <option value="gemini-3.8-flash">3.8 Flash (All-around help)</option>
+            <option value="gemini-3.1-pro-preview">3.1 Pro (Advanced reasoning)</option>
+            <option value="gemini-3.5-flash-lite">3.5 Flash-Lite (Fastest answers)</option>
           </select>
         </div>
 
@@ -1566,9 +1564,125 @@
         </div>
       </div>
 
-      <div class="mt-5 pt-3 border-t border-[var(--surface-border)] text-right">
-        <button id="btnDoneSettings" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium active:scale-95 transition">Done</button>
+            <div class="mt-5 pt-3 border-t border-[var(--surface-border)] flex items-center justify-between">
+        <button id="btnOpenAboutFromSettings" type="button" class="px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl font-bold text-xs flex items-center space-x-1.5 active:scale-95 transition">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i>
+          <span>About Studio</span>
+        </button>
+
+        <button id="btnDoneSettings" type="button" class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white rounded-xl font-bold active:scale-95 transition shadow-md flex items-center space-x-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Save Settings</span>
+        </button>
       </div>
+    </div>
+  </div>
+  <!-- ========================================================================= -->
+  <!-- PROFESSIONAL PLAY STORE ABOUT & LEGAL POLICY MODAL -->
+  <!-- ========================================================================= -->
+  <div id="modalAboutStudio" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)] space-y-3.5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--surface-border)]">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+            <i data-lucide="terminal" class="w-5 h-5 text-cyan-400"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">ANZARG CODE STUDIO</h3>
+            <span id="labelAboutAppVersion" class="text-[10px] text-cyan-400 font-mono font-medium">v7.2 Production Release • Gemini Core</span>
+          </div>
+        </div>
+        <button id="btnCloseAboutStudio" class="text-[var(--text-muted)] hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <div class="text-[10px] uppercase font-bold text-cyan-400 mb-1">Architecture & Offline Service</div>
+          <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">
+            Lightweight, ad-free mobile engineering studio designed for high-performance offline development, real-time sandboxed previews, and resilient workspace persistence.
+          </p>
+        </div>
+
+        <div class="p-2.5 bg-black/25 rounded-xl border border-[var(--surface-border)] font-mono text-[11px] space-y-1">
+          <div class="flex justify-between"><span class="text-[var(--text-muted)]">Persistence:</span><span class="text-emerald-400 font-semibold">IndexedDB v8 (Encrypted)</span></div>
+          <div class="flex justify-between"><span class="text-[var(--text-muted)]">Environment:</span><span class="text-cyan-300 font-semibold">100% Client-Side Engine</span></div>
+        </div>
+
+        <div>
+          <div class="text-[10px] uppercase font-bold text-emerald-400 mb-1">Privacy & Data Safety Policy</div>
+          <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">
+            Compliant with Google Play Data Safety policies. All source code, assets, and storage files remain entirely sandboxed on local hardware. No background telemetry or analytics are collected.
+          </p>
+        </div>
+
+        <!-- DEVELOPER VAULT TRIGGER BUTTON -->
+        <button id="btnOpenMaintainerVault" class="w-full py-2.5 bg-gradient-to-r from-cyan-600/20 to-emerald-600/20 hover:from-cyan-600/30 hover:to-emerald-600/30 border border-cyan-500/40 rounded-xl font-bold text-xs text-cyan-300 flex items-center justify-center space-x-2 active:scale-95 transition shadow-sm">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Developer & Maintainer Vault</span>
+        </button>
+
+        <div class="pt-2 border-t border-[var(--surface-border)] text-center text-[10px] text-[var(--text-muted)] font-mono">
+          Copyright &copy; 2026 ANZARG Studio Core. All Rights Reserved.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVELOPER & SOCIAL LINKS VAULT MODAL -->
+  <div id="modalMaintainerVault" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="app-popup-card w-full max-w-xs text-left border shadow-2xl space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)]">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+            <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-[var(--text-main)]">Maintainer Credentials</h4>
+            <span class="text-[9px] text-emerald-400 font-mono">Verified Lead Architect</span>
+          </div>
+        </div>
+        <button id="btnCloseMaintainerVault" class="text-[var(--text-muted)] hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-2.5 bg-black/25 rounded-xl border border-[var(--surface-border)] font-mono text-[11px] space-y-1.5">
+        <div><span class="text-[var(--text-muted)] text-[10px] block">Lead Architect:</span><span class="text-cyan-300 font-bold">Mohammed Anzar</span></div>
+        <div><span class="text-[var(--text-muted)] text-[10px] block">Verified Brand:</span><span class="text-emerald-300 font-bold">ANZARG Studio Core</span></div>
+      </div>
+
+      <!-- SOCIAL MEDIA CONNECT ICONS -->
+            <div>
+        <div class="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-2">Connect Channels:</div>
+        <div class="grid grid-cols-4 gap-2">
+          <!-- GITHUB -->
+          <a href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-black/30 hover:bg-white/10 border border-[var(--surface-border)] hover:border-cyan-400 text-slate-200 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition" title="GitHub">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span class="text-[9px] font-semibold text-cyan-300">GitHub</span>
+          </a>
+          <!-- YOUTUBE -->
+          <a href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-black/30 hover:bg-rose-500/15 border border-[var(--surface-border)] hover:border-rose-500 text-rose-500 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition" title="YouTube">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <span class="text-[9px] font-semibold text-rose-400">YouTube</span>
+          </a>
+          <!-- INSTAGRAM -->
+          <a href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-black/30 hover:bg-pink-500/15 border border-[var(--surface-border)] hover:border-pink-500 text-pink-500 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition" title="Instagram">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span class="text-[9px] font-semibold text-pink-400">Insta</span>
+          </a>
+          <!-- FACEBOOK -->
+          <a href="#" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-black/30 hover:bg-blue-600/15 border border-[var(--surface-border)] hover:border-blue-500 text-blue-500 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition" title="Facebook">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            <span class="text-[9px] font-semibold text-blue-400">FB</span>
+          </a>
+        </div>
+      </div>
+
+      <button id="btnReturnFromVault" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl transition active:scale-95 shadow-md">
+        Return to Studio
+      </button>
     </div>
   </div>
 
@@ -1676,7 +1790,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.1',
+      version: '7.2',
       edition: 'Developer Master Edition'
     };
 
@@ -2437,10 +2551,15 @@
 
       document.getElementById('btnCloseKeySetupModal')?.addEventListener('click', returnBackToSettingsOrEditor);
 
-      btnToggle?.addEventListener('click', () => {
-        const currentKey = userSettings.geminiApiKey || (inputKey ? inputKey.value.trim() : '');
+                        btnToggle?.addEventListener('click', () => {
+        const currentKey = userSettings.geminiApiKey || '';
         if (!currentKey) {
-          triggerToast("No key currently entered.");
+          showProfessionalPopup({
+            title: "No Key Stored",
+            message: "Abhi koi verified API key saved nahi hai. Niche box mein Google AI Studio ki key enter karke 'Test Connection & Save' karein.",
+            confirmText: "Understood",
+            iconType: "info"
+          });
           return;
         }
 
@@ -2456,34 +2575,88 @@
           iconType: "key",
           onConfirm: () => {
             executeClipboardCopy(currentKey);
+
+            // Re-show modal cleanly without breaking listeners
+            const modalEl = document.getElementById("modalAppPopup");
+            if (modalEl) modalEl.classList.remove("hidden");
+
+            // Hardware Haptic + Left-Right Shake (Repeatable on each tap)
+            const btnConfirm = document.getElementById("btnPopupConfirm");
+            if (btnConfirm) {
+              if (navigator.vibrate) {
+                try { navigator.vibrate([45, 30, 45]); } catch(e){}
+              }
+              btnConfirm.classList.remove('btn-shake-active');
+              void btnConfirm.offsetWidth;
+              btnConfirm.classList.add('btn-shake-active');
+
+              const isAlready = btnConfirm.getAttribute('data-copied') === 'true';
+              btnConfirm.setAttribute('data-copied', 'true');
+              
+              btnConfirm.innerHTML = isAlready 
+                ? `<i data-lucide="check-check" class="w-3.5 h-3.5"></i><span>Already Copied! ✓</span>`
+                : `<i data-lucide="check" class="w-3.5 h-3.5"></i><span>Key Copied ✓</span>`;
+                
+              btnConfirm.className = "flex-1 px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition flex items-center justify-center space-x-1.5";
+              if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+
+            // Ensure Dismiss button remains 100% active
+            const btnCancel = document.getElementById("btnPopupCancel");
+            if (btnCancel) {
+              btnCancel.onclick = () => {
+                if (modalEl) modalEl.classList.add("hidden");
+              };
+            }
+          },
+          onCancel: () => {
+            const modalEl = document.getElementById("modalAppPopup");
+            if (modalEl) modalEl.classList.add("hidden");
           }
         });
       });
 
-      // POINT 2: CONFIRMATION DIALOG BEFORE REMOVING KEY
+      // PROFESSIONAL KEY REMOVAL CONTROLLER (STRICT VALIDATION BRIDGE)
       btnRemove?.addEventListener('click', () => {
-        const currentKey = userSettings.geminiApiKey || (inputKey ? inputKey.value.trim() : '');
-        if (!currentKey) {
-          triggerToast("Koi key active nahi hai.");
+        const verifiedSavedKey = userSettings.geminiApiKey;
+        const typedInput = inputKey ? inputKey.value.trim() : '';
+
+        // Strict Check: Agar saved key nahi hai ya sirf unverified text box mein hai
+        if (!verifiedSavedKey) {
+          if (typedInput) {
+            inputKey.value = '';
+            triggerToast("Unverified input cleared.");
+            if (boxStatus) boxStatus.textContent = "Status: No custom key. Using high-speed fallback proxy.";
+          } else {
+            showProfessionalPopup({
+              title: "No Active API Key",
+              message: "Studio environment mein koi custom API key save nahi hai.\n\nStudio default high-speed proxy engine par operational hai.",
+              confirmText: "Got It",
+              iconType: "info"
+            });
+          }
           return;
         }
 
+        // Verified key database mein maujood hone par hi Detach confirmation aayega
         showProfessionalPopup({
-          title: "API Key Remove Karein?",
-          message: "Kya aap API key detach karna chahte hain?\nApp Google AI Studio se disconnect hokar default fallback mode par switch ho jayega.",
-          confirmText: "Yes, Remove",
-          cancelText: "Cancel",
+          title: "API Key Detach Confirmation",
+          message: "Kya aap saved Google AI Studio key remove karna chahte hain?\n\nKey remove hote hi Studio automatically zero-configuration default proxy mode par fallback ho jayega.",
+          confirmText: "Yes, Detach Key",
+          cancelText: "Keep Key",
           iconType: "warning",
+          confirmColor: "from-rose-600 to-red-600",
           onConfirm: () => {
             userSettings.geminiApiKey = '';
             if (inputKey) inputKey.value = '';
             scheduleAutoSave();
             updateBadge(false);
-            if (boxStatus) boxStatus.textContent = "Status: Key removed. Default fallback active.";
+            if (boxStatus) boxStatus.textContent = "Status: No custom key. Using high-speed fallback proxy.";
             showProfessionalPopup({
-              title: "Key Detached",
-              message: "Custom key remove ho gayi hai. Studio default zero-delay fallback route par switch ho gaya hai.",
-              iconType: "warning",
+              title: "Default Proxy Active",
+              message: "Custom API key safely detach kar di gayi hai.\nStudio ab default zero-delay fallback mode par operational hai.",
+              confirmText: "Confirm",
+              iconType: "info",
               onConfirm: () => {
                 returnBackToSettingsOrEditor();
               }
@@ -2492,18 +2665,21 @@
         });
       });
 
+      // SMART VERIFICATION & SAVE HANDSHAKE
       btnVerify?.addEventListener('click', async () => {
         const rawKey = (inputKey ? inputKey.value : '').replace(/\s+/g, '').trim();
 
         if (!rawKey) {
-          userSettings.geminiApiKey = '';
-          scheduleAutoSave();
-          updateBadge(false);
           showProfessionalPopup({
-            title: "Fallback Proxy Active",
-            message: "Koi key nahi dali gayi. Studio default proxy mode par run karega.",
-            iconType: "info",
+            title: "Default Proxy Mode Notice",
+            message: "Aapne koi custom Gemini API key enter nahi ki hai.\n\nStudio default high-speed proxy engine par chalega. Kya aap default mode confirm karna chahte hain?",
+            confirmText: "Continue Default",
+            cancelText: "Enter Key",
+            iconType: "warning",
             onConfirm: () => {
+              userSettings.geminiApiKey = '';
+              scheduleAutoSave();
+              updateBadge(false);
               returnBackToSettingsOrEditor();
             }
           });
@@ -2524,8 +2700,13 @@
         if (boxStatus) boxStatus.textContent = "Status: Google AI Studio server se test handshake chal raha hai...";
         triggerToast("Verifying with Google server...");
 
+        const originalBtnText = btnVerify.innerHTML;
+        btnVerify.disabled = true;
+        btnVerify.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Verifying...</span>`;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
         try {
-          const testEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${encodeURIComponent(rawKey)}`;
+          const testEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(rawKey)}`;
           const response = await fetch(testEndpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2548,17 +2729,27 @@
             return;
           }
 
+          // Strict Save: Handshake successful hone ke baad hi database mein save hoga
           userSettings.geminiApiKey = rawKey;
           scheduleAutoSave();
           updateBadge(true);
+          if (boxStatus) boxStatus.textContent = "Status: Verified Key is secured in storage.";
 
           showProfessionalPopup({
             title: "API Connection Verified!",
             message: "Aapki Gemini API Key Google server dwara 100% verify ho chuki hai. Studio ab direct live quota par active hai!",
             confirmText: "Confirm",
+            cancelText: "Change Key",
             iconType: "success",
             onConfirm: () => {
               returnBackToSettingsOrEditor();
+            },
+            onCancel: () => {
+              if (inputKey) {
+                inputKey.focus();
+                inputKey.select();
+              }
+              triggerToast("Enter new key to replace.");
             }
           });
 
@@ -2570,6 +2761,10 @@
             iconType: "danger"
           });
           if (boxStatus) boxStatus.textContent = "Status: Network handshake timeout.";
+        } finally {
+          btnVerify.disabled = false;
+          btnVerify.innerHTML = originalBtnText;
+          if (typeof lucide !== 'undefined') lucide.createIcons();
         }
       });
     }
@@ -3601,6 +3796,15 @@ Rules:
         tabEl.appendChild(closeBtn);
 
         tabEl.onclick = () => handleSwitchTab(tab.id);
+        tabEl.ondblclick = () => {
+          const inputRename = document.getElementById('inputRenameName');
+          const modalRename = document.getElementById('modalRename');
+          if (inputRename && modalRename) {
+            inputRename.value = tab.name;
+            modalRename.classList.remove('hidden');
+            inputRename.focus();
+          }
+        };
         container.appendChild(tabEl);
       });
 
@@ -4160,6 +4364,15 @@ Rules:
         return;
       }
 
+            const vaultModal = document.getElementById('modalMaintainerVault');
+      const aboutModal = document.getElementById('modalAboutStudio');
+      if (vaultModal && !vaultModal.classList.contains('hidden')) {
+        vaultModal.classList.add('hidden');
+        if (aboutModal) aboutModal.classList.remove('hidden');
+        window.history.pushState({ page: 'editor' }, '');
+        return;
+      }
+
       const keyModal = document.getElementById('modalGeminiKeySetup');
       const settingsModal = document.getElementById('modalSettings');
       if (keyModal && !keyModal.classList.contains('hidden')) {
@@ -4187,7 +4400,7 @@ Rules:
         'modalDiagnosticReport',
         'modalPatchStudio',
         'modalConflictShield',
-        'modalAiCopilot',
+              'modalAiCopilot',
         'modalEditCopilotContext',
         'modalAppPopup'
       ];
@@ -4393,11 +4606,16 @@ Rules:
       document.getElementById('btnCropZoomOut')?.addEventListener('click', () => cropperInstance?.zoom(-0.1));
       document.getElementById('btnCropRotate')?.addEventListener('click', () => cropperInstance?.rotate(90));
 
-      const closeCropper = () => {
+            const closeCropper = () => {
         cropModal?.classList.add('hidden');
         if (cropperInstance) {
           cropperInstance.destroy();
           cropperInstance = null;
+        }
+        // Agar Settings modal se khula tha toh dashboard par fekane ke badle settings par wapis aayega
+        const settingsModal = document.getElementById('modalSettings');
+        if (settingsModal) {
+          settingsModal.classList.remove('hidden');
         }
       };
 
@@ -4415,7 +4633,7 @@ Rules:
 
         const dataUrl = canvas.toDataURL('image/png', 0.92);
 
-        if (currentCropTarget === 'logo') {
+                if (currentCropTarget === 'logo') {
           await storeSave('studio_custom_logo', dataUrl);
           applyLogoToUI(dataUrl);
           triggerToast("Logo Saved!");
@@ -4425,6 +4643,10 @@ Rules:
           triggerToast("Banner Saved!");
         }
         closeCropper();
+        const settingsModal = document.getElementById('modalSettings');
+        if (settingsModal) {
+          settingsModal.classList.remove('hidden');
+        }
       });
     }
 
@@ -4492,8 +4714,11 @@ Rules:
       }
     }
 
-    async function exportTabAsZip(singleTabOnly = false) {
-      if (!window.JSZip) return;
+        async function exportTabAsZip(singleTabOnly = false) {
+      if (!window.JSZip) {
+        triggerToast("ZIP engine load nahi hua!");
+        return;
+      }
       if (textarea && activeFileId) {
         const cur = fileTabs.find(t => t.id === activeFileId);
         if (cur) cur.content = textarea.value;
@@ -4509,15 +4734,48 @@ Rules:
       const zipContent = await zip.generateAsync({ type: 'blob' });
       const defaultZipName = singleTabOnly ? `${tabsToExport[0].name.replace(/\.[^/.]+$/, "")}.zip` : `anzarg-project-${Date.now()}.zip`;
 
-      const url = URL.createObjectURL(zipContent);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = defaultZipName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      triggerToast("Exported as ZIP!");
+      // STRICT LAYER 1: Modern Native Storage Picker Check
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultZipName,
+            types: [{
+              description: 'ZIP Archive Project',
+              accept: { 'application/zip': ['.zip'] }
+            }]
+          });
+
+          // User ne file name choose kiya aur Save daba diya
+          const writable = await handle.createWritable();
+          await writable.write(zipContent);
+          await writable.close();
+          triggerToast("ZIP Saved to Selected Folder!");
+          return;
+
+        } catch (err) {
+          // STRICT CANCEL GUARD: Agar user ne cancel kiya toh seedha exit, zabardasti download bilkul nahi hoga
+          if (err.name === 'AbortError' || err.code === 20) {
+            triggerToast("Export Cancelled");
+            return;
+          }
+          console.warn("Storage picker unexpected error, checking fallback...", err);
+        }
+      }
+
+      // STRICT LAYER 2: Fallback sirf tabhi chalega jab native support na ho ya hardware fail ho (User Cancel nahi)
+      try {
+        const url = URL.createObjectURL(zipContent);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = defaultZipName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        triggerToast("Direct Download Complete!");
+      } catch (e) {
+        triggerToast("Export failed completely!");
+      }
     }
 
     function applyAppTheme(themeName) {
@@ -4590,29 +4848,69 @@ Rules:
     }
 
     function setupCustomModals() {
+        if (sessionStorage.getItem('openDrawerAfterRestart') === 'true') {
+      sessionStorage.removeItem('openDrawerAfterRestart');
+      setTimeout(() => openDrawerPanel(), 100);
+    }
+                 // PLAY STORE ABOUT & MAINTAINER VAULT CONTROLLERS (WITH SMART BACK-STACK)
+      const modalAbout = document.getElementById('modalAboutStudio');
+      const modalVault = document.getElementById('modalMaintainerVault');
+      let openedAboutFromSettings = false;
+
       document.getElementById('dNavAbout')?.addEventListener('click', () => {
+        openedAboutFromSettings = false;
         closeDrawerPanel();
-        showProfessionalPopup({
-          title: "About ANZARG Code Studio",
-          message: `ANZARG CODE STUDIO v${APP_CONFIG.version}\n\n100% Offline Mobile Code Architecture • Zero Data Loss • Gemini 3.8/3.1 Integration\nDeveloped by Mohammed Anzar.`,
-          iconType: "info"
-        });
+        modalAbout?.classList.remove('hidden');
       });
 
-      document.getElementById('dNavResetWorkspace')?.addEventListener('click', () => {
+      // Agar Settings ke andar se About open hota hai
+      document.getElementById('btnOpenAboutFromSettings')?.addEventListener('click', () => {
+        openedAboutFromSettings = true;
+        modalSet?.classList.add('hidden');
+        modalAbout?.classList.remove('hidden');
+      });
+
+                     // Cut (✖) dabane par smart back navigation
+      document.getElementById('btnCloseAboutStudio')?.addEventListener('click', () => {
+        modalAbout?.classList.add('hidden');
+        if (openedAboutFromSettings) {
+          modalSet?.classList.remove('hidden');
+        } else {
+          openDrawerPanel();
+        }
+      });
+
+      document.getElementById('btnOpenMaintainerVault')?.addEventListener('click', () => {
+        modalAbout?.classList.add('hidden');
+        modalVault?.classList.remove('hidden');
+      });
+
+            const returnToAboutModal = () => {
+        modalVault?.classList.add('hidden');
+        modalAbout?.classList.remove('hidden');
+      };
+
+      document.getElementById('btnCloseMaintainerVault')?.addEventListener('click', returnToAboutModal);
+      document.getElementById('btnReturnFromVault')?.addEventListener('click', returnToAboutModal);
+
+            document.getElementById('dNavResetWorkspace')?.addEventListener('click', () => {
         closeDrawerPanel();
         showProfessionalPopup({
-          title: "Reset Workspace Data?",
-          message: "Aapka saara saved tabs data aur settings IndexedDB se clear ho jayega. Kya aap continue karna chahte hain?",
-          confirmText: "Yes, Reset",
+          title: "Clear Cache & Restart Studio",
+          message: "Current session cache aur temporary editor tabs IndexedDB se wipe ho jayenge. Studio clean default state par restart hoga.",
+          confirmText: "Restore Default",
           cancelText: "Cancel",
           iconType: "danger",
-          onConfirm: async () => {
+                    onConfirm: async () => {
             clearTimeout(autoDebounceTimer);
             try { await storeClearAll(); } catch(e){}
-            try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
-            triggerToast("Workspace reset! Restarting...");
-            setTimeout(() => window.location.reload(), 300);
+            try { localStorage.clear(); } catch(e){}
+            sessionStorage.setItem('openDrawerAfterRestart', 'true');
+            triggerToast("Studio restored! Restarting...");
+            setTimeout(() => window.location.reload(), 350);
+          },
+          onCancel: () => {
+            openDrawerPanel();
           }
         });
       });
@@ -4737,21 +5035,20 @@ Rules:
         modalSet?.classList.remove('hidden');
       };
 
-      document.getElementById('optSettings')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        openSettings();
-      });
-      document.getElementById('dNavSettings')?.addEventListener('click', () => {
+            document.getElementById('dNavSettings')?.addEventListener('click', () => {
         closeDrawerPanel();
         openSettings();
       });
-      document.getElementById('btnCloseSettings')?.addEventListener('click', () => modalSet?.classList.add('hidden'));
+            document.getElementById('btnCloseSettings')?.addEventListener('click', () => {
+        if (modalSet) modalSet.classList.add('hidden');
+      });
+
       document.getElementById('btnDoneSettings')?.addEventListener('click', () => {
         const modelSelect = document.getElementById('settingSelectGeminiModel');
         if (modelSelect) userSettings.geminiModel = modelSelect.value;
         scheduleAutoSave();
-        modalSet?.classList.add('hidden');
-        triggerToast("Preferences Saved!");
+        if (modalSet) modalSet.classList.add('hidden');
+        triggerToast("Settings Saved!");
       });
 
       document.getElementById('settingSelectAnimStyle')?.addEventListener('change', (e) => {
@@ -5059,6 +5356,8 @@ Rules:
 
       if (savedLogo) applyLogoToUI(savedLogo);
       if (savedBanner) applyBannerToUI(savedBanner);
+      const aboutVerEl = document.getElementById('labelAboutAppVersion');
+      if (aboutVerEl) aboutVerEl.textContent = `v${APP_CONFIG.version} Production Release • Gemini Core`;
 
       initNativeEditor();
       const currentTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];

@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.3 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.4 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -1603,7 +1603,7 @@
           </div>
           <div>
             <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">ANZARG CODE STUDIO</h3>
-            <span class="text-[10px] text-cyan-400 font-mono font-medium">Production Release • Gemini Core</span>
+           <span id="badgeAboutAppVersion" class="text-[10px] text-cyan-400 font-mono font-medium">Production v7.4 • Gemini Core</span>
           </div>
         </div>
         <button id="btnCloseAboutStudio" class="text-[var(--text-muted)] hover:text-white p-1">
@@ -1804,7 +1804,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.3',
+      version: '7.4',
       edition: 'Developer Master Edition'
     };
 
@@ -3149,10 +3149,11 @@
         boxMessages.appendChild(aiDiv);
         boxMessages.scrollTop = boxMessages.scrollHeight;
 
-        let systemInstruction = `You are ANZARG CODE STUDIO Copilot, a senior web development assistant.
+                let systemInstruction = `You are ANZARG CODE STUDIO Engine.
 Rules:
-1. Provide accurate, clean code solutions for single-file web applications.
-2. When writing replacement code, explain changes concisely, then output the snippet in standard markdown blocks (\`\`\`html or \`\`\`javascript).`;
+1. Give complete single-file runnable code immediately without theory or long explanation.
+2. Put the code strictly inside markdown block (\`\`\`html ... \`\`\`).
+3. Never waste time on introduction. Start output directly.`;
 
         let codeContextSnippet = "";
         if (activeStudioContext.isValid()) {
@@ -3185,31 +3186,63 @@ Rules:
 
           aiDiv.innerHTML = `<div>${formattedText}</div>`;
 
-          // POINT 3: SMART AUTO-SWAP LOAD BUTTON
+                    // SMART 1-TAP ACTION CONTROLS (NEW TAB + INSTANT RUN)
           if (codeSnippets.length > 0) {
-            const patchBtn = document.createElement('button');
-            patchBtn.className = 'w-full py-2 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl flex items-center justify-center space-x-1.5 active:scale-95 transition shadow-md mt-2';
-            patchBtn.innerHTML = `<i data-lucide="layers" class="w-3.5 h-3.5"></i><span>1-Tap Patch Code to File</span>`;
-            patchBtn.onclick = () => {
-              const snippetToInject = codeSnippets[0];
+            const generatedCode = codeSnippets[0];
+            const btnStrip = document.createElement('div');
+            btnStrip.className = 'grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-[var(--surface-border)] font-mono';
+
+            // 1. Direct New Tab Button
+            const btnNewTab = document.createElement('button');
+            btnNewTab.className = 'py-2 px-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-[11px] flex items-center justify-center space-x-1 active:scale-95 transition shadow';
+            btnNewTab.innerHTML = `<i data-lucide="plus-square" class="w-3.5 h-3.5"></i><span>1-Tap New Tab</span>`;
+            btnNewTab.onclick = () => {
               modal.classList.add('hidden');
-              const patchModal = document.getElementById('modalPatchStudio');
-              const targetNew = document.getElementById('inputTargetNew');
-              const targetOld = document.getElementById('inputTargetOld');
-
-              if (targetNew) targetNew.value = snippetToInject;
-              
-              // Auto-Detecting matching old code block from active file
-              const detectedOld = autoDetectOldCodeMatch(snippetToInject);
-              if (targetOld) targetOld.value = detectedOld;
-
-              if (patchModal) {
-                patchModal.classList.remove('hidden');
-                document.getElementById('tabModeTarget')?.click();
-              }
-              triggerToast(detectedOld ? "Auto-Matched Old Code!" : "Loaded into Patch Studio!");
+              const nextName = `app-${fileTabs.length + 1}.html`;
+              const freshTab = createFreshBlankTab(nextName, generatedCode);
+              fileTabs.push(freshTab);
+              handleSwitchTab(freshTab.id);
+              triggerToast(`Created & Pasted in ${nextName}!`);
             };
-            aiDiv.appendChild(patchBtn);
+
+            // 2. Instant Live Run Button
+            const btnInstantRun = document.createElement('button');
+            btnInstantRun.className = 'py-2 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-[11px] flex items-center justify-center space-x-1 active:scale-95 transition shadow';
+            btnInstantRun.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Instant Run</span>`;
+            btnInstantRun.onclick = () => {
+              modal.classList.add('hidden');
+              const currentTab = fileTabs.find(t => t.id === activeFileId);
+              if (currentTab && textarea) {
+                recordHistory();
+                currentTab.content = generatedCode;
+                textarea.value = generatedCode;
+                updateLineNumbers();
+                updateSyntaxHighlightingOptimized();
+                markActiveModified();
+              }
+              document.getElementById('btnHeaderRun')?.click();
+            };
+                        // 3. Batch Auto-Merge Button (For Batch 1, 2, 3 Stacking)
+            const btnBatchStack = document.createElement('button');
+            btnBatchStack.className = 'col-span-2 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-[11px] flex items-center justify-center space-x-1.5 active:scale-95 transition shadow';
+            btnBatchStack.innerHTML = `<i data-lucide="layers" class="w-3.5 h-3.5"></i><span>Auto-Merge to Active Tab</span>`;
+            btnBatchStack.onclick = () => {
+              modal.classList.add('hidden');
+              recordHistory();
+              if (!textarea.value.trim()) {
+                textarea.value = generatedCode;
+              } else {
+                textarea.value = textarea.value.trimEnd() + '\n' + generatedCode;
+              }
+              updateLineNumbers();
+              updateSyntaxHighlightingOptimized();
+              markActiveModified();
+              triggerToast("Batch Successfully Merged!");
+            };
+
+            btnStrip.appendChild(btnNewTab);
+            btnStrip.appendChild(btnInstantRun);
+            btnStrip.appendChild(btnBatchStack);
             if (window.lucide) lucide.createIcons();
           }
 
@@ -5075,8 +5108,12 @@ Rules:
       const btnCheckUpdate = document.getElementById('btnManualCheckUpdate');
       const badgeUpdate = document.getElementById('badgeSettingsUpdateStatus');
 
+            const badgeAbout = document.getElementById('badgeAboutAppVersion');
       if (badgeUpdate) {
         badgeUpdate.textContent = `v${APP_CONFIG.version} (Active)`;
+      }
+      if (badgeAbout) {
+        badgeAbout.textContent = `Production v${APP_CONFIG.version} • Gemini Core`;
       }
 
       btnCheckUpdate?.addEventListener('click', async () => {
@@ -5257,13 +5294,16 @@ Rules:
         logsBox.scrollTop = logsBox.scrollHeight;
       }
 
-      window.addEventListener('message', (e) => {
+            window.addEventListener('message', (e) => {
         if (e.data?.source === 'anzarg-frame-console') {
           appendLog(e.data.type, e.data.message);
         }
+        if (e.data?.source === 'anzarg-runtime-error') {
+          triggerToast(`⚠️ Bug Found on Line ${e.data.line}!`);
+        }
       });
 
-      function buildInjectedSource(raw) {
+            function buildInjectedSource(raw) {
         const interceptor = `
           <script>
             (function(){
@@ -5279,7 +5319,10 @@ Rules:
               console.log = function(){ _log.apply(console, arguments); forward('log', arguments); };
               console.error = function(){ _err.apply(console, arguments); forward('error', arguments); };
               console.warn = function(){ _warn.apply(console, arguments); forward('warn', arguments); };
-              window.onerror = function(msg, url, l){ forward('error', msg + ' (Line ' + l + ')'); };
+              window.onerror = function(msg, url, lineNo, colNo){ 
+                forward('error', msg + ' (Line ' + lineNo + ')'); 
+                window.parent.postMessage({ source: 'anzarg-runtime-error', line: lineNo, error: msg }, '*');
+              };
             })();
           <\/script>
         `;

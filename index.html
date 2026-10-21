@@ -140,7 +140,9 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+        html, body {
+      position: fixed;
+      inset: 0;
       height: 100%;
       height: 100dvh;
       width: 100vw;
@@ -470,22 +472,11 @@
             <span class="ticker-item text-emerald-300">Install App</span>
           </div>
         </div>
-      </button>
+            </button>
 
-      <button id="btnHeaderDirectCopilot" class="hidden"></button>
-      <div id="slotHeaderCustom" class="w-7 h-7 mr-0.5 pointer-events-none"></div>
-      <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
-        <i data-lucide="undo-2" class="w-4 h-4"></i>
-      </button>
-      <button id="btnHeaderRedo" title="Redo" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
-        <i data-lucide="redo-2" class="w-4 h-4"></i>
-      </button>
-      <button id="btnHeaderSave" title="Save File" class="p-1.5 rounded-lg hover:bg-black/5 text-emerald-500 hover:text-emerald-400 active:scale-90 transition">
-        <i data-lucide="save" class="w-4 h-4"></i>
-      </button>
-      <button id="btnHeaderSearch" title="Search & Replace" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
-        <i data-lucide="search" class="w-4 h-4"></i>
-      </button>
+      <!-- FUTURE ACTIONS EMPTY SLOT (RESERVED FOR NEW FEATURES) -->
+      <div id="slotHeaderFutureActions" class="flex items-center space-x-1"></div>
+
       <button id="btnHeaderRun" title="Live Preview" class="p-1.5 rounded-lg hover:bg-black/5 text-cyan-500 hover:text-cyan-400 active:scale-90 transition">
         <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
       </button>
@@ -493,9 +484,9 @@
       <div class="relative">
         <button id="btnHeaderMore" aria-label="More Menu" class="p-1.5 rounded-lg hover:bg-black/5 text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-90 transition">
           <i data-lucide="more-vertical" class="w-4 h-4"></i>
-        </button>
+        </button>        
 
-        <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-64 bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-50 text-sm backdrop-blur-md">
+        <div id="menuOverflowDropdown" class="hidden absolute right-0 mt-1.5 w-64 max-h-[48vh] overflow-y-auto no-scrollbar bg-[var(--surface)] border border-[var(--surface-border)] rounded-2xl shadow-2xl py-1.5 z-[9999] text-sm backdrop-blur-md">
           <button id="optOpenAiCopilot" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-purple-400 font-bold">
             <i data-lucide="bot" class="w-4 h-4 text-purple-400"></i>
             <span>Gemini AI Copilot Chat</span>
@@ -521,9 +512,13 @@
             <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
             <span>Save As / Export</span>
           </button>
-          <button id="optExportSingleZip" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-500"></i>
+                    <button id="optExportSingleZip" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs hover:bg-[var(--surface-hover)] text-slate-300 transition">
+            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-400"></i>
             <span>Export Active Tab as (.ZIP)</span>
+          </button>
+          <button id="optExtractJs" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs hover:bg-[var(--surface-hover)] text-amber-300 transition">
+            <i data-lucide="file-code" class="w-4 h-4 text-amber-400"></i>
+            <span>Extract JS to New Tab</span>
           </button>
           <button id="optGoToLine" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
@@ -547,9 +542,13 @@
             </span>
             <input type="checkbox" id="checkReadOnlyState" class="accent-cyan-500 rounded cursor-pointer pointer-events-none">
           </button>
-          <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+                    <button id="optStats" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-500"></i>
             <span>File Statistics</span>
+          </button>
+          <button id="optSettingsMenu" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
+            <i data-lucide="settings" class="w-4 h-4 text-purple-400"></i>
+            <span>Settings</span>
           </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
           <button id="optForceExitApp" class="w-full text-left px-3.5 py-2 hover:bg-rose-500/10 flex items-center space-x-2.5 text-rose-400 font-medium">
@@ -613,7 +612,12 @@
   <!-- MAIN EDITOR AREA -->
   <main id="editorContainer">
     <div id="lineNumbersGutter">1</div>
-    <div id="editorStage">
+        <div id="editorStage">
+      <!-- DYNAMIC CYBER DOT-MATRIX WATERMARK (ZERO-INTERFERENCE BACKGROUND) -->
+      <div id="editorTerminalWatermark" class="pointer-events-none select-none absolute inset-0 flex items-center justify-center opacity-[0.07] z-0 overflow-hidden font-mono font-black text-center text-cyan-400 tracking-widest uppercase transition-all duration-300">
+        <pre id="watermarkAsciiDisplay" class="font-mono text-[11px] leading-tight select-none pointer-events-none m-0 p-0 text-cyan-300 drop-shadow-[0_0_12px_rgba(0,242,254,0.3)]">ANZARG</pre>
+      </div>
+
       <pre id="syntaxHighlightPre" aria-hidden="true"><code id="syntaxHighlightCode" class="language-markup"></code></pre>
       <textarea id="codeTextarea" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Write code here..."></textarea>
     </div>
@@ -671,16 +675,32 @@
     <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition shrink-0">
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
+            <!-- KEYBOARD MODE TOGGLE (CUSTOM SLIM vs SYSTEM GBOARD) -->
+        <button id="btnToggleCustomKeyboard" title="Switch Keyboard (Slim / System)" class="px-2 py-1 rounded-lg bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-mono text-[10px] font-bold active:scale-95 transition flex items-center space-x-1 shrink-0 mr-1.5">
+          <span id="labelKbdModeIcon">⌨️</span>
+          <span id="labelKbdModeText" class="text-[9px]">SLIM</span>
+        </button>
 
-    <!-- Pinned Sticky Minimize Arrow -->
-    <div class="sticky-dock-pin flex items-center pl-1 pr-1.5 h-full">
-      <button id="btnToggleAccessoryBar" title="Minimize Dev Keys" class="px-2 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs font-bold active:scale-90 transition flex items-center justify-center shadow-md">
-        ▼
-      </button>
-    </div>
+            <!-- PERMANENT CORNER DOCK ANCHOR (NEVER VANISHES) -->
+        <div class="sticky-dock-pin flex items-center pl-1.5 shrink-0 z-50">
+          <button id="btnPermanentDockAnchor" type="button" title="Toggle Bottom Bars View" class="w-7 h-7 rounded-lg bg-[#161b22] border border-cyan-500/40 text-cyan-400 font-mono text-xs font-bold active:scale-90 active:bg-cyan-500 active:text-black transition flex items-center justify-center shadow-md">
+            <span id="labelDockAnchorIcon">▼</span>
+          </button>
+        </div>
   </div>
+    <!-- ULTRA-SLIM CUSTOM CYBER CODING KEYBOARD -->
+    <div id="customCyberKeyboard" class="hidden w-full bg-[#0a0d14] border-t border-cyan-500/30 p-1 flex flex-col space-y-1 select-none z-30 transition-all duration-200">
+
+      <!-- Main Dynamic QWERTY Matrix -->
+      <div id="cyberKbdGrid" class="flex flex-col space-y-1"></div>
+    </div>
 
   <!-- ROW 2: QUICKEDIT NAVIGATION BAR -->
+      <!-- SMART DOCK RESCUE PILL (PREVENTS ACCIDENTAL HIDE / LOCKOUT) -->
+    <button id="btnSmartRestoreDock" title="Restore Action Bars" class="hidden fixed bottom-2 right-2 z-[9999] px-2.5 py-1 rounded-full bg-cyan-500/20 border border-cyan-400 text-cyan-300 font-mono text-[10px] font-bold shadow-lg shadow-cyan-500/20 active:scale-95 transition flex items-center space-x-1">
+      <span>▲</span>
+      <span>DOCK</span>
+    </button>
   <footer id="bottomQuickEditBar" class="h-11 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center justify-between px-2 shrink-0 select-none z-20 action-bar-transition transition-colors">
     <div class="flex items-center justify-around flex-1 h-full">
       <button id="btnBottomUndo" title="Undo" class="quickedit-nav-btn">
@@ -1169,32 +1189,107 @@
     </div>
   </div>
 
-  <!-- MODAL: PATH INSPECTOR & DEVICE FOLDER PICKER -->
-  <div id="modalPathDetails" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)] space-y-3">
-      <div class="flex items-center justify-between border-b border-[var(--surface-border)] pb-2.5">
-        <h3 class="font-bold text-sm text-cyan-400 flex items-center space-x-1.5">
-          <i data-lucide="folder" class="w-4 h-4 text-amber-400"></i>
-          <span>Device File & Folder Path</span>
-        </h3>
-        <button id="btnClosePathModal" class="text-[var(--text-muted)] hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </div>
-      <div class="space-y-2 bg-black/20 p-3 rounded-xl border border-[var(--surface-border)] font-mono text-[11px]">
-        <div><span class="text-[var(--text-muted)]">File Name:</span> <span id="viewModalFileName" class="text-cyan-300 font-bold">index.html</span></div>
-        <div><span class="text-[var(--text-muted)]">Active Folder:</span> <span id="viewModalFolder" class="text-emerald-300">Internal Storage</span></div>
-        <div class="break-all"><span class="text-[var(--text-muted)]">Full Storage Path:</span> <span id="viewModalFullPath" class="text-purple-300">/storage/emulated/0/index.html</span></div>
-        <div><span class="text-[var(--text-muted)]">Origin:</span> <span id="viewModalOrigin" class="text-amber-300">Device File</span></div>
-      </div>
-      <div class="space-y-2 pt-2 border-t border-[var(--surface-border)]">
-        <button id="btnTriggerCustomFolderModal" class="w-full py-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition">
-          <i data-lucide="folder-cog" class="w-3.5 h-3.5"></i>
-          <span>Change Project / Folder Name</span>
+              <!-- APPLICATION NATIVE TAB & FOLDER INSPECTOR MODAL -->
+  <div id="modalPathDetails" class="hidden fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-[#13171f] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+      
+      <!-- Clean Header -->
+      <div class="flex items-center justify-between px-4 py-3 bg-[#0a0d14] border-b border-slate-800 shrink-0">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="file-badge" class="w-4 h-4 text-cyan-400"></i>
+          <span class="text-xs font-mono font-bold text-slate-200 tracking-wider">TAB INSPECTOR</span>
+        </div>
+        <button type="button" id="btnClosePathModal" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
-        <button id="btnModalCopyFullPath" class="w-full py-2 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-          <span>Copy Full Path</span>
-        </button>
-        <button id="btnModalDonePath" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition">Done</button>
+      </div>
+
+      <!-- Main Body -->
+      <div class="p-3.5 space-y-3 font-mono text-xs overflow-y-auto no-scrollbar flex-1">
+        
+        <!-- 1. Quick File Rename & Dynamic Status/Language Header -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-[9px] uppercase tracking-wider font-bold px-0.5">
+            <!-- Language & Encoding Chip -->
+            <span id="inspectorLangBadge" class="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono">HTML5 • UTF-8</span>
+            
+            <!-- Live Unsaved / Clean Status Badge -->
+            <span id="inspectorDirtyBadge" class="flex items-center space-x-1.5 text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>All Saved</span>
+            </span>
+          </div>
+
+          <div class="flex items-center space-x-1.5">
+            <input type="text" id="inspectorFileNameInput" class="grow bg-[#0a0d14] border border-slate-700/80 focus:border-cyan-400 rounded-xl px-3 py-2 text-cyan-300 font-mono text-xs outline-none transition" spellcheck="false">
+            <button type="button" id="btnInspectorApplyRename" class="px-3.5 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-black border border-cyan-500/40 font-bold transition">Save</button>
+          </div>
+        </div>
+
+        <!-- 2. Live File Stats Card (Proportional Ratio: 25% Size, 27% Lines, 48% Modified Deck with Relative Timer) -->
+        <div class="flex items-stretch bg-[#0a0d14] rounded-xl border border-slate-800/80 p-2 text-center">
+          <!-- Size (25%) -->
+          <div class="w-[25%] flex flex-col justify-center px-1">
+            <div class="text-[9px] text-slate-500 uppercase font-sans tracking-wide">Size</div>
+            <div id="inspectorStatSize" class="text-xs font-bold text-amber-300 truncate mt-0.5">-- KB</div>
+          </div>
+          
+          <!-- Lines (27%) -->
+          <div class="w-[27%] flex flex-col justify-center px-1 border-x border-slate-800">
+            <div class="text-[9px] text-slate-500 uppercase font-sans tracking-wide">Lines</div>
+            <div id="inspectorStatLines" class="text-xs font-bold text-cyan-300 truncate mt-0.5">--</div>
+          </div>
+          
+          <!-- Modified Deck (48% with Exact 4-Digit Year + Seconds + Relative Timer) -->
+          <div class="w-[48%] flex flex-col justify-center px-1.5">
+            <div class="flex items-center justify-between text-[9px] text-slate-500 uppercase font-sans tracking-wide">
+              <span>Modified</span>
+              <span id="inspectorRelativeTime" class="text-[8px] text-amber-400/90 font-mono lowercase">just now</span>
+            </div>
+            <div id="inspectorStatDate" class="text-[10px] font-bold text-emerald-400 leading-tight mt-0.5 whitespace-nowrap">--</div>
+            <div id="inspectorStatTime" class="text-[10px] font-mono text-cyan-300/90 leading-tight whitespace-nowrap">--</div>
+          </div>
+        </div>
+
+        <!-- 3. Full Storage Path (Smooth Left-Right Swipeable) -->
+        <div class="space-y-1">
+          <div class="flex justify-between items-center text-[9px] text-slate-400">
+            <span class="uppercase tracking-wider font-bold">Storage Path</span>
+            <span class="text-[8px] text-slate-500 font-sans">Swipe ◀ ▶</span>
+          </div>
+          <div class="bg-[#0a0d14] rounded-xl border border-slate-800/80 p-2 overflow-x-auto no-scrollbar">
+            <div id="viewModalFullPathDisplay" class="text-slate-300 text-[11px] whitespace-nowrap select-all font-mono">/storage/emulated/0/...</div>
+          </div>
+        </div>
+
+        <!-- 4. Folder Files Quick-Pick (Single File Open on Tap) -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center px-0.5">
+            <span class="text-[9px] uppercase tracking-wider font-bold text-cyan-400 flex items-center space-x-1">
+              <i data-lucide="folder" class="w-3 h-3"></i>
+              <span id="viewModalFolderDisplay" class="truncate max-w-[170px]">Folder Files</span>
+            </span>
+            <span id="badgeFolderFileCount" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-cyan-500/15 text-cyan-300 font-semibold">0 files</span>
+          </div>
+          
+          <div id="boxInspectorFolderFiles" class="bg-[#0a0d14] border border-slate-800/80 rounded-xl p-1.5 max-h-36 overflow-y-auto space-y-1">
+            <div class="text-slate-500 text-[10px] text-center py-3">No other files in this folder</div>
+          </div>
+        </div>
+
+        <!-- 5. Two Clean Action Buttons -->
+        <div class="pt-1 flex space-x-2">
+          <button type="button" id="btnModalCopyFullPath" class="flex-1 flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-[#1c222d] hover:bg-slate-700 text-slate-200 border border-slate-700/80 font-bold text-xs active:scale-95 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Copy Path</span>
+          </button>
+
+          <button type="button" id="btnDirectOpenProjectFolder" class="flex-1 flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs active:scale-95 transition shadow-lg shadow-cyan-500/20">
+            <i data-lucide="folder-sync" class="w-3.5 h-3.5"></i>
+            <span>Switch Folder</span>
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1551,6 +1646,17 @@
             <option value="cyberpunk">Cyberpunk Neon</option>
           </select>
         </div>
+                <!-- CODING KEYBOARD MODE (PERFECT MATCHING DROPDOWN) -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-[var(--text-main,#e6edf3)] text-xs">Coding Keyboard Mode</div>
+            <div class="text-[10px] text-[var(--text-muted,#7d8590)]">Slim Cyber QWERTY vs System</div>
+          </div>
+          <select id="settingKbdModeSelect" class="bg-[var(--bg-card,#161b22)] border border-[var(--border-color,#30363d)] text-[var(--text-main,#e6edf3)] text-[11px] rounded-lg px-2 py-1 font-mono outline-none">
+            <option value="system">⌨️ System (Gboard)</option>
+            <option value="custom">⚡ Slim Cyber (QWERTY)</option>
+          </select>
+        </div>
 
         <div class="flex items-center justify-between">
           <div>
@@ -1813,7 +1919,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.5',
+      version: '7.6',
       edition: 'Developer Master Edition'
     };
 
@@ -2803,8 +2909,13 @@
         }
       });
     }
-            // ANZARG STUDIO - DEDICATED ZERO-DELAY PROXY & STRICT GATEWAY ROUTER
+                // ANZARG STUDIO - DEDICATED ZERO-DELAY PROXY & STRICT GATEWAY ROUTER (WITH INSTANT OFFLINE GUARD)
     async function fetchGeminiDirect(payload, abortSignal) {
+      // INSTANT OFFLINE GUARD: Agar internet nahi hai toh bina 14 sec wait kiye turant error throw karega
+      if (!navigator.onLine) {
+        throw new Error("[Offline Mode Active]: AI features ke liye internet connection zaroori hai. Studio ke baaki sabhi coding tools 100% offline chal rahe hain!");
+      }
+
       const activeModel = userSettings.geminiModel || 'gemini-3.8-flash';
       const userKey = (userSettings.geminiApiKey || '').trim();
       const STUDIO_PROXY_ENDPOINT = "https://anzarg-studio-api.freenews782.workers.dev";
@@ -4344,26 +4455,33 @@ CRITICAL OPERATIONAL RULES:
         }
       }
 
-      if (cur.isNewFile || forceSaveAs) {
+            if (cur.isNewFile || forceSaveAs) {
+        // 🛡️ UNICODE SHIELD: Hindi matraon aur Devanagari text ko tightly lock karna
+        const safeContent = (typeof content === 'string' && typeof content.normalize === 'function') 
+          ? content.normalize('NFC') 
+          : (content || '');
+
         if ('showSaveFilePicker' in window) {
           try {
             const handle = await window.showSaveFilePicker({
               suggestedName: cleanName,
               types: [{
-                description: 'HTML Source File',
-                accept: { 'text/html': ['.html', '.htm'] }
+                description: 'HTML & Code Source File',
+                accept: { 'text/html': ['.html', '.htm', '.js', '.css', '.txt', '.json', '.md', '.py'] }
               }]
             });
             const writable = await handle.createWritable();
-            await writable.write(content);
+            await writable.write(safeContent);
             await writable.close();
 
             cur.fileHandle = handle;
             cur.name = handle.name || cleanName;
+            cur.content = safeContent;
             cur.isModified = false;
             cur.isNewFile = false;
             cur.folderName = 'Selected Folder';
             cur.filePath = `/storage/emulated/0/${cur.name}`;
+            cur.lastModified = Date.now();
             renderTabStrip();
             await storeSave('workspace_tabs', fileTabs);
             showSavedSuccessModal(cur.filePath);
@@ -4374,7 +4492,8 @@ CRITICAL OPERATIONAL RULES:
         }
 
         try {
-          const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+          // Explicit UTF-8 Blob declaration: Phone storage Hindi ko corrupt nahi karega
+          const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -4384,10 +4503,12 @@ CRITICAL OPERATIONAL RULES:
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
+          cur.content = safeContent;
           cur.isModified = false;
           cur.isNewFile = false;
           cur.folderName = 'Download';
           cur.filePath = `/storage/emulated/0/Download/${cleanName}`;
+          cur.lastModified = Date.now();
           renderTabStrip();
           await storeSave('workspace_tabs', fileTabs);
           showSavedSuccessModal(cur.filePath);
@@ -4409,11 +4530,17 @@ CRITICAL OPERATIONAL RULES:
       if (!cur || !cur.fileHandle || !textarea) return;
 
       try {
+        // 🛡️ UNICODE SHIELD: Textarea se direct overwrite karte waqt bhi Hindi normalize karna
+        const rawVal = textarea.value || '';
+        const safeVal = (typeof rawVal.normalize === 'function') ? rawVal.normalize('NFC') : rawVal;
+
         const writable = await cur.fileHandle.createWritable();
-        await writable.write(textarea.value);
+        await writable.write(safeVal);
         await writable.close();
 
+        cur.content = safeVal;
         cur.isModified = false;
+        cur.lastModified = Date.now();
         renderTabStrip();
         await storeSave('workspace_tabs', fileTabs);
         showSavedSuccessModal(cur.filePath || `/storage/emulated/0/${cur.name}`);
@@ -4423,7 +4550,7 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
-    async function handleOpenFileNative() {
+        async function handleOpenFileNative() {
       if ('showOpenFilePicker' in window) {
         try {
           const [handle] = await window.showOpenFilePicker({
@@ -4434,7 +4561,11 @@ CRITICAL OPERATIONAL RULES:
             }]
           });
           const file = await handle.getFile();
-          const text = await file.text();
+          const rawText = await file.text();
+          // 🛡️ UNICODE SHIELD: File load hote hi Hindi matraon ko normalize aur bind karna
+          const text = (typeof rawText === 'string' && typeof rawText.normalize === 'function') 
+            ? rawText.normalize('NFC') 
+            : (rawText || '');
 
           let folderDetected = detectProjectFolder(file.name, text);
           if (file.webkitRelativePath && file.webkitRelativePath.includes('/')) {
@@ -4454,6 +4585,8 @@ CRITICAL OPERATIONAL RULES:
             isNewFile: false,
             filePath: fullPath,
             folderName: folderDetected,
+            lastModified: file.lastModified || Date.now(),
+            fileSize: file.size || text.length,
             cursorPos: 0,
             scrollTop: 0
           };
@@ -4957,90 +5090,381 @@ CRITICAL OPERATIONAL RULES:
       if (userSettings.theme === 'system') applyAppTheme('system');
     });
 
-    function setupPathInspectorModal() {
+                                            function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
-      const modalEditFolder = document.getElementById('modalEditFolder');
-      const inputEditFolder = document.getElementById('inputEditFolderName');
+      const closeBtn = document.getElementById('btnClosePathModal');
+      const copyBtn = document.getElementById('btnModalCopyFullPath');
+      const quickCopyBtn = document.getElementById('btnQuickCopyPath');
+      const nameInput = document.getElementById('inspectorFileNameInput');
+      const saveNameBtn = document.getElementById('btnInspectorApplyRename');
+      const folderDisplay = document.getElementById('viewModalFolderDisplay');
+      const fullPathDisplay = document.getElementById('viewModalFullPathDisplay');
+      const btnLinkFolder = document.getElementById('btnDirectOpenProjectFolder');
+      const filesContainer = document.getElementById('boxInspectorFolderFiles');
+      const badgeCount = document.getElementById('badgeFolderFileCount');
+
+      // Badges & Metrics
+      const langBadge = document.getElementById('inspectorLangBadge');
+      const dirtyBadge = document.getElementById('inspectorDirtyBadge');
+      const statSize = document.getElementById('inspectorStatSize');
+      const statLines = document.getElementById('inspectorStatLines');
+      const statDate = document.getElementById('inspectorStatDate');
+      const statTime = document.getElementById('inspectorStatTime');
+      const relativeTimeDisplay = document.getElementById('inspectorRelativeTime');
+
+      const btnViewPath = document.getElementById('btnViewPathModal');
+      const addressWrapper = document.getElementById('addressBreadcrumbWrapper');
+
+      // Helper: Format File Size (Bytes to KB / MB)
+      const formatFileSize = (bytes) => {
+        if (!bytes || bytes === 0) return '0 KB';
+        const k = 1024;
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + ['B', 'KB', 'MB', 'GB'][i];
+      };
+
+      // Helper: Relative Time Ago (Just now, 15s ago, 2m ago)
+      const getRelativeTimeAgo = (timestamp) => {
+        if (!timestamp) return 'just now';
+        const diffMs = Date.now() - Number(timestamp);
+        const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+        if (diffSec < 10) return 'just now';
+        if (diffSec < 60) return `${diffSec}s ago`;
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) return `${diffMin}m ago`;
+        const diffHours = Math.floor(diffMin / 60);
+        if (diffHours < 24) return `${diffHours}h ago`;
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays}d ago`;
+      };
+
+      // Helper: Detect Language & Encoding
+      const detectLanguage = (filename) => {
+        const lower = (filename || '').toLowerCase();
+        if (lower.endsWith('.html') || lower.endsWith('.htm')) return 'HTML5 • UTF-8';
+        if (lower.endsWith('.js') || lower.endsWith('.mjs')) return 'JavaScript • UTF-8';
+        if (lower.endsWith('.css')) return 'CSS3 • UTF-8';
+        if (lower.endsWith('.json')) return 'JSON • UTF-8';
+        if (lower.endsWith('.py')) return 'Python • UTF-8';
+        if (lower.endsWith('.md')) return 'Markdown • UTF-8';
+        if (lower.endsWith('.php')) return 'PHP • UTF-8';
+        if (lower.endsWith('.sql')) return 'SQL • UTF-8';
+        return 'Plain Text • UTF-8';
+      };
+
+      // Helper: Render Folder Files with exact Year & Size badges
+      const renderFolderFilesList = async (cur) => {
+        if (!filesContainer) return;
+        filesContainer.innerHTML = '';
+
+        if (cur && cur.dirHandle) {
+          try {
+            const files = [];
+            const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py', '.php', '.sql'];
+            for await (const entry of cur.dirHandle.values()) {
+              if (entry.kind === 'file') {
+                const lower = entry.name.toLowerCase();
+                if (validExts.some(ext => lower.endsWith(ext))) {
+                  files.push(entry);
+                }
+              }
+            }
+
+            if (badgeCount) badgeCount.textContent = `${files.length} files`;
+
+            if (files.length === 0) {
+              filesContainer.innerHTML = `<div class="text-slate-500 text-[10px] text-center py-2.5 font-mono">No matching code files</div>`;
+              return;
+            }
+
+            for (const entry of files) {
+              const isCurrent = entry.name === cur.name;
+              const isAlreadyOpen = fileTabs.some(t => t.name === entry.name && t.folderName === cur.folderName);
+              
+              let fileMetaSize = '';
+              let fileMetaYear = '';
+              try {
+                const fData = await entry.getFile();
+                fileMetaSize = formatFileSize(fData.size);
+                if (fData.lastModified) {
+                  fileMetaYear = new Date(fData.lastModified).getFullYear();
+                }
+              } catch (e) {}
+
+              const row = document.createElement('div');
+              row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer text-[11px] transition ${
+                isCurrent 
+                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' 
+                  : 'text-slate-300 hover:bg-slate-800/80 active:scale-98'
+              }`;
+
+              row.innerHTML = `
+                <div class="flex items-center space-x-1.5 truncate">
+                  <i data-lucide="${entry.name.endsWith('.html') ? 'file-code-2' : entry.name.endsWith('.js') ? 'file-json' : 'file-text'}" class="w-3.5 h-3.5 shrink-0 ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}"></i>
+                  <span class="truncate">${entry.name}</span>
+                </div>
+                <div class="flex items-center space-x-1.5 shrink-0">
+                  ${fileMetaSize ? `<span class="text-[9px] text-slate-400 font-mono">${fileMetaSize}</span>` : ''}
+                  ${fileMetaYear ? `<span class="text-[9px] text-amber-300 font-mono px-1 py-0.2 rounded bg-amber-500/10 border border-amber-500/20">${fileMetaYear}</span>` : ''}
+                  ${isCurrent 
+                    ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-400 text-black font-bold uppercase font-sans">Active</span>' 
+                    : isAlreadyOpen 
+                      ? '<span class="text-[9px] text-slate-400 font-mono">Open</span>' 
+                      : '<span class="text-[9px] text-cyan-400 font-mono">+ Load</span>'
+                  }
+                </div>
+              `;
+
+              // Single File On Tap (Unicode Normalized)
+              row.onclick = async () => {
+                closeInspector();
+                const existing = fileTabs.find(t => t.name === entry.name && t.folderName === cur.folderName);
+                if (existing) {
+                  handleSwitchTab(existing.id);
+                  triggerToast(`Switched to ${entry.name}`);
+                } else {
+                  try {
+                    const f = await entry.getFile();
+                    const rawText = await f.text();
+                    // Unicode NFC Normalization: Protects Hindi matras & conjuncts
+                    const text = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
+                    const fullPath = `/storage/emulated/0/${cur.folderName}/${entry.name}`;
+                    const newTab = {
+                      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                      name: entry.name,
+                      content: text,
+                      isModified: false,
+                      fileHandle: entry,
+                      dirHandle: cur.dirHandle,
+                      isNewFile: false,
+                      filePath: fullPath,
+                      folderName: cur.folderName,
+                      lastModified: f.lastModified || Date.now(),
+                      fileSize: f.size || text.length,
+                      cursorPos: 0,
+                      scrollTop: 0
+                    };
+                    fileTabs.push(newTab);
+                    renderTabStrip();
+                    handleSwitchTab(newTab.id);
+                    triggerToast(`Opened: ${entry.name} ⚡`);
+                  } catch (e) {
+                    triggerToast("Could not load file");
+                  }
+                }
+              };
+              filesContainer.appendChild(row);
+            }
+
+            if (window.lucide) lucide.createIcons();
+            return;
+          } catch (e) {}
+        }
+
+        // Agar dirHandle nahi hai
+        const sameFolderTabs = fileTabs.filter(t => t.folderName === (cur?.folderName || 'Internal Storage'));
+        if (badgeCount) badgeCount.textContent = `${sameFolderTabs.length} files`;
+
+        filesContainer.innerHTML = `
+          <div class="text-slate-400 text-[10px] text-center py-2.5 space-y-1">
+            <div>${cur?.name || 'File'}</div>
+            <div class="text-[9px] text-slate-500 font-sans">Tap 'Switch Folder' to link project directory.</div>
+          </div>
+        `;
+      };
 
       const openInspector = () => {
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        if (!cur) return;
-        document.getElementById('viewModalFileName').textContent = cur.name;
-        document.getElementById('viewModalFolder').textContent = cur.folderName || 'Internal Storage';
-        document.getElementById('viewModalFullPath').textContent = cur.filePath || `/storage/emulated/0/${cur.name}`;
-        document.getElementById('viewModalOrigin').textContent = cur.fileHandle ? 'Native Device File' : 'Local Sandbox Session';
+        const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
+        const curList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
+        const cur = curList.find(t => t.id === curTabId);
+
+        const currentName = cur ? (cur.name || cur.filename || 'untitled.html') : 'untitled.html';
+        const currentFolder = cur ? (cur.folderName || 'Internal Storage') : 'Internal Storage';
+        const currentPath = cur ? (cur.filePath || `/storage/emulated/0/${currentFolder !== 'Internal Storage' ? currentFolder + '/' : ''}${currentName}`) : `/storage/emulated/0/${currentName}`;
+
+        if (nameInput) nameInput.value = currentName;
+        if (folderDisplay) folderDisplay.textContent = currentFolder;
+        if (fullPathDisplay) fullPathDisplay.textContent = currentPath;
+
+        // 1. Language & Encoding Chip
+        if (langBadge) {
+          langBadge.textContent = detectLanguage(currentName);
+        }
+
+        // 2. Live Unsaved Changes Pulse Badge
+        const isModified = cur ? Boolean(cur.isModified) : false;
+        if (dirtyBadge) {
+          if (isModified) {
+            dirtyBadge.className = 'flex items-center space-x-1.5 text-amber-400 font-semibold';
+            dirtyBadge.innerHTML = `
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>Unsaved</span>
+            `;
+          } else {
+            dirtyBadge.className = 'flex items-center space-x-1.5 text-emerald-400';
+            dirtyBadge.innerHTML = `
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>All Saved</span>
+            `;
+          }
+        }
+
+        // 3. Exact Metrics Calculation (UTF-8 Bytes Safe)
+        const ta = document.getElementById('codeTextarea');
+        let contentStr = ta ? ta.value : (cur ? cur.content || '' : '');
+        if (typeof contentStr.normalize === 'function') {
+          contentStr = contentStr.normalize('NFC');
+        }
+        const totalLines = contentStr ? contentStr.split('\n').length : 1;
+        // Strict UTF-8 Blob to count real bytes accurately
+        const totalBytes = new Blob([contentStr], { type: 'text/plain;charset=utf-8' }).size;
+
+        if (statLines) statLines.textContent = `${totalLines.toLocaleString()}`;
+        if (statSize) statSize.textContent = formatFileSize(totalBytes);
+        
+        // 4. Exact 4-Digit Year & Time with Seconds
+        const modTimestamp = cur && cur.lastModified ? Number(cur.lastModified) : Date.now();
+        const modDate = new Date(modTimestamp);
+        const d = String(modDate.getDate()).padStart(2, '0');
+        const m = modDate.toLocaleString('en-US', { month: 'short' });
+        const y = modDate.getFullYear();
+        
+        let hh = modDate.getHours();
+        const mm = String(modDate.getMinutes()).padStart(2, '0');
+        const ss = String(modDate.getSeconds()).padStart(2, '0');
+        const ampm = hh >= 12 ? 'PM' : 'AM';
+        hh = hh % 12;
+        hh = hh ? String(hh).padStart(2, '0') : '12';
+
+        if (statDate) statDate.textContent = `${d}-${m}-${y}`;
+        if (statTime) statTime.textContent = `${hh}:${mm}:${ss} ${ampm}`;
+        if (relativeTimeDisplay) relativeTimeDisplay.textContent = getRelativeTimeAgo(modTimestamp);
+
+        renderFolderFilesList(cur);
+
         modal?.classList.remove('hidden');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
       };
 
-      document.getElementById('btnViewPathModal')?.addEventListener('click', openInspector);
-      document.getElementById('addressBreadcrumbWrapper')?.addEventListener('click', openInspector);
-
-      document.getElementById('btnClosePathModal')?.addEventListener('click', () => modal?.classList.add('hidden'));
-      document.getElementById('btnModalDonePath')?.addEventListener('click', () => modal?.classList.add('hidden'));
-
-      const copyPath = () => {
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        if (cur) executeClipboardCopy(cur.filePath || `/storage/emulated/0/${cur.name}`);
+      const closeInspector = () => {
+        modal?.classList.add('hidden');
       };
 
-      document.getElementById('btnModalCopyFullPath')?.addEventListener('click', copyPath);
-      document.getElementById('btnQuickCopyPath')?.addEventListener('click', copyPath);
+      btnViewPath?.addEventListener('click', (e) => { e.preventDefault(); openInspector(); });
+      addressWrapper?.addEventListener('click', (e) => { e.preventDefault(); openInspector(); });
 
-      document.getElementById('btnTriggerCustomFolderModal')?.addEventListener('click', () => {
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        if (!cur) return;
-        inputEditFolder.value = (cur.folderName && cur.folderName !== 'Internal Storage') ? cur.folderName : '';
-        modalEditFolder?.classList.remove('hidden');
-        inputEditFolder?.focus();
+      closeBtn?.addEventListener('click', closeInspector);
+
+      // 1. Rename Current File / Tab directly
+      saveNameBtn?.addEventListener('click', () => {
+        const newName = nameInput?.value.trim();
+        if (!newName) return;
+
+        const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
+        const curList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
+        const cur = curList.find(t => t.id === curTabId);
+
+        if (cur) {
+          cur.name = newName;
+          cur.filename = newName;
+          const folderPrefix = (cur.folderName && cur.folderName !== 'Internal Storage') ? `${cur.folderName}/` : '';
+          cur.filePath = `/storage/emulated/0/${folderPrefix}${newName}`;
+          
+          if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
+          if (typeof renderTabStrip === 'function') renderTabStrip();
+          if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+          if (typeof triggerToast === 'function') triggerToast(`File renamed to ${newName} ⚡`);
+        }
+        closeInspector();
       });
 
-      document.getElementById('btnCancelEditFolder')?.addEventListener('click', () => modalEditFolder?.classList.add('hidden'));
+      // 2. Switch / Link Project Folder Handler (ZERO BULK TAB CLUTTER)
+      btnLinkFolder?.addEventListener('click', async () => {
+        closeInspector();
+        const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
+        const cur = fileTabs.find(t => t.id === curTabId);
 
-      document.getElementById('btnConfirmEditFolder')?.addEventListener('click', () => {
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        if (!cur) return;
-        const val = inputEditFolder.value.trim() || 'Internal Storage';
-        cur.folderName = val;
-        const prefix = (val !== 'Internal Storage') ? `${val}/` : '';
-        cur.filePath = `/storage/emulated/0/${prefix}${cur.name}`;
-        updateAddressHeader(cur);
-        openInspector();
-        modalEditFolder?.classList.add('hidden');
-        scheduleAutoSave();
-        triggerToast(`Folder updated to: ${val}`);
+        if ('showDirectoryPicker' in window) {
+          try {
+            const dirHandle = await window.showDirectoryPicker();
+            if (!dirHandle) return;
+
+            if (cur) {
+              cur.dirHandle = dirHandle;
+              cur.folderName = dirHandle.name;
+              cur.filePath = `/storage/emulated/0/${dirHandle.name}/${cur.name}`;
+              if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
+              if (typeof renderTabStrip === 'function') renderTabStrip();
+              if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+            }
+
+            triggerToast(`Folder '${dirHandle.name}' linked 📂`);
+            setTimeout(() => { openInspector(); }, 250);
+            return;
+          } catch (err) {
+            if (err.name === 'AbortError') return;
+          }
+        }
+
+        if (typeof handleOpenFileNative === 'function') {
+          handleOpenFileNative();
+        }
       });
+
+      // 3. Copy Full Path to Clipboard
+      const copyPathHandler = () => {
+        const path = fullPathDisplay?.textContent || '';
+        if (typeof executeClipboardCopy === 'function') {
+          executeClipboardCopy(path);
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(path).then(() => {
+            if (typeof triggerToast === 'function') triggerToast("Path copied! 📋");
+          });
+        } else {
+          if (typeof triggerToast === 'function') triggerToast("Path: " + path);
+        }
+      };
+
+      copyBtn?.addEventListener('click', copyPathHandler);
+      quickCopyBtn?.addEventListener('click', copyPathHandler);
     }
 
     function setupCustomModals() {
+      try {
         if (sessionStorage.getItem('openDrawerAfterRestart') === 'true') {
-      sessionStorage.removeItem('openDrawerAfterRestart');
-      setTimeout(() => openDrawerPanel(), 100);
-    }
-                 // PLAY STORE ABOUT & MAINTAINER VAULT CONTROLLERS (WITH SMART BACK-STACK)
+          sessionStorage.removeItem('openDrawerAfterRestart');
+          setTimeout(() => {
+            if (typeof openDrawerPanel === 'function') openDrawerPanel();
+          }, 100);
+        }
+      } catch (e) {}
+
+      // PLAY STORE ABOUT & MAINTAINER VAULT CONTROLLERS (WITH SAFE TARGET RESOLUTION)
       const modalAbout = document.getElementById('modalAboutStudio');
       const modalVault = document.getElementById('modalMaintainerVault');
+      const settingsModal = document.getElementById('modalSettings') || document.getElementById('modalSettingsPanel') || null;
       let openedAboutFromSettings = false;
 
       document.getElementById('dNavAbout')?.addEventListener('click', () => {
         openedAboutFromSettings = false;
-        closeDrawerPanel();
+        if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
         modalAbout?.classList.remove('hidden');
       });
 
-      // Agar Settings ke andar se About open hota hai
+      // Settings ke andar se About open hone par
       document.getElementById('btnOpenAboutFromSettings')?.addEventListener('click', () => {
         openedAboutFromSettings = true;
-        modalSet?.classList.add('hidden');
+        settingsModal?.classList.add('hidden');
         modalAbout?.classList.remove('hidden');
       });
 
-                     // Cut (✖) dabane par smart back navigation
+      // Close Button par smart back navigation
       document.getElementById('btnCloseAboutStudio')?.addEventListener('click', () => {
         modalAbout?.classList.add('hidden');
         if (openedAboutFromSettings) {
-          modalSet?.classList.remove('hidden');
+          settingsModal?.classList.remove('hidden');
         } else {
-          openDrawerPanel();
+          if (typeof openDrawerPanel === 'function') openDrawerPanel();
         }
       });
 
@@ -5057,21 +5481,120 @@ CRITICAL OPERATIONAL RULES:
       document.getElementById('btnCloseMaintainerVault')?.addEventListener('click', returnToAboutModal);
       document.getElementById('btnReturnFromVault')?.addEventListener('click', returnToAboutModal);
 
-            document.getElementById('dNavResetWorkspace')?.addEventListener('click', () => {
+      // =========================================================================
+      // ANZARG CODE STUDIO - BRAND SYSTEM RESET
+      // =========================================================================
+      document.getElementById('dNavResetWorkspace')?.addEventListener('click', () => {
         closeDrawerPanel();
         showProfessionalPopup({
-          title: "Clear Cache & Restart Studio",
-          message: "Current session cache aur temporary editor tabs IndexedDB se wipe ho jayenge. Studio clean default state par restart hoga.",
-          confirmText: "Restore Default",
-          cancelText: "Cancel",
+          title: "Factory Reset",
+          message: "Aapka sabhi data delete hokar app nayi shuru hogi.\nAll saved code and cache will be deleted completely.",
+          confirmText: "Yes, Apply",
+          cancelText: "Back",
           iconType: "danger",
-                    onConfirm: async () => {
+          onConfirm: async () => {
+            // 1. HARDWARE REBOOT VIBRATION SEQUENCE (Phone restart haptic)
+            if (navigator.vibrate) {
+              try {
+                navigator.vibrate([100, 60, 250]);
+              } catch(e){}
+            }
+
+            // 2. OPPO/VIVO STYLE "ANZARG" BRAND REBOOT OVERLAY (2.8s DURATION)
+            const rebootScreen = document.createElement('div');
+            rebootScreen.id = 'anzargRebootBootScreen';
+            rebootScreen.style.cssText = `
+              position: fixed;
+              inset: 0;
+              background: #080b10;
+              z-index: 999999;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              user-select: none;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+              animation: bootFadeIn 0.25s ease-out forwards;
+            `;
+
+            rebootScreen.innerHTML = `
+              <style>
+                @keyframes bootFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes brandPulseSpin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+                @keyframes textGlowPulse {
+                  0%, 100% { opacity: 0.9; text-shadow: 0 0 15px rgba(0,242,254,0.4); }
+                  50% { opacity: 1; text-shadow: 0 0 30px rgba(0,242,254,0.9), 0 0 45px rgba(16,185,129,0.6); }
+                }
+                @keyframes bootProgressBar {
+                  0% { width: 0%; }
+                  40% { width: 45%; }
+                  75% { width: 85%; }
+                  100% { width: 100%; }
+                }
+              </style>
+
+              <!-- ROTATING BRAND GLOW RING -->
+              <div style="position: relative; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; margin-bottom: 22px;">
+                <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: #00f2fe; border-right-color: #10b981; animation: brandPulseSpin 1.1s linear infinite;"></div>
+                <div style="position: absolute; inset: 8px; border-radius: 50%; border: 2px dashed rgba(168,85,247,0.45); animation: brandPulseSpin 2.2s linear infinite reverse;"></div>
+                
+                <!-- BRAND ICON / LOGO -->
+                <div style="width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, rgba(0,242,254,0.18), rgba(16,185,129,0.18)); border: 1.5px solid rgba(0,242,254,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px rgba(0,242,254,0.25);">
+                  <span style="font-size: 32px; font-weight: 900; background: linear-gradient(to right, #00f2fe, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">&lt;/&gt;</span>
+                </div>
+              </div>
+
+              <!-- BRAND TYPOGRAPHY -->
+              <div style="font-size: 22px; font-weight: 900; letter-spacing: 0.16em; color: #ffffff; text-transform: uppercase; animation: textGlowPulse 1.8s ease-in-out infinite;">
+                ANZARG
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #00f2fe; letter-spacing: 0.22em; text-transform: uppercase; margin-top: 4px; opacity: 0.85;">
+                CODE STUDIO
+              </div>
+
+              <!-- STATUS SUBTITLE -->
+              <div style="font-size: 11px; color: #8b949e; margin-top: 24px; font-family: monospace; letter-spacing: 0.05em;">
+                Deleting all data and restarting...
+              </div>
+
+              <!-- REBOOT LOADING BAR (2.8s) -->
+              <div style="width: 140px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 10px; overflow: hidden;">
+                <div style="height: 100%; background: linear-gradient(90deg, #00f2fe, #10b981); animation: bootProgressBar 2.7s ease-in-out forwards;"></div>
+              </div>
+            `;
+            document.body.appendChild(rebootScreen);
+
             clearTimeout(autoDebounceTimer);
-            try { await storeClearAll(); } catch(e){}
+
+            // 3. BACKGROUND TOTAL STORAGE PURGE (DURING ANIMATION)
+            try {
+              if (idb) { idb.close(); idb = null; }
+              await storeClearAll();
+            } catch(e){}
+
             try { localStorage.clear(); } catch(e){}
-            sessionStorage.setItem('openDrawerAfterRestart', 'true');
-            triggerToast("Studio restored! Restarting...");
-            setTimeout(() => window.location.reload(), 350);
+            try { sessionStorage.clear(); } catch(e){}
+
+            try {
+              if ('caches' in window) {
+                const cacheKeys = await caches.keys();
+                await Promise.all(cacheKeys.map(k => caches.delete(k)));
+              }
+            } catch(e){}
+
+            try {
+              if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ action: 'CLEAR_ALL_CACHES' });
+              }
+            } catch(e){}
+
+            // 4. CLEAN REBOOT RELOAD AT 2.8 SECONDS
+            setTimeout(() => {
+              window.location.replace(window.location.origin + window.location.pathname);
+            }, 2800);
           },
           onCancel: () => {
             openDrawerPanel();
@@ -5199,8 +5722,13 @@ CRITICAL OPERATIONAL RULES:
         modalSet?.classList.remove('hidden');
       };
 
-            document.getElementById('dNavSettings')?.addEventListener('click', () => {
+                  document.getElementById('dNavSettings')?.addEventListener('click', () => {
         closeDrawerPanel();
+        openSettings();
+      });
+
+      document.getElementById('optSettingsMenu')?.addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
         openSettings();
       });
             document.getElementById('btnCloseSettings')?.addEventListener('click', () => {
@@ -5327,9 +5855,89 @@ CRITICAL OPERATIONAL RULES:
       });
 
       document.getElementById('optExportSingleZip')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        exportTabAsZip(true);
-      });
+  document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+  exportTabAsZip(true);
+});
+
+// ⚡ EXTRACT JS TO NEW TAB (DOMParser + Unicode NFC Engine)
+document.getElementById('optExtractJs')?.addEventListener('click', () => {
+  document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+
+  const cur = fileTabs.find(t => t.id === activeFileId);
+  const code = (textarea ? textarea.value : (cur ? cur.content : '')) || '';
+
+  if (!code.trim()) {
+    triggerToast("Active document is empty!");
+    return;
+  }
+
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(code, 'text/html');
+    const scripts = Array.from(doc.querySelectorAll('script'));
+
+    if (!scripts || scripts.length === 0) {
+      triggerToast("No <script> tags found in file!");
+      return;
+    }
+
+    const extractedBlocks = [];
+    let blockIndex = 1;
+
+    for (const s of scripts) {
+      const src = s.getAttribute('src');
+      const innerJs = s.textContent || s.innerText || '';
+
+      if (src) {
+        extractedBlocks.push(`// [External Script Link: ${src}]`);
+      } else if (innerJs.trim()) {
+        extractedBlocks.push(`// ==========================================\n// [SCRIPT BLOCK #${blockIndex}]\n// ==========================================\n` + innerJs.trim());
+        blockIndex++;
+      }
+    }
+
+    if (blockIndex === 1 && extractedBlocks.length === 0) {
+      triggerToast("No inline JavaScript code found!");
+      return;
+    }
+
+    let finalJsCode = extractedBlocks.join('\n\n');
+    // 🛡️ UNICODE SHIELD: Protect Hindi strings & Unicode inside JS
+    if (typeof finalJsCode.normalize === 'function') {
+      finalJsCode = finalJsCode.normalize('NFC');
+    }
+
+    const baseName = (cur?.name || 'document.html').replace(/\.[^/.]+$/, "");
+    const newName = `${baseName}.app.js`;
+    const folderName = cur?.folderName || 'Internal Storage';
+    const fullPath = (folderName !== 'Internal Storage') 
+      ? `/storage/emulated/0/${folderName}/${newName}` 
+      : `/storage/emulated/0/${newName}`;
+
+    const newTab = {
+      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      name: newName,
+      content: finalJsCode,
+      isModified: true,
+      fileHandle: null,
+      dirHandle: cur?.dirHandle || null,
+      isNewFile: true,
+      filePath: fullPath,
+      folderName: folderName,
+      lastModified: Date.now(),
+      fileSize: new Blob([finalJsCode], { type: 'application/javascript;charset=utf-8' }).size,
+      cursorPos: 0,
+      scrollTop: 0
+    };
+
+    fileTabs.push(newTab);
+    if (typeof renderTabStrip === 'function') renderTabStrip();
+    if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
+    triggerToast(`Extracted ${blockIndex - 1} JS block(s) into ${newName} ⚡`);
+  } catch (err) {
+    triggerToast("Error extracting scripts: " + err.message);
+  }
+});
 
       document.getElementById('optDiagnoseCode')?.addEventListener('click', () => {
         document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
@@ -5623,6 +6231,359 @@ CRITICAL OPERATIONAL RULES:
       setupConflictShieldSystem();
       setupGeminiCopilotStudio();
       setupGeminiKeyManager();
+               // =========================================================================
+    // STYLE 1: CLEAN ERGONOMIC QWERTY CYBER KEYBOARD & PERMANENT DOCK ENGINE
+    // =========================================================================
+    let isCustomKbdActive = false;
+    let isKbdShiftActive = false;
+    let isKbdSymMode = false;
+
+    // Turbo Auto-Repeat Backspace Timers
+    let bkspInitialTimeout = null;
+    let bkspRepeatInterval = null;
+
+       // Big Ergonomic QWERTY Layouts
+    const STYLE1_QWERTY_LOWER = [
+      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+      ['SHIFT', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BKSP']
+    ];
+
+    const STYLE1_QWERTY_UPPER = [
+      ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+      ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+      ['SHIFT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BKSP']
+    ];
+
+    // Numbers & Extra Symbols Mode (?123)
+    const STYLE1_NUM_SYMS = [
+      ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+      ['+', '-', '*', '/', '%', '&', '|', '^', '!', '?'],
+      ['ABC', '~', '`', '@', '#', '$', '\\', '_', 'BKSP']
+    ];
+
+           // =========================================================================
+    // SMART DUAL-SENSORY ENGINE: GBOARD HAPTICS + ACOUSTIC CLICK (ANZARG CORE)
+    // =========================================================================
+    let kbdAudioCtx = null;
+    function playAcousticThock(pitch = 320, duration = 0.022, vol = 0.05) {
+      try {
+        if (!kbdAudioCtx) {
+          kbdAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (kbdAudioCtx.state === 'suspended') {
+          kbdAudioCtx.resume();
+        }
+        const osc = kbdAudioCtx.createOscillator();
+        const gain = kbdAudioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(pitch, kbdAudioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, kbdAudioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(vol, kbdAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, kbdAudioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(kbdAudioCtx.destination);
+        osc.start();
+        osc.stop(kbdAudioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function triggerKeyHaptic(type = 'char') {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try {
+          if (type === 'char') {
+            navigator.vibrate([18, 12, 10]); // Gboard style micro-snap
+            playAcousticThock(340, 0.018, 0.04);
+          } else if (type === 'delete') {
+            navigator.vibrate([28, 15, 14]); // Crisp Warning snap
+            playAcousticThock(260, 0.024, 0.06);
+          } else if (type === 'action') {
+            navigator.vibrate([35, 20, 20]); // Deep space/enter solid thump
+            playAcousticThock(200, 0.035, 0.08);
+          } else if (type === 'toggle') {
+            navigator.vibrate([15, 25, 15]); // Double click feel for shift/sym
+            playAcousticThock(420, 0.020, 0.05);
+          }
+        } catch (e) {}
+      }
+    }
+
+    // Flash Highlight on Key Press
+    function flashVisualKey(btn) {
+      if (!btn) return;
+      btn.classList.add('!bg-cyan-400', '!text-black', '!border-cyan-300', 'scale-95', 'shadow-md', 'shadow-cyan-400/50');
+      setTimeout(() => {
+        btn.classList.remove('!bg-cyan-400', '!text-black', '!border-cyan-300', 'scale-95', 'shadow-md', 'shadow-cyan-400/50');
+      }, 90);
+    }
+
+        function renderStyle1Keyboard() {
+      const grid = document.getElementById('cyberKbdGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+      const layout = isKbdSymMode ? STYLE1_NUM_SYMS : (isKbdShiftActive ? STYLE1_QWERTY_UPPER : STYLE1_QWERTY_LOWER);
+
+      // 2. Big Fat Key Matrix
+      layout.forEach(row => {
+        const rowEl = document.createElement('div');
+        rowEl.className = "flex justify-center space-x-1 mb-1";
+
+        row.forEach(key => {
+          const btn = document.createElement('button');
+          btn.type = "button";
+
+          if (key === 'SHIFT') {
+            btn.className = `w-12 h-11 rounded-xl font-mono text-sm font-bold flex items-center justify-center border transition ${isKbdShiftActive ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/30' : 'bg-[#1b222d] text-slate-300 border-slate-700'}`;
+            btn.textContent = "⇧";
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
+          } else if (key === 'BKSP') {
+            btn.className = "w-12 h-11 rounded-xl bg-red-500/20 text-red-300 font-mono text-base font-bold flex items-center justify-center border border-red-500/40 active:bg-red-500 active:text-white transition";
+            btn.textContent = "⌫";
+
+            // Continuous Long Press Auto-Repeat Logic
+            const startBackspace = (e) => {
+              e.preventDefault();
+              triggerKeyHaptic('delete');
+              flashVisualKey(btn);
+              executeSingleBackspace();
+
+              clearTimeout(bkspInitialTimeout);
+              clearInterval(bkspRepeatInterval);
+
+              // 320ms hold threshold, then rapid delete every 45ms
+              bkspInitialTimeout = setTimeout(() => {
+                bkspRepeatInterval = setInterval(() => {
+                  triggerKeyHaptic('delete');
+                  executeSingleBackspace();
+                }, 45);
+              }, 320);
+            };
+
+            const stopBackspace = () => {
+              clearTimeout(bkspInitialTimeout);
+              clearInterval(bkspRepeatInterval);
+            };
+
+            btn.addEventListener('touchstart', startBackspace, { passive: false });
+            btn.addEventListener('touchend', stopBackspace);
+            btn.addEventListener('touchcancel', stopBackspace);
+            btn.addEventListener('mousedown', startBackspace);
+            btn.addEventListener('mouseup', stopBackspace);
+            btn.addEventListener('mouseleave', stopBackspace);
+
+          } else if (key === 'ABC') {
+            btn.className = "w-12 h-11 rounded-xl bg-amber-500/20 text-amber-300 font-mono text-xs font-bold flex items-center justify-center border border-amber-500/40 transition";
+            btn.textContent = "ABC";
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
+          } else {
+            btn.className = "grow max-w-[42px] h-11 rounded-xl bg-[#161b22] text-white font-mono text-xl font-bold flex items-center justify-center border border-slate-700/80 active:scale-95 transition shadow-sm tracking-wide";
+            btn.textContent = key;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
+          }
+
+          rowEl.appendChild(btn);
+        });
+        grid.appendChild(rowEl);
+      });
+
+      // 3. Bottom Dual-Thumb Action Row
+      const bottomRow = document.createElement('div');
+      bottomRow.className = "flex justify-between space-x-1.5 mt-0.5";
+      bottomRow.innerHTML = `
+        <button type="button" id="s1KeyMode" class="w-14 h-11 rounded-xl bg-[#1b222d] text-amber-300 font-mono text-xs font-bold border border-amber-500/40 active:bg-amber-400 active:text-black flex items-center justify-center">${isKbdSymMode ? 'ABC' : '?123'}</button>
+        <button type="button" id="s1KeyTab" class="w-14 h-11 rounded-xl bg-[#1b222d] text-slate-300 font-mono text-xs font-bold border border-slate-700 active:bg-cyan-500 active:text-black flex items-center justify-center">TAB</button>
+        <button type="button" id="s1KeySpace" class="grow h-11 rounded-xl bg-[#161b22] text-slate-300 font-mono text-xs font-bold border border-slate-700 active:bg-cyan-500 active:text-black flex items-center justify-center shadow-sm">SPACE</button>
+        <button type="button" id="s1KeyEnter" class="w-16 h-11 rounded-xl bg-cyan-600/30 text-cyan-300 font-mono text-sm font-bold border border-cyan-500/50 active:bg-cyan-500 active:text-black flex items-center justify-center shadow-sm">↵</button>
+      `;
+
+      const bMode = bottomRow.querySelector('#s1KeyMode');
+      const bTab = bottomRow.querySelector('#s1KeyTab');
+      const bSpace = bottomRow.querySelector('#s1KeySpace');
+      const bEnter = bottomRow.querySelector('#s1KeyEnter');
+
+      bMode.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('toggle'); flashVisualKey(bMode); isKbdSymMode = !isKbdSymMode; renderStyle1Keyboard(); }, { passive: false });
+      bMode.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('toggle'); flashVisualKey(bMode); isKbdSymMode = !isKbdSymMode; renderStyle1Keyboard(); });
+
+      bTab.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('char'); flashVisualKey(bTab); insertTextAtCursor('  '); }, { passive: false });
+      bTab.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('char'); flashVisualKey(bTab); insertTextAtCursor('  '); });
+
+      bSpace.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bSpace); insertTextAtCursor(' '); }, { passive: false });
+      bSpace.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bSpace); insertTextAtCursor(' '); });
+
+      bEnter.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bEnter); insertTextAtCursor('\n'); }, { passive: false });
+      bEnter.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bEnter); insertTextAtCursor('\n'); });
+
+      grid.appendChild(bottomRow);
+    }
+
+        function insertTextAtCursor(text) {
+      const textarea = document.getElementById('codeTextarea');
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+
+      textarea.value = val.substring(0, start) + text + val.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+
+      if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+      if (typeof updateLineNumbers === 'function') updateLineNumbers();
+      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+      if (typeof markActiveModified === 'function') markActiveModified();
+      if (typeof recordHistory === 'function') recordHistory();
+    }
+
+    function executeSingleBackspace() {
+      const textarea = document.getElementById('codeTextarea');
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+
+      if (start === end && start > 0) {
+        textarea.value = val.substring(0, start - 1) + val.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start - 1;
+      } else if (start !== end) {
+        textarea.value = val.substring(0, start) + val.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start;
+      }
+      if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+      if (typeof updateLineNumbers === 'function') updateLineNumbers();
+      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+      if (typeof markActiveModified === 'function') markActiveModified();
+      if (typeof recordHistory === 'function') recordHistory();
+    }
+
+    function moveEditorCursor(delta) {
+      const ta = document.getElementById('codeTextarea');
+      if (!ta) return;
+      const newPos = Math.max(0, Math.min(ta.value.length, ta.selectionStart + delta));
+      ta.selectionStart = ta.selectionEnd = newPos;
+      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+    }
+
+    function handleStyle1Input(key) {
+      const textarea = document.getElementById('codeTextarea');
+      if (!textarea) return;
+
+      if (key === 'SHIFT') {
+        triggerKeyHaptic('toggle');
+        isKbdShiftActive = !isKbdShiftActive;
+        renderStyle1Keyboard();
+        return;
+      }
+      if (key === 'ABC') {
+        triggerKeyHaptic('toggle');
+        isKbdSymMode = false;
+        renderStyle1Keyboard();
+        return;
+      }
+
+      triggerKeyHaptic('char');
+      insertTextAtCursor(key);
+      if (isKbdShiftActive) {
+        isKbdShiftActive = false;
+        renderStyle1Keyboard();
+      }
+    }
+
+    // Permanent Dock Anchor Engine (3-Way Cycle)
+    function setupPermanentDockEngine() {
+      const anchorBtn = document.getElementById('btnPermanentDockAnchor');
+      const anchorIcon = document.getElementById('labelDockAnchorIcon');
+      const accBar = document.getElementById('accessoryBar');
+      const bottomBar = document.getElementById('bottomQuickEditBar');
+
+      let dockCycle = 0;
+
+      anchorBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerKeyHaptic(25);
+        dockCycle = (dockCycle + 1) % 2;
+
+        if (dockCycle === 1) {
+          bottomBar?.classList.add('hidden');
+          if (anchorIcon) anchorIcon.textContent = '▲';
+          triggerToast("Action bar collapsed (More Code View)");
+        } else {
+          bottomBar?.classList.remove('hidden');
+          accBar?.classList.remove('hidden');
+          if (anchorIcon) anchorIcon.textContent = '▼';
+          triggerToast("Action bar restored");
+        }
+      });
+    }
+
+    function setupCyberKeyboardEngine() {
+      const toggleBtn = document.getElementById('btnToggleCustomKeyboard');
+      const kbdContainer = document.getElementById('customCyberKeyboard');
+      const textarea = document.getElementById('codeTextarea');
+      const labelIcon = document.getElementById('labelKbdModeIcon');
+      const labelText = document.getElementById('labelKbdModeText');
+
+      function applyKbdState() {
+        if (isCustomKbdActive) {
+          kbdContainer?.classList.remove('hidden');
+          textarea?.setAttribute('inputmode', 'none');
+          if (labelIcon) labelIcon.textContent = '⚡';
+          if (labelText) labelText.textContent = 'SLIM';
+          toggleBtn?.classList.add('bg-cyan-500/30', 'border-cyan-300');
+          renderStyle1Keyboard();
+        } else {
+          kbdContainer?.classList.add('hidden');
+          textarea?.removeAttribute('inputmode');
+          if (labelIcon) labelIcon.textContent = '⌨️';
+          if (labelText) labelText.textContent = 'SYS';
+          toggleBtn?.classList.remove('bg-cyan-500/30', 'border-cyan-300');
+        }
+      }
+
+      toggleBtn?.addEventListener('click', () => {
+        triggerKeyHaptic(25);
+        isCustomKbdActive = !isCustomKbdActive;
+        localStorage.setItem('studio_custom_kbd_mode', isCustomKbdActive ? 'true' : 'false');
+        applyKbdState();
+        triggerToast(isCustomKbdActive ? 'Slim Cyber Keyboard: Active ⚡' : 'System Keyboard (Gboard): Active ⌨️');
+      });
+
+      const savedMode = localStorage.getItem('studio_custom_kbd_mode');
+      if (savedMode === 'true') isCustomKbdActive = true;
+      applyKbdState();
+
+      setupPermanentDockEngine();
+
+      // Settings Modal Sync
+      const settingsKbdSelect = document.getElementById('settingKbdModeSelect');
+      const settingsRestoreBtn = document.getElementById('btnSettingsRestoreBars');
+
+      if (settingsKbdSelect) {
+        settingsKbdSelect.value = isCustomKbdActive ? 'custom' : 'system';
+        settingsKbdSelect.addEventListener('change', (e) => {
+          isCustomKbdActive = (e.target.value === 'custom');
+          localStorage.setItem('studio_custom_kbd_mode', isCustomKbdActive ? 'true' : 'false');
+          applyKbdState();
+          triggerToast(isCustomKbdActive ? 'Slim Cyber Keyboard: ON ⚡' : 'System Keyboard (Gboard): Active ⌨️');
+        });
+      }
+
+            settingsRestoreBtn?.addEventListener('click', () => {
+        triggerKeyHaptic(30);
+        const accBar = document.getElementById('accessoryBar');
+        const bottomBar = document.getElementById('bottomQuickEditBar');
+        accBar?.classList.remove('hidden');
+        bottomBar?.classList.remove('hidden');
+        userSettings.miniBar = true;
+        userSettings.actionBar = true;
+        scheduleAutoSave();
+        triggerToast("Navigation Dock 100% Restored! ⚡");
+          });
+    }
+
+    setupCyberKeyboardEngine();
 
       const accBar = document.getElementById('accessoryBar');
       const resBtnRow1 = document.getElementById('btnRestoreAccessoryBar');

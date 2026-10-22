@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.7 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.8 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -1921,7 +1921,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.7',
+      version: '7.8',
       edition: 'Developer Master Edition'
     };
 
@@ -2485,14 +2485,77 @@
       }
     }
 
-    function analyzeCodeTwoTier(code) {
+        function analyzeCodeTwoTier(code) {
       if (!code.trim()) return { hasError: false };
 
+      // 1. TIER 1: CSS & BRACKETS SCANNER (<style> blocks ya pure CSS)
+      const styleMatches = code.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi);
+      for (const sm of styleMatches) {
+        const cssBody = sm[1];
+        const styleStartIndex = sm.index + sm[0].indexOf('>') + 1;
+        const linesBeforeStyle = code.substring(0, styleStartIndex).split('\n').length - 1;
+
+        // Check A: Selector ke baad missing '{' (jaise .pwa-close-btn ke baad direct property shuru hona)
+        const missingBraceMatch = cssBody.match(/([.#a-zA-Z0-9_\-]+)\s*\n\s*([a-zA-Z\-]+)\s*:/);
+        if (missingBraceMatch) {
+          const matchOffset = cssBody.indexOf(missingBraceMatch[0]);
+          const errLine = linesBeforeStyle + cssBody.substring(0, matchOffset).split('\n').length;
+          return {
+            hasError: true,
+            tier: 'css',
+            type: 'Missing CSS Bracket {',
+            line: errLine,
+            col: 1,
+            message: `CSS selector '${missingBraceMatch[1].trim()}' ke baad opening bracket '{' gayab hai.`,
+            fixType: 'insert_css_open_bracket',
+            selector: missingBraceMatch[1].trim()
+          };
+        }
+
+        // Check B: CSS Brackets Balance Check ({ vs })
+        let openBraces = 0;
+        let lastOpenLine = 1;
+        const cssLines = cssBody.split('\n');
+        for (let i = 0; i < cssLines.length; i++) {
+          const ln = cssLines[i];
+          for (let ch of ln) {
+            if (ch === '{') { openBraces++; lastOpenLine = linesBeforeStyle + i + 1; }
+            else if (ch === '}') { openBraces--; }
+          }
+          if (openBraces < 0) {
+            return {
+              hasError: true,
+              tier: 'css',
+              type: 'Unexpected Extra CSS Bracket }',
+              line: linesBeforeStyle + i + 1,
+              col: 1,
+              message: `Faltu closing bracket '}' mila jo kisi selector se linked nahi hai.`,
+              fixType: 'none'
+            };
+          }
+        }
+        if (openBraces > 0) {
+          return {
+            hasError: true,
+            tier: 'css',
+            type: 'Unclosed CSS Block {',
+            line: lastOpenLine,
+            col: 1,
+            message: `CSS block band nahi hua hai. Aakhri '}' bracket missing hai.`,
+            fixType: 'append_css_close_bracket'
+          };
+        }
+      }
+
+      // 2. TIER 2: JAVASCRIPT SYNTAX SCANNER
       const scriptMatches = code.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi);
       for (const m of scriptMatches) {
         const jsBody = m[1];
         const scriptIndex = m.index;
         const linesBeforeScript = code.substring(0, scriptIndex).split('\n').length - 1;
+
+        // Skip ES Module imports/exports from new Function crash
+        if (/^\s*(import|export)\s+/m.test(jsBody)) continue;
 
         try {
           new Function(jsBody);
@@ -2514,14 +2577,15 @@
         }
       }
 
-      const cleanHtml = code.replace(new RegExp('<script[\\s\\S]*?<\\/script>', 'gi'), (match) => {
-        return '\n'.repeat(match.split('\n').length - 1);
-      });
+      // 3. TIER 3: HTML NESTING SCANNER (Comments aur Style safai ke sath)
+      let cleanHtml = code.replace(/<!--[\s\S]*?-->/g, (m) => '\n'.repeat(m.split('\n').length - 1));
+      cleanHtml = cleanHtml.replace(/<script[\s\S]*?<\/script>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
+      cleanHtml = cleanHtml.replace(/<style[\s\S]*?<\/style>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
 
       const tagsOpen = [];
       const tagRegex = /<\/?([a-zA-Z0-9\-]+)(?:\s+[^>]*)?>/g;
       let match;
-      const selfClosing = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
+      const selfClosing = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr', '!doctype']);
 
       while ((match = tagRegex.exec(cleanHtml)) !== null) {
         const fullTag = match[0];
@@ -2581,7 +2645,7 @@
         box.innerHTML = `
           <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1">
             <div class="text-sm font-bold text-emerald-400">Zero Compiler & Syntax Errors</div>
-            <p class="text-[11px] text-[var(--text-muted)]">JavaScript execution compiled successfully & HTML is 100% clean!</p>
+            <p class="text-[11px] text-[var(--text-muted)]">HTML, CSS Brackets aur JavaScript 100% clean aur compile hain!</p>
           </div>
         `;
         if (btnFix) btnFix.classList.add('hidden');
@@ -2598,7 +2662,10 @@
             </div>
             <p class="text-[11px] text-[var(--text-main)]">${report.message}</p>
             <div class="p-2 bg-black/30 rounded-lg text-[10px] text-amber-300 border border-amber-500/20">
-              ${report.fixType === 'append_tag' ? `Safe Action: Engine will append &lt;/${report.tagName}&gt; safely.` : 'Action: Tap Jump above to inspect this exact line.'}
+              ${report.fixType === 'append_tag' ? `Safe Action: Engine will append &lt;/${report.tagName}&gt; safely.` : 
+                report.fixType === 'insert_css_open_bracket' ? `Safe Action: 1-Tap Auto-Fix selector ke aage '{' aur block band karega.` :
+                report.fixType === 'append_css_close_bracket' ? `Safe Action: Missing '}' bracket auto-close karega.` :
+                'Action: Tap Jump above to inspect this exact line.'}
             </div>
           </div>
         `;
@@ -2609,9 +2676,9 @@
         });
 
         if (btnFix) {
-          if (report.fixType === 'append_tag') {
+          if (report.fixType && report.fixType !== 'none') {
             btnFix.classList.remove('hidden');
-            btnFix.innerHTML = `<i data-lucide="wand-2" class="w-3.5 h-3.5"></i><span>1-Tap Auto-Close (&lt;/${report.tagName}&gt;)</span>`;
+            btnFix.innerHTML = `<i data-lucide="wand-2" class="w-3.5 h-3.5"></i><span>1-Tap Auto-Fix Error</span>`;
           } else {
             btnFix.classList.add('hidden');
           }
@@ -2623,14 +2690,37 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function executeSafeAutoFix() {
+        function executeSafeAutoFix() {
       if (!currentDiagnosticFix || !textarea) return;
       const modal = document.getElementById('modalDiagnosticReport');
 
+      recordHistory();
+
       if (currentDiagnosticFix.fixType === 'append_tag') {
-        recordHistory();
         insertTextAtCursor(`\n</${currentDiagnosticFix.tagName}>`);
         triggerToast(`Auto-Healed: Inserted </${currentDiagnosticFix.tagName}>`);
+      } else if (currentDiagnosticFix.fixType === 'insert_css_open_bracket') {
+        const val = textarea.value;
+        const targetSelector = currentDiagnosticFix.selector;
+        const escSel = targetSelector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        // Full-Heal: Selector se lekar agle selector ya blank line tak ka block dhund kar { aur } dono lagana
+        const blockRegex = new RegExp(`(${escSel})\\s*\\n([\\s\\S]*?)(?=\\n\\s*\\n|\\n\\s*[.#a-zA-Z0-9_\\-]+\\s*\\{|<\\/style>)`);
+        if (blockRegex.test(val)) {
+          textarea.value = val.replace(blockRegex, (match, sel, props) => {
+            return `${sel} {\n${props}\n    }`;
+          });
+          triggerToast(`Auto-Healed: Enclosed ${targetSelector} in { }`);
+        } else {
+          const simpleRegex = new RegExp(`(${escSel})\\s*\\n`);
+          if (simpleRegex.test(val)) {
+            textarea.value = val.replace(simpleRegex, `$1 {\n`);
+            triggerToast(`Auto-Healed: Inserted '{' for ${targetSelector}`);
+          }
+        }
+      } else if (currentDiagnosticFix.fixType === 'append_css_close_bracket') {
+        insertTextAtCursor(`\n}\n`);
+        triggerToast(`Auto-Healed: Closed CSS block with '}'`);
       }
 
       updateLineNumbers();
@@ -2639,7 +2729,6 @@
       markActiveModified();
       if (modal) modal.classList.add('hidden');
     }
-
     // =========================================================================
     // POINT 1 & 2: KEY MANAGER WITH BACK-STACK NAVIGATION & CONFIRM DIALOG
     // =========================================================================
@@ -3512,14 +3601,12 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-    // =========================================================================
-    // CONFLICT SHIELD & AUDITOR
-    // =========================================================================
-    function auditWorkspaceConflicts() {
+            function auditWorkspaceConflicts() {
       if (!textarea) return { duplicateFunctions: [], duplicateIds: [], emptyDivMatches: [], totalConflicts: 0, deadLinesCount: 0 };
       const code = textarea.value;
 
-      const functionRegex = /function\s+([a-zA-Z0-9_$]+)\s*\(/g;
+      // Comprehensive Function Scanner: declaration, arrow functions, and function expressions
+      const functionRegex = /(?:function\s+([a-zA-Z0-9_$]+)\s*\(|(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s*)?(?:function\s*\(|\([^)]*\)\s*=>|[a-zA-Z0-9_$]+\s*=>))/g;
       const idRegex = /id=["']([a-zA-Z0-9_\-]+)["']/g;
 
       const functionMap = new Map();
@@ -3527,7 +3614,8 @@ CRITICAL OPERATIONAL RULES:
 
       let match;
       while ((match = functionRegex.exec(code)) !== null) {
-        const name = match[1];
+        const name = match[1] || match[2];
+        if (!name) continue;
         const linesBefore = code.substring(0, match.index).split('\n');
         const lineNum = linesBefore.length;
         if (!functionMap.has(name)) functionMap.set(name, []);
@@ -3552,8 +3640,9 @@ CRITICAL OPERATIONAL RULES:
         if (lines.length > 1) duplicateIds.push({ idName, lines });
       });
 
+      // Safe Dead Tag Detection: Sirf wahi tags count honge jinme koi ID ya Class na ho
       const emptyDivMatches = [];
-      const emptyRegex = /<div[^>]*>\s*<\/div>/g;
+      const emptyRegex = /<div\s*>\s*<\/div>/g;
       while ((match = emptyRegex.exec(code)) !== null) {
         const lineNum = code.substring(0, match.index).split('\n').length;
         emptyDivMatches.push(lineNum);
@@ -3661,8 +3750,10 @@ CRITICAL OPERATIONAL RULES:
 
       btnCopyAI?.addEventListener('click', () => {
         const audit = auditWorkspaceConflicts();
+        const activeTab = fileTabs.find(t => t.id === activeFileId);
+        const currentName = activeTab ? activeTab.name : 'index.html';
         let promptReport = `[ANZARG CODE STUDIO - CONFLICT & OVERWRITE AUDIT REPORT]\n\n`;
-        promptReport += `File: ${document.getElementById('labelFileName')?.textContent || 'code.html'}\n`;
+        promptReport += `File: ${currentName}\n`;
         promptReport += `Total Lines: ${textarea ? textarea.value.split('\n').length : 0}\n\n`;
 
         promptReport += `1. DUPLICATE FUNCTIONS:\n`;
@@ -3689,7 +3780,8 @@ CRITICAL OPERATIONAL RULES:
       btnPurgeDead?.addEventListener('click', () => {
         if (!textarea) return;
         const orig = textarea.value;
-        const cleaned = orig.replace(/<div[^>]*>\s*<\/div>/g, '');
+        // SAFE PURGE: Sirf bina attribute wale pure empty <div > </div> hatenge
+        const cleaned = orig.replace(/<div\s*>\s*<\/div>\n?/g, '');
         if (orig.length !== cleaned.length) {
           recordHistory();
           textarea.value = cleaned;
@@ -3697,9 +3789,9 @@ CRITICAL OPERATIONAL RULES:
           updateSyntaxHighlightingOptimized();
           markActiveModified();
           openConflictShieldModal();
-          triggerToast("Empty dead tags purged!");
+          triggerToast("Safe dead tags purged!");
         } else {
-          triggerToast("No empty dead tags found!");
+          triggerToast("No unreferenced empty tags found!");
         }
       });
 
@@ -3721,7 +3813,7 @@ CRITICAL OPERATIONAL RULES:
     }
 
     // =========================================================================
-    // POINT 3 & 4: SMART CODE PATCH STUDIO WITH MODAL UNDO & REDO CONTROLS
+    // SMART CODE INJECTOR & PATCH STUDIO (UPGRADED: BOUNDARY-AWARE & FUZZY MATCH)
     // =========================================================================
     function setupSmartPatchStudio() {
       const modal = document.getElementById('modalPatchStudio');
@@ -3765,7 +3857,6 @@ CRITICAL OPERATIONAL RULES:
       btnClose?.addEventListener('click', closeStudio);
       btnCancel?.addEventListener('click', closeStudio);
 
-      // POINT 4: DEDICATED IN-MODAL UNDO & REDO
       btnUndoSwap?.addEventListener('click', () => {
         performUndo();
         triggerToast("Swapped Code Undone ↶");
@@ -3808,29 +3899,44 @@ CRITICAL OPERATIONAL RULES:
           badgeStatus.textContent = 'Ready for Batch 1';
           badgeStatus.className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-mono text-[10px]';
           labelAdvice.textContent = 'Editor is empty. Paste Batch 1 below to start fresh.';
-        } else if (!code.includes('</main>')) {
+        } else if (!code.includes('</main>') && !code.includes('</body>')) {
           badgeStatus.textContent = `Batch 1 Detected (${lines} Lines)`;
           badgeStatus.className = 'px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `Batch 1 is present. Paste Batch 2 below — engine will append it cleanly!`;
+          labelAdvice.textContent = `Batch 1 is present. Paste Batch 2 below — engine will inject cleanly.`;
         } else if (!code.includes('</html>')) {
           badgeStatus.textContent = `Batch 2 Detected (${lines} Lines)`;
           badgeStatus.className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `Batch 1 & 2 are present. Paste Batch 3 below to seal the app!`;
+          labelAdvice.textContent = `Batch 1 & 2 are present. Paste Batch 3 below to seal the app.`;
         } else {
           badgeStatus.textContent = `File Complete (${lines} Lines)`;
           badgeStatus.className = 'px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `File is completely assembled. You can append or use Target & Replace mode.`;
+          labelAdvice.textContent = `File is completely assembled. Batch inject will place code safely before closing tags.`;
         }
       }
 
+      // SMART BOUNDARY-AWARE INJECTOR
       document.getElementById('btnExecuteBatchStack')?.addEventListener('click', () => {
         const input = document.getElementById('inputBatchCode');
         const batchText = input ? input.value.trim() : '';
         if (!batchText || !textarea) return;
 
         recordHistory();
-        if (!textarea.value.trim()) textarea.value = batchText;
-        else textarea.value = textarea.value.trimEnd() + '\n' + batchText;
+        let cur = textarea.value;
+
+        if (!cur.trim()) {
+          textarea.value = batchText;
+        } else {
+          // Agar file me pehle se </body> ya </html> maujood hai toh uske theek pehle inject karega
+          const bodyCloseIndex = cur.lastIndexOf('</body>');
+          const htmlCloseIndex = cur.lastIndexOf('</html>');
+          const insertPoint = bodyCloseIndex !== -1 ? bodyCloseIndex : (htmlCloseIndex !== -1 ? htmlCloseIndex : -1);
+
+          if (insertPoint !== -1) {
+            textarea.value = cur.slice(0, insertPoint) + '\n' + batchText + '\n' + cur.slice(insertPoint);
+          } else {
+            textarea.value = cur.trimEnd() + '\n' + batchText;
+          }
+        }
 
         input.value = '';
         updateLineNumbers();
@@ -3838,10 +3944,10 @@ CRITICAL OPERATIONAL RULES:
         updateCursorIndicator();
         markActiveModified();
         closeStudio();
-        triggerToast("Batch Successfully Injected!");
+        triggerToast("Batch Safely Injected Before Closing Tags!");
       });
 
-      // 1-TAP SWAP CODE BLOCK WITH FUZZY INJECTION
+      // 1-TAP SWAP WITH WHITESPACE & INDENTATION TOLERANCE
       document.getElementById('btnExecuteTargetReplace')?.addEventListener('click', () => {
         const oldInput = document.getElementById('inputTargetOld');
         const newInput = document.getElementById('inputTargetNew');
@@ -3855,37 +3961,79 @@ CRITICAL OPERATIONAL RULES:
           oldText = autoDetectOldCodeMatch(newText);
         }
 
+        // Exact Match Pehle Check Karega
         if (oldText && currentContent.includes(oldText)) {
           recordHistory();
           textarea.value = currentContent.replace(oldText, newText);
           if (oldInput) oldInput.value = '';
           if (newInput) newInput.value = '';
-
           updateLineNumbers();
           updateSyntaxHighlightingOptimized();
           updateCursorIndicator();
           markActiveModified();
           closeStudio();
           triggerToast("Code Block Swapped Successfully! ✓");
-        } else {
-          showProfessionalPopup({
-            title: "Old Code Match Not Found",
-            message: "Specified old code editor mein nahi mila.\nKya aap is new code ko document ke end mein append karna chahte hain?",
-            confirmText: "Append to End",
-            cancelText: "Cancel",
-            iconType: "warning",
-            onConfirm: () => {
-              recordHistory();
-              textarea.value = currentContent + '\n' + newText;
-              updateLineNumbers();
-              updateSyntaxHighlightingOptimized();
-              updateCursorIndicator();
-              markActiveModified();
-              closeStudio();
-              triggerToast("Code Appended Safely! ✓");
-            }
-          });
+          return;
         }
+
+        // Fuzzy Whitespace Match (Line-by-line whitespace trim karke check karega)
+        if (oldText) {
+          const oldLines = oldText.split('\n').map(l => l.trim()).filter(Boolean);
+          const docLines = currentContent.split('\n');
+          let matchStartIndex = -1;
+
+          for (let i = 0; i <= docLines.length - oldLines.length; i++) {
+            let matched = true;
+            for (let j = 0; j < oldLines.length; j++) {
+              if (docLines[i + j].trim() !== oldLines[j]) {
+                matched = false;
+                break;
+              }
+            }
+            if (matched) {
+              matchStartIndex = i;
+              break;
+            }
+          }
+
+          if (matchStartIndex !== -1) {
+            recordHistory();
+            docLines.splice(matchStartIndex, oldLines.length, newText);
+            textarea.value = docLines.join('\n');
+            if (oldInput) oldInput.value = '';
+            if (newInput) newInput.value = '';
+            updateLineNumbers();
+            updateSyntaxHighlightingOptimized();
+            updateCursorIndicator();
+            markActiveModified();
+            closeStudio();
+            triggerToast("Code Swapped with Flexible Indent Matching! ✓");
+            return;
+          }
+        }
+
+        showProfessionalPopup({
+          title: "Old Code Match Not Found",
+          message: "Specified old code editor mein nahi mila.\nKya aap is new code ko safe boundary par inject karna chahte hain?",
+          confirmText: "Inject Safely",
+          cancelText: "Cancel",
+          iconType: "warning",
+          onConfirm: () => {
+            recordHistory();
+            const bodyClose = currentContent.lastIndexOf('</body>');
+            if (bodyClose !== -1) {
+              textarea.value = currentContent.slice(0, bodyClose) + '\n' + newText + '\n' + currentContent.slice(bodyClose);
+            } else {
+              textarea.value = currentContent + '\n' + newText;
+            }
+            updateLineNumbers();
+            updateSyntaxHighlightingOptimized();
+            updateCursorIndicator();
+            markActiveModified();
+            closeStudio();
+            triggerToast("Code Injected Safely! ✓");
+          }
+        });
       });
 
       document.getElementById('btnExecuteRangeReplace')?.addEventListener('click', () => {
@@ -3918,34 +4066,74 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-    // =========================================================================
-    // SAFE BEAUTIFIER & FORMATTER
+               // =========================================================================
+    // SAFE BEAUTIFIER & FORMATTER (CLEAN: ZERO PARSER LEAK)
     // =========================================================================
     function autoFormatCurrentDocument() {
       if (!textarea) return;
       let code = textarea.value;
       if (!code.trim()) return;
 
+      const activeTab = fileTabs.find(t => t.id === activeFileId);
+      const isJsFile = activeTab && activeTab.name && activeTab.name.toLowerCase().endsWith('.js');
+
       let formatted = '';
       let indentLevel = 0;
       const indentStr = '  ';
       const lines = code.split('\n');
 
-      for (let rawLine of lines) {
-        let line = rawLine.trim();
-        if (!line) {
-          formatted += '\n';
-          continue;
+      // 1. Agar Pure JavaScript (.js) file active hai
+      if (isJsFile) {
+        for (let rawLine of lines) {
+          let line = rawLine.trim();
+          if (!line) {
+            formatted += '\n';
+            continue;
+          }
+
+          if (line.startsWith('}') || line.startsWith(']') || line.startsWith(')')) {
+            indentLevel = Math.max(0, indentLevel - 1);
+          }
+
+          formatted += indentStr.repeat(indentLevel) + line + '\n';
+
+          if (line.endsWith('{') || line.endsWith('[') || line.endsWith('(')) {
+            indentLevel++;
+          }
         }
+      } else {
+        // 2. Agar HTML file active hai (Isolate raw blocks safely)
+        let insideRawBlock = false;
 
-        if (line.match(/^<\/(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr))/) || line.startsWith('}') || line.startsWith(']')) {
-          indentLevel = Math.max(0, indentLevel - 1);
-        }
+        for (let rawLine of lines) {
+          let line = rawLine.trim();
+          if (!line) {
+            formatted += '\n';
+            continue;
+          }
 
-        formatted += indentStr.repeat(indentLevel) + line + '\n';
+          const isClosingRaw = new RegExp('^<' + '\\/(script|style)>', 'i').test(line);
+          if (isClosingRaw) {
+            insideRawBlock = false;
+            indentLevel = Math.max(0, indentLevel - 1);
+          } else if (!insideRawBlock) {
+            if (line.match(/^<\/(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr))/i) || line.startsWith('}')) {
+              indentLevel = Math.max(0, indentLevel - 1);
+            }
+          }
 
-        if ((line.match(/<(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr|\/|!))[^>]+[^\/]>/) && !line.includes('</')) || line.endsWith('{') || line.endsWith('[')) {
-          indentLevel++;
+          formatted += indentStr.repeat(indentLevel) + line + '\n';
+
+          if (!insideRawBlock) {
+            if ((line.match(/<(?!(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr|\/|!))[^>]+[^\/]>/i) && !line.includes('</')) || line.endsWith('{')) {
+              indentLevel++;
+            }
+          }
+
+          const isOpeningRaw = /<(script|style)\b[^>]*>/i.test(line) && !new RegExp('<' + '\\/(script|style)>', 'i').test(line);
+          if (isOpeningRaw) {
+            insideRawBlock = true;
+          }
         }
       }
 
@@ -3955,7 +4143,7 @@ CRITICAL OPERATIONAL RULES:
       updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
-      triggerToast("Code Formatted Cleanly!");
+      triggerToast("Code Formatted Cleanly! ✓");
     }
 
     function initNativeEditor() {
@@ -4321,7 +4509,6 @@ CRITICAL OPERATIONAL RULES:
         document.getElementById('modalColor')?.classList.remove('hidden');
       });
     }
-        // 🛡️ UNIFIED SMART INPUT ROUTER (ACCESSORY BAR + GBOARD)
         // 🛡️ FOCUS MEMORY ROUTER (PERFECT SEARCH + EDITOR SYMBOL ROUTING)
     let lastActiveInputTarget = null;
 
@@ -4412,8 +4599,6 @@ CRITICAL OPERATIONAL RULES:
         if (visualHighlightBar) visualHighlightBar.style.display = 'none';
         inputFind.focus();
       });
-
-      // 🛡️ DYNAMIC VISUAL CYBER NEON HIGHLIGHT BAR
             // 🛡️ ZERO-LAG ROCK-SOLID LINE HIGHLIGHT (PAGE KE SATH 100% CHIPKA RAHEGA)
       let visualHighlightBar = document.getElementById('searchActiveHighlightBar');
       if (!visualHighlightBar && editorStage) {
@@ -5582,37 +5767,46 @@ CRITICAL OPERATIONAL RULES:
         closeInspector();
       });
 
-      // 2. Switch / Link Project Folder Handler (ZERO BULK TAB CLUTTER)
-      btnLinkFolder?.addEventListener('click', async () => {
+            // 2. Switch / Link Project Folder Handler (PRE-PERMISSION PROFESSIONAL BRIDGE)
+      btnLinkFolder?.addEventListener('click', () => {
         closeInspector();
         const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
         const cur = fileTabs.find(t => t.id === curTabId);
 
-        if ('showDirectoryPicker' in window) {
-          try {
-            const dirHandle = await window.showDirectoryPicker();
-            if (!dirHandle) return;
+        showProfessionalPopup({
+          title: "Link Project Folder",
+          message: "Studio aapke project folder (HTML, CSS, JS) ko auto-detect karke live preview se link karega.\n\nAgle step mein Android aur Browser folder access ki permission maangenge, wahan 'Allow' chunein.",
+          confirmText: "Proceed to Link",
+          cancelText: "Cancel",
+          iconType: "info",
+          onConfirm: async () => {
+            if ('showDirectoryPicker' in window) {
+              try {
+                const dirHandle = await window.showDirectoryPicker();
+                if (!dirHandle) return;
 
-            if (cur) {
-              cur.dirHandle = dirHandle;
-              cur.folderName = dirHandle.name;
-              cur.filePath = `/storage/emulated/0/${dirHandle.name}/${cur.name}`;
-              if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
-              if (typeof renderTabStrip === 'function') renderTabStrip();
-              if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                if (cur) {
+                  cur.dirHandle = dirHandle;
+                  cur.folderName = dirHandle.name;
+                  cur.filePath = `/storage/emulated/0/${dirHandle.name}/${cur.name}`;
+                  if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
+                  if (typeof renderTabStrip === 'function') renderTabStrip();
+                  if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                }
+
+                triggerToast(`Folder '${dirHandle.name}' linked 📂`);
+                setTimeout(() => { openInspector(); }, 250);
+                return;
+              } catch (err) {
+                if (err.name === 'AbortError') return;
+              }
             }
 
-            triggerToast(`Folder '${dirHandle.name}' linked 📂`);
-            setTimeout(() => { openInspector(); }, 250);
-            return;
-          } catch (err) {
-            if (err.name === 'AbortError') return;
+            if (typeof handleOpenFileNative === 'function') {
+              handleOpenFileNative();
+            }
           }
-        }
-
-        if (typeof handleOpenFileNative === 'function') {
-          handleOpenFileNative();
-        }
+        });
       });
 
       // 3. Copy Full Path to Clipboard
@@ -6063,7 +6257,7 @@ CRITICAL OPERATIONAL RULES:
   exportTabAsZip(true);
 });
 
-// ⚡ EXTRACT JS TO NEW TAB (Auto-Strip, Link & Undo Protected Engine)
+// ⚡ EXTRACT JS TO NEW TAB (UPGRADED: BULLETPROOF PARSER & AUTO-TRIM)
 document.getElementById('optExtractJs')?.addEventListener('click', () => {
   document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
 
@@ -6076,26 +6270,21 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
   }
 
   try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(code, 'text/html');
-    const allScripts = Array.from(doc.querySelectorAll('script'));
-
-    if (!allScripts || allScripts.length === 0) {
-      triggerToast("No <script> tags found in file!");
-      return;
-    }
-
+    const scriptTagRegex = new RegExp('<script\\b([^>]*)>([\\s\\S]*?)<\\/script>', 'gi');
+    let match;
     const extractedBlocks = [];
     let blockIndex = 1;
 
-    for (const s of allScripts) {
-      const src = s.getAttribute('src');
-      const innerJs = s.textContent || s.innerText || '';
+    while ((match = scriptTagRegex.exec(code)) !== null) {
+      const attrs = match[1];
+      const innerJs = match[2];
+      const srcMatch = attrs.match(/src=["']([^"']+)["']/i);
 
-      if (src) {
-        extractedBlocks.push(`// [External Script Link: ${src}]`);
+      if (srcMatch) {
+        extractedBlocks.push('// [External Script Link: ' + srcMatch[1] + ']');
       } else if (innerJs.trim()) {
-        extractedBlocks.push(`// ==========================================\n// [SCRIPT BLOCK #${blockIndex}]\n// ==========================================\n` + innerJs.trim());
+        const trimmedLines = innerJs.split('\n').map(l => l.replace(/^ {2,4}/, '')).join('\n').trim();
+        extractedBlocks.push('// ==========================================\n// [SCRIPT BLOCK #' + blockIndex + ']\n// ==========================================\n' + trimmedLines);
         blockIndex++;
       }
     }
@@ -6110,13 +6299,13 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
       finalJsCode = finalJsCode.normalize('NFC');
     }
 
-        let baseName = (cur?.name || 'document.html').replace(/\.(html|htm|js|json|css|txt)$/i, "");
+    let baseName = (cur?.name || 'document.html').replace(/\.(html|htm|js|json|css|txt)$/i, "");
     baseName = baseName.replace(/\.app$/i, "").replace(/\.js$/i, "");
-    const newName = `${baseName}.js`;
+    const newName = baseName + '.js';
     const folderName = cur?.folderName || 'Internal Storage';
     const fullPath = (folderName !== 'Internal Storage') 
-      ? `/storage/emulated/0/${folderName}/${newName}` 
-      : `/storage/emulated/0/${newName}`;
+      ? '/storage/emulated/0/' + folderName + '/' + newName 
+      : '/storage/emulated/0/' + newName;
 
     const executeExtraction = (stripFromHtml = false) => {
       // 1. Create and Open New JS Tab
@@ -6136,56 +6325,45 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         scrollTop: 0
       };
 
-      // 2. Agar user ne Clean & Link chuna hai toh Original HTML ko auto-clean karein
+      // 2. Safe String-Based Strip: Split script tag to avoid browser HTML parser break
       if (stripFromHtml && cur && textarea) {
         if (typeof recordHistory === 'function') recordHistory();
 
-        // Safe DOM Strip: Sirf inline scripts ko hatana (CDN links ko nahi chhedna)
-        const stripDoc = new DOMParser().parseFromString(code, 'text/html');
-        const toRemove = stripDoc.querySelectorAll('script');
-        toRemove.forEach(sc => {
-          if (!sc.getAttribute('src') && sc.textContent.trim()) {
-            sc.remove();
+        let linkInjected = false;
+        const safeScriptPattern = new RegExp('<script\\b([^>]*)>([\\s\\S]*?)<\\/script>', 'gi');
+        let cleanedHtml = code.replace(safeScriptPattern, (fullMatch, attrs, innerJs) => {
+          if (!attrs.includes('src=') && innerJs.trim()) {
+            if (!linkInjected) {
+              linkInjected = true;
+              return '<script src="' + newName + '"><' + '/script>';
+            }
+            return '';
           }
+          return fullMatch;
         });
 
-        // Nayi script tag link inject karna
-        const externalScriptTag = stripDoc.createElement('script');
-        externalScriptTag.setAttribute('src', newName);
-        if (stripDoc.body) {
-          stripDoc.body.appendChild(externalScriptTag);
-        } else {
-          stripDoc.documentElement.appendChild(externalScriptTag);
-        }
-
-        let cleanedHtml = '<!DOCTYPE html>\n' + stripDoc.documentElement.outerHTML;
         if (typeof cleanedHtml.normalize === 'function') {
           cleanedHtml = cleanedHtml.normalize('NFC');
         }
 
-        // Original Tab Memory aur Editor me apply
         cur.content = cleanedHtml;
         cur.isModified = true;
         textarea.value = cleanedHtml;
 
-        if (typeof autoFormatCurrentDocument === 'function') {
-          autoFormatCurrentDocument();
-        } else {
-          if (typeof updateLineNumbers === 'function') updateLineNumbers();
-          if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
-        }
+        if (typeof updateLineNumbers === 'function') updateLineNumbers();
+        if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
       }
 
       fileTabs.push(newTab);
       if (typeof renderTabStrip === 'function') renderTabStrip();
       if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
-      triggerToast(stripFromHtml ? `Extracted & Linked <script src="${newName}"> ⚡` : `Extracted ${blockIndex - 1} block(s) into ${newName} ⚡`);
+      triggerToast(stripFromHtml ? 'Extracted & Linked <script src="' + newName + '"> ⚡' : 'Extracted into ' + newName + ' (Safe) ⚡');
     };
 
-    // User Choice Dialog (Choice A: Clean & Link vs Choice B: Safe Copy Only)
+    // Dialog: Clean & Link vs Copy Only
     showProfessionalPopup({
       title: "Extract JavaScript Engine",
-      message: `Found ${blockIndex - 1} inline script block(s).\n\nKya aap original HTML se inline script hata kar '<script src="${newName}">' link karna chahte hain?`,
+      message: 'Found ' + (blockIndex - 1) + ' inline script block(s).\n\nKya aap original HTML se inline script hata kar \'<script src="' + newName + '">\' link karna chahte hain?',
       confirmText: "Clean & Link HTML",
       cancelText: "Copy Only (Safe)",
       iconType: "info",
@@ -6243,6 +6421,9 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
 
     let activePreviewBlobUrl = null;
 
+            // =========================================================================
+    // LIVE RUNNER ENGINE (SMART AUTO-DETECT: DIRECTORY + TAB HYBRID BUNDLER)
+    // =========================================================================
     function setupLiveRunner() {
       const modal = document.getElementById('modalLivePreview');
       const frame = document.getElementById('liveFrame');
@@ -6263,7 +6444,7 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         logsBox.scrollTop = logsBox.scrollHeight;
       }
 
-            window.addEventListener('message', (e) => {
+      window.addEventListener('message', (e) => {
         if (e.data?.source === 'anzarg-frame-console') {
           appendLog(e.data.type, e.data.message);
         }
@@ -6272,38 +6453,122 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         }
       });
 
-            function buildInjectedSource(raw) {
-        const interceptor = `
-          <script>
-            (function(){
-              function forward(type, args){
-                try {
-                  var line = Array.from(args).map(function(item){
-                    return typeof item === 'object' ? JSON.stringify(item) : String(item);
-                  }).join(' ');
-                  window.parent.postMessage({ source: 'anzarg-frame-console', type: type, message: line }, '*');
-                } catch(e){}
-              }
-              var _log = console.log, _err = console.error, _warn = console.warn;
-              console.log = function(){ _log.apply(console, arguments); forward('log', arguments); };
-              console.error = function(){ _err.apply(console, arguments); forward('error', arguments); };
-              console.warn = function(){ _warn.apply(console, arguments); forward('warn', arguments); };
-              window.onerror = function(msg, url, lineNo, colNo){ 
-                forward('error', msg + ' (Line ' + lineNo + ')'); 
-                window.parent.postMessage({ source: 'anzarg-runtime-error', line: lineNo, error: msg }, '*');
-              };
-            })();
-          <\/script>
-        `;
-        return raw.includes('<head>') ? raw.replace('<head>', '<head>' + interceptor) : interceptor + raw;
+      // Background Reader: Folder (dirHandle) se kisi bhi file ka text nikalne ke liye
+      async function readLinkedFileFromDisk(dirHandle, fileName) {
+        if (!dirHandle || !fileName) return null;
+        try {
+          const fileHandle = await dirHandle.getFileHandle(fileName);
+          const f = await fileHandle.getFile();
+          return await f.text();
+        } catch (e) {
+          return null;
+        }
       }
 
-      function injectCodeToIframe() {
+      async function buildInjectedSource(rawHtml, activeTab) {
+        let processedSource = rawHtml;
+
+        // 1. External Script Tags Auto-Bundle
+        const scriptRegexPattern = new RegExp('<' + 'script\\b[^>]*src=["\']([^"\']+)["\'][^>]*>\\s*<' + '\\/script>', 'gi');
+        const scriptMatches = Array.from(processedSource.matchAll(scriptRegexPattern));
+        for (const m of scriptMatches) {
+          const fullMatch = m[0];
+          const srcPath = m[1];
+          const pureName = srcPath.split('/').pop();
+
+          let fileContent = null;
+
+          // Priority A: Tab strip mein open file
+          const openTab = fileTabs.find(t => t.name === pureName || t.name === srcPath);
+          if (openTab && openTab.content) {
+            fileContent = (openTab.id === activeFileId && textarea) ? textarea.value : openTab.content;
+          }
+
+          // Priority B: Linked Folder se background auto-read
+          if (!fileContent && activeTab && activeTab.dirHandle) {
+            fileContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureName);
+          }
+
+          if (fileContent) {
+            processedSource = processedSource.replace(fullMatch, '\n<' + 'script>\n/* [Auto-Bundled: ' + pureName + '] */\n' + fileContent + '\n<' + '/script>\n');
+          }
+        }
+
+        // 2. External CSS Links Auto-Bundle
+        const cssRegexPattern = new RegExp('<' + 'link\\b[^>]*href=["\']([^"\']+\\.css)["\'][^>]*>', 'gi');
+        const cssMatches = Array.from(processedSource.matchAll(cssRegexPattern));
+        for (const cm of cssMatches) {
+          const fullMatch = cm[0];
+          const hrefPath = cm[1];
+          const pureCssName = hrefPath.split('/').pop();
+
+          let cssContent = null;
+          const openCssTab = fileTabs.find(t => t.name === pureCssName);
+          if (openCssTab && openCssTab.content) {
+            cssContent = (openCssTab.id === activeFileId && textarea) ? textarea.value : openCssTab.content;
+          }
+
+          if (!cssContent && activeTab && activeTab.dirHandle) {
+            cssContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureCssName);
+          }
+
+          if (cssContent) {
+            processedSource = processedSource.replace(fullMatch, '\n<style>\n/* [Auto-Bundled: ' + pureCssName + '] */\n' + cssContent + '\n<' + '/style>\n');
+          }
+        }
+
+        const interceptor = '<' + 'script>\n' +
+          '(function(){\n' +
+          '  function forward(type, args){\n' +
+          '    try {\n' +
+          '      var line = Array.from(args).map(function(item){\n' +
+          '        return typeof item === "object" ? JSON.stringify(item) : String(item);\n' +
+          '      }).join(" ");\n' +
+          '      window.parent.postMessage({ source: "anzarg-frame-console", type: type, message: line }, "*");\n' +
+          '    } catch(e){}\n' +
+          '  }\n' +
+          '  var _log = console.log, _err = console.error, _warn = console.warn;\n' +
+          '  console.log = function(){ _log.apply(console, arguments); forward("log", arguments); };\n' +
+          '  console.error = function(){ _err.apply(console, arguments); forward("error", arguments); };\n' +
+          '  console.warn = function(){ _warn.apply(console, arguments); forward("warn", arguments); };\n' +
+          '  window.onerror = function(msg, url, lineNo, colNo){ \n' +
+          '    forward("error", msg + " (Line " + lineNo + ")"); \n' +
+          '    window.parent.postMessage({ source: "anzarg-runtime-error", line: lineNo, error: msg }, "*");\n' +
+          '  };\n' +
+          '})();\n<' + '/script>\n';
+
+        return processedSource.includes('<head>') ? processedSource.replace('<head>', '<head>' + interceptor) : interceptor + processedSource;
+      }
+
+      async function injectCodeToIframe() {
         if (activePreviewBlobUrl) {
           URL.revokeObjectURL(activePreviewBlobUrl);
           activePreviewBlobUrl = null;
         }
-        const source = buildInjectedSource(textarea ? textarea.value : '');
+
+        const curTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];
+        const isJsFile = curTab && curTab.name && curTab.name.toLowerCase().endsWith('.js');
+        let htmlSource = textarea ? textarea.value : '';
+
+        // SMART REVERSE ROUTER: Agar active tab .js file hai
+        if (isJsFile) {
+          let mainHtmlTab = fileTabs.find(t => t.name && (t.name.toLowerCase().endsWith('.html') || t.name.toLowerCase().endsWith('.htm')));
+          
+          if (!mainHtmlTab && curTab && curTab.dirHandle) {
+            const diskHtml = await readLinkedFileFromDisk(curTab.dirHandle, 'index.html');
+            if (diskHtml) {
+              mainHtmlTab = { name: 'index.html', content: diskHtml, dirHandle: curTab.dirHandle };
+            }
+          }
+
+          if (mainHtmlTab && mainHtmlTab.content) {
+            htmlSource = mainHtmlTab.content;
+          } else {
+            htmlSource = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>JS Preview</title></head><body><div id="app">Running ' + curTab.name + '...</div><' + '/body><' + '/html>';
+          }
+        }
+
+        const source = await buildInjectedSource(htmlSource, curTab);
         const blob = new Blob([source], { type: 'text/html' });
         activePreviewBlobUrl = URL.createObjectURL(blob);
         frame.src = activePreviewBlobUrl;
@@ -6313,15 +6578,17 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         if (logsBox) logsBox.innerHTML = '<div class="text-slate-500 italic">Console ready...</div>';
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
-          setTimeout(() => injectCodeToIframe(), 35);
+          setTimeout(async () => {
+            await injectCodeToIframe();
+          }, 35);
         });
       }
 
       document.getElementById('btnHeaderRun')?.addEventListener('click', launchPreview);
       document.getElementById('btnBottomRun')?.addEventListener('click', launchPreview);
 
-      document.getElementById('btnPreviewRefresh')?.addEventListener('click', () => {
-        injectCodeToIframe();
+      document.getElementById('btnPreviewRefresh')?.addEventListener('click', async () => {
+        await injectCodeToIframe();
         triggerToast("Refreshed Preview");
       });
 

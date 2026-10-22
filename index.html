@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.8 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.9 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -1921,7 +1921,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.8',
+      version: '7.9',
       edition: 'Developer Master Edition'
     };
 
@@ -4066,8 +4066,8 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-               // =========================================================================
-    // SAFE BEAUTIFIER & FORMATTER (CLEAN: ZERO PARSER LEAK)
+                      // =========================================================================
+    // SAFE BEAUTIFIER & RE-STRUCTURE ENGINE (WITH STYLISH SECTION BANNERS)
     // =========================================================================
     function autoFormatCurrentDocument() {
       if (!textarea) return;
@@ -4077,40 +4077,51 @@ CRITICAL OPERATIONAL RULES:
       const activeTab = fileTabs.find(t => t.id === activeFileId);
       const isJsFile = activeTab && activeTab.name && activeTab.name.toLowerCase().endsWith('.js');
 
+      // Agar Pure JavaScript file hai toh seedha standard indent karega
+      if (isJsFile) {
+        executeStandardIndentFormatting(code);
+        return;
+      }
+
+      // HTML File ke liye 2-Way Smart Choice Modal
+      showProfessionalPopup({
+        title: "Code Formatter & Beautifier",
+        message: "Aap code ko kis tarah format karna chahte hain?\n\n1. Quick Indent: Sirf spaces aur line alignment theek karega.\n2. Deep Restructure: Bikhre huye HTML, CSS aur JS ko alag-alag sort karke Stylish Banners lagayega.",
+        confirmText: "Deep Restructure ⚡",
+        cancelText: "Quick Indent",
+        iconType: "info",
+        onConfirm: () => executeDeepCodeRestructure(code),
+        onCancel: () => executeStandardIndentFormatting(code)
+      });
+    }
+
+    // 1. STANDARD INDENTATION FORMATTER
+    function executeStandardIndentFormatting(code) {
+      const activeTab = fileTabs.find(t => t.id === activeFileId);
+      const isJsFile = activeTab && activeTab.name && activeTab.name.toLowerCase().endsWith('.js');
+
       let formatted = '';
       let indentLevel = 0;
       const indentStr = '  ';
       const lines = code.split('\n');
 
-      // 1. Agar Pure JavaScript (.js) file active hai
       if (isJsFile) {
         for (let rawLine of lines) {
           let line = rawLine.trim();
-          if (!line) {
-            formatted += '\n';
-            continue;
-          }
-
+          if (!line) { formatted += '\n'; continue; }
           if (line.startsWith('}') || line.startsWith(']') || line.startsWith(')')) {
             indentLevel = Math.max(0, indentLevel - 1);
           }
-
           formatted += indentStr.repeat(indentLevel) + line + '\n';
-
           if (line.endsWith('{') || line.endsWith('[') || line.endsWith('(')) {
             indentLevel++;
           }
         }
       } else {
-        // 2. Agar HTML file active hai (Isolate raw blocks safely)
         let insideRawBlock = false;
-
         for (let rawLine of lines) {
           let line = rawLine.trim();
-          if (!line) {
-            formatted += '\n';
-            continue;
-          }
+          if (!line) { formatted += '\n'; continue; }
 
           const isClosingRaw = new RegExp('^<' + '\\/(script|style)>', 'i').test(line);
           if (isClosingRaw) {
@@ -4143,7 +4154,84 @@ CRITICAL OPERATIONAL RULES:
       updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
-      triggerToast("Code Formatted Cleanly! ✓");
+      triggerToast("Code Indented Cleanly! ✓");
+    }
+
+    // 2. DEEP CODE RE-STRUCTURE & STYLISH BANNER ENGINE (PARSER LEAK PROOF)
+    function executeDeepCodeRestructure(rawCode) {
+      if (!textarea || !rawCode.trim()) return;
+
+      // Purane banners ko pehle saaf karein taaki duplicate na hon
+      let cleanCode = rawCode.replace(/<!--\s*───\s*[🎨🛑⚡].*?───\s*-->\n?/gi, '');
+
+      // 1. Extract All Styles
+      const stylePool = [];
+      const styleRegex = new RegExp('<' + 'style\\b[^>]*>([\\s\\S]*?)<' + '\\/style>', 'gi');
+      cleanCode = cleanCode.replace(styleRegex, (match, cssBody) => {
+        if (cssBody.trim()) stylePool.push(cssBody.trim());
+        return '';
+      });
+
+      // 2. Extract All Scripts
+      const scriptPool = [];
+      const externalScriptPool = [];
+      const scriptRegex = new RegExp('<' + 'script\\b([^>]*)>([\\s\\S]*?)<' + '\\/script>', 'gi');
+      cleanCode = cleanCode.replace(scriptRegex, (match, attrs, jsBody) => {
+        if (attrs && /src=["']/i.test(attrs)) {
+          externalScriptPool.push(match.trim());
+        } else if (jsBody.trim()) {
+          scriptPool.push(jsBody.trim());
+        }
+        return '';
+      });
+
+      // 3. Extract Head Tags
+      let headContent = '';
+      const headRegex = new RegExp('<' + 'head\\b[^>]*>([\\s\\S]*?)<' + '\\/head>', 'i');
+      const headMatch = cleanCode.match(headRegex);
+      if (headMatch) {
+        headContent = headMatch[1].trim();
+        cleanCode = cleanCode.replace(headMatch[0], '');
+      }
+
+      // 4. Extract Body Content
+      let bodyContent = cleanCode;
+      const bodyRegex = new RegExp('<' + 'body\\b[^>]*>([\\s\\S]*?)<' + '\\/body>', 'i');
+      const bodyMatch = cleanCode.match(bodyRegex);
+      if (bodyMatch) {
+        bodyContent = bodyMatch[1].trim();
+      } else {
+        bodyContent = bodyContent.replace(/<!DOCTYPE[^>]*>/i, '')
+                                 .replace(/<\/?html[^>]*>/gi, '')
+                                 .trim();
+      }
+
+      // Stylish Compact Banners Build
+      const cssBlock = stylePool.length > 0 
+        ? '\n  <!-- ─── 🎨 CSS STYLES (START) ─── -->\n  <' + 'style>\n' + stylePool.join('\n\n') + '\n  <' + '/style>\n  <!-- ─── 🎨 CSS STYLES (END) ───── -->\n'
+        : '';
+
+      const jsBlock = scriptPool.length > 0
+        ? '\n  <!-- ─── ⚡ JS LOGIC (START) ───── -->\n  <' + 'script>\n' + scriptPool.join('\n\n') + '\n  <' + '/script>\n  <!-- ─── ⚡ JS LOGIC (END) ─────── -->\n'
+        : '';
+
+      const extJsBlock = externalScriptPool.length > 0
+        ? '\n  ' + externalScriptPool.join('\n  ') + '\n'
+        : '';
+
+      // Clean Re-Assembled Document
+      let assembled = '<!DOCTYPE html>\n<html lang="hi">\n<' + 'head>\n';
+      if (headContent) assembled += '  ' + headContent + '\n';
+      else assembled += '  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>App</title>\n';
+      
+      assembled += cssBlock;
+      assembled += '<' + '/head>\n\n<' + 'body>\n  <!-- ─── 🛑 HTML CONTENT (START) ─── -->\n  ' + bodyContent + '\n  <!-- ─── 🛑 HTML CONTENT (END) ───── -->\n';
+      assembled += extJsBlock;
+      assembled += jsBlock;
+      assembled += '<' + '/body>\n<' + '/html>';
+
+      executeStandardIndentFormatting(assembled);
+      triggerToast("Code Restructured with Stylish Banners! ⚡");
     }
 
     function initNativeEditor() {

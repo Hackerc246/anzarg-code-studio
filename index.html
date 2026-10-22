@@ -4,7 +4,7 @@
   ---------------------------------------------------------------------------------
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
   Developed by: Mohammed Anzar
-  Version: 7.5 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
+  Version: 7.7 Production Master (GitHub Zero-Bug Verified • Gemini 3 Core)
 
   LEGAL NOTICE & WARNING:
   Unauthorized copying, reverse engineering, redistribution, scraping, or 
@@ -570,9 +570,10 @@
 
   <!-- HORIZONTAL TOUCH-SCROLLABLE ADDRESS & ACTION BAR (FULL PATH GUARANTEED) -->
   <div id="fullWidthAddressBar" class="h-8 bg-[var(--editor-bg)] border-b border-[var(--surface-border)] flex items-center px-2 shrink-0 select-none z-10 text-[11px] font-mono overflow-x-auto no-scrollbar whitespace-nowrap">
-    <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 shrink-0 pr-2 cursor-pointer hover:bg-white/5 py-1 px-1.5 rounded transition" title="Tap to view folder or pick file from device">
+        <div id="addressBreadcrumbWrapper" class="flex items-center space-x-1.5 shrink-0 pr-2 cursor-pointer hover:bg-white/5 py-1 px-1.5 rounded transition" title="Tap to view folder or pick file from device">
       <i data-lucide="folder" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
       <span id="breadcrumbPathDisplay" class="text-cyan-300 font-semibold text-[11px] whitespace-nowrap">/storage/emulated/0/untitled.html</span>
+      <span id="dotUnsaved" class="hidden w-2 h-2 rounded-full bg-amber-400 shrink-0 animate-pulse" title="Unsaved changes"></span>
     </div>
 
     <div class="h-3.5 w-px bg-[var(--surface-border)] shrink-0 mx-1"></div>
@@ -675,12 +676,6 @@
     <button id="btnKeyColor" title="Color Picker" class="px-2.5 h-7 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center active:scale-95 transition shrink-0">
       <i data-lucide="palette" class="w-3.5 h-3.5"></i>
     </button>
-            <!-- KEYBOARD MODE TOGGLE (CUSTOM SLIM vs SYSTEM GBOARD) -->
-        <button id="btnToggleCustomKeyboard" title="Switch Keyboard (Slim / System)" class="px-2 py-1 rounded-lg bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 font-mono text-[10px] font-bold active:scale-95 transition flex items-center space-x-1 shrink-0 mr-1.5">
-          <span id="labelKbdModeIcon">⌨️</span>
-          <span id="labelKbdModeText" class="text-[9px]">SLIM</span>
-        </button>
-
             <!-- PERMANENT CORNER DOCK ANCHOR (NEVER VANISHES) -->
         <div class="sticky-dock-pin flex items-center pl-1.5 shrink-0 z-50">
           <button id="btnPermanentDockAnchor" type="button" title="Toggle Bottom Bars View" class="w-7 h-7 rounded-lg bg-[#161b22] border border-cyan-500/40 text-cyan-400 font-mono text-xs font-bold active:scale-90 active:bg-cyan-500 active:text-black transition flex items-center justify-center shadow-md">
@@ -688,12 +683,6 @@
           </button>
         </div>
   </div>
-    <!-- ULTRA-SLIM CUSTOM CYBER CODING KEYBOARD -->
-    <div id="customCyberKeyboard" class="hidden w-full bg-[#0a0d14] border-t border-cyan-500/30 p-1 flex flex-col space-y-1 select-none z-30 transition-all duration-200">
-
-      <!-- Main Dynamic QWERTY Matrix -->
-      <div id="cyberKbdGrid" class="flex flex-col space-y-1"></div>
-    </div>
 
   <!-- ROW 2: QUICKEDIT NAVIGATION BAR -->
       <!-- SMART DOCK RESCUE PILL (PREVENTS ACCIDENTAL HIDE / LOCKOUT) -->
@@ -1153,38 +1142,63 @@
     </div>
   </div>
 
-  <!-- MODAL: SEARCH & REPLACE -->
-  <div id="modalSearchQuickEdit" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="material-card-elevated w-full max-w-sm p-5 text-xs text-[var(--text-main)] space-y-3">
-      <div class="flex items-center justify-between border-b border-[var(--surface-border)] pb-2.5">
-        <h3 class="font-bold text-sm text-cyan-400 flex items-center space-x-1.5">
-          <i data-lucide="search" class="w-4 h-4"></i>
-          <span>Search & Replace</span>
-        </h3>
-        <button id="btnModalClose" class="text-[var(--text-muted)] hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <!-- SLIM FLOATING SEARCH & REPLACE JUMP BAR (ZERO-BLOCK ARCHITECTURE) -->
+  <div id="modalSearchQuickEdit" class="hidden fixed top-12 left-2 right-2 max-w-md mx-auto z-40 bg-[#161b22]/95 backdrop-blur-md border border-cyan-500/40 rounded-2xl shadow-2xl p-2 font-mono text-xs select-none transition-all">
+    <!-- Row 1: Search, Match Counter & Jump Arrows -->
+    <div class="flex items-center space-x-1.5">
+            <div class="relative flex-1 flex items-center">
+        <i data-lucide="search" class="w-3.5 h-3.5 text-cyan-400 absolute left-2 pointer-events-none"></i>
+        <input type="text" id="inputModalFind" placeholder="Find in document..." class="w-full bg-[#0a0d14] border border-slate-700 focus:border-cyan-400 rounded-xl pl-7 pr-7 py-1.5 text-xs text-cyan-300 outline-none" spellcheck="false">
+        <button id="btnClearSearchInput" type="button" title="Clear Text" class="w-5 h-5 absolute right-1.5 text-slate-400 hover:text-white flex items-center justify-center text-xs active:scale-90 transition">✕</button>
       </div>
-      <div>
-        <label class="block text-[10px] uppercase text-[var(--text-muted)] font-bold mb-1">Find Text:</label>
-        <input type="text" id="inputModalFind" placeholder="Text to find..." class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-cyan-300">
+
+      <!-- Live Match Counter (e.g. 1/3) -->
+      <span id="labelSearchCounter" class="px-2 py-1 bg-black/40 border border-slate-700/80 rounded-lg text-[10px] text-amber-300 font-bold shrink-0 min-w-[42px] text-center">0/0</span>
+
+      <!-- Previous Arrow (▲) -->
+      <button id="btnSearchPrev" title="Previous Match" type="button" class="w-7 h-7 bg-slate-800 hover:bg-cyan-500 hover:text-black rounded-lg text-slate-200 border border-slate-700 flex items-center justify-center active:scale-90 transition shrink-0 font-bold">
+        ▲
+      </button>
+
+      <!-- Next Arrow (▼) -->
+      <button id="btnSearchNext" title="Next Match" type="button" class="w-7 h-7 bg-slate-800 hover:bg-cyan-500 hover:text-black rounded-lg text-slate-200 border border-slate-700 flex items-center justify-center active:scale-90 transition shrink-0 font-bold">
+        ▼
+      </button>
+
+      <!-- Toggle Replace Tray (⇄) -->
+      <button id="btnToggleReplaceTray" title="Toggle Replace Tools" type="button" class="w-7 h-7 bg-slate-800 hover:bg-amber-500 hover:text-black rounded-lg text-amber-300 border border-amber-500/30 flex items-center justify-center active:scale-90 transition shrink-0 font-bold">
+        ⇄
+      </button>
+
+      <!-- Close Search (✕) -->
+      <button id="btnModalClose" title="Close Search" type="button" class="w-7 h-7 bg-rose-500/20 hover:bg-rose-500 hover:text-white rounded-lg text-rose-400 border border-rose-500/40 flex items-center justify-center active:scale-90 transition shrink-0 font-bold">
+        ✕
+      </button>
+    </div>
+
+    <!-- Row 2: Replace & Replace All Controls (Collapsible Tray) -->
+    <div id="trayReplaceControls" class="hidden mt-2 pt-2 border-t border-slate-800 space-y-1.5">
+      <div class="flex items-center space-x-1.5">
+        <input type="text" id="inputModalReplace" placeholder="Replace with..." class="flex-1 bg-[#0a0d14] border border-slate-700 focus:border-emerald-400 rounded-xl px-2.5 py-1.5 text-xs text-emerald-300 outline-none" spellcheck="false">
+        
+        <button id="btnModalReplace" type="button" class="px-2.5 py-1.5 bg-amber-600/30 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/40 rounded-xl font-bold text-[11px] active:scale-95 transition shrink-0">
+          Replace
+        </button>
+        
+        <button id="btnModalReplaceAll" type="button" class="px-2.5 py-1.5 bg-emerald-600/30 hover:bg-emerald-500 hover:text-black text-emerald-300 border border-emerald-500/40 rounded-xl font-bold text-[11px] active:scale-95 transition shrink-0">
+          All
+        </button>
       </div>
-      <div>
-        <label class="block text-[10px] uppercase text-[var(--text-muted)] font-bold mb-1">Replace With:</label>
-        <input type="text" id="inputModalReplace" placeholder="Replacement..." class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-emerald-300">
-      </div>
-      <div class="flex items-center space-x-4 pt-1 text-[11px]">
-        <label class="flex items-center space-x-1.5 cursor-pointer">
-          <input type="checkbox" id="checkModalCase" class="accent-cyan-500 rounded">
+
+      <div class="flex items-center space-x-3 text-[10px] text-slate-400 px-1 pt-0.5">
+        <label class="flex items-center space-x-1 cursor-pointer">
+          <input type="checkbox" id="checkModalCase" class="accent-cyan-400 rounded">
           <span>Match Case</span>
         </label>
-        <label class="flex items-center space-x-1.5 cursor-pointer">
-          <input type="checkbox" id="checkModalRegex" class="accent-cyan-500 rounded">
+        <label class="flex items-center space-x-1 cursor-pointer">
+          <input type="checkbox" id="checkModalRegex" class="accent-cyan-400 rounded">
           <span>Regex</span>
         </label>
-      </div>
-      <div class="flex items-center space-x-2 pt-2 border-t border-[var(--surface-border)]">
-        <button id="btnModalSearch" class="flex-1 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold active:scale-95 transition">Find</button>
-        <button id="btnModalReplace" class="flex-1 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-bold active:scale-95 transition">Replace</button>
-        <button id="btnModalReplaceAll" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold active:scale-95 transition">All</button>
       </div>
     </div>
   </div>
@@ -1646,18 +1660,6 @@
             <option value="cyberpunk">Cyberpunk Neon</option>
           </select>
         </div>
-                <!-- CODING KEYBOARD MODE (PERFECT MATCHING DROPDOWN) -->
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="font-medium text-[var(--text-main,#e6edf3)] text-xs">Coding Keyboard Mode</div>
-            <div class="text-[10px] text-[var(--text-muted,#7d8590)]">Slim Cyber QWERTY vs System</div>
-          </div>
-          <select id="settingKbdModeSelect" class="bg-[var(--bg-card,#161b22)] border border-[var(--border-color,#30363d)] text-[var(--text-main,#e6edf3)] text-[11px] rounded-lg px-2 py-1 font-mono outline-none">
-            <option value="system">⌨️ System (Gboard)</option>
-            <option value="custom">⚡ Slim Cyber (QWERTY)</option>
-          </select>
-        </div>
-
         <div class="flex items-center justify-between">
           <div>
             <div class="font-medium text-[var(--text-main)]">Font Size</div>
@@ -1919,7 +1921,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '7.6',
+      version: '7.7',
       edition: 'Developer Master Edition'
     };
 
@@ -4071,7 +4073,8 @@ CRITICAL OPERATIONAL RULES:
         tabEl.appendChild(closeBtn);
 
         tabEl.onclick = () => handleSwitchTab(tab.id);
-        tabEl.ondblclick = () => {
+                tabEl.ondblclick = () => {
+          handleSwitchTab(tab.id);
           const inputRename = document.getElementById('inputRenameName');
           const modalRename = document.getElementById('modalRename');
           if (inputRename && modalRename) {
@@ -4153,19 +4156,6 @@ CRITICAL OPERATIONAL RULES:
       }
       renderTabStrip();
       scheduleAutoSave();
-    }
-
-    function insertTextAtCursor(text) {
-      if (!textarea) return;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      textarea.setRangeText(text, start, end, 'end');
-      textarea.focus();
-      updateLineNumbers();
-      updateSyntaxHighlightingOptimized();
-      updateCursorIndicator();
-      markActiveModified();
-      recordHistory();
     }
 
     function applyDockAnimation(element, styleType) {
@@ -4331,6 +4321,70 @@ CRITICAL OPERATIONAL RULES:
         document.getElementById('modalColor')?.classList.remove('hidden');
       });
     }
+        // 🛡️ UNIFIED SMART INPUT ROUTER (ACCESSORY BAR + GBOARD)
+        // 🛡️ FOCUS MEMORY ROUTER (PERFECT SEARCH + EDITOR SYMBOL ROUTING)
+    let lastActiveInputTarget = null;
+
+    function trackInputFocus(el) {
+      if (el) lastActiveInputTarget = el;
+    }
+
+    function getActiveInputElement() {
+      const inputFind = document.getElementById('inputModalFind');
+      const inputReplace = document.getElementById('inputModalReplace');
+      const textarea = document.getElementById('codeTextarea');
+      const searchModal = document.getElementById('modalSearchQuickEdit');
+
+      // Agar search modal screen par khula hua hai
+      if (searchModal && !searchModal.classList.contains('hidden')) {
+        if (lastActiveInputTarget === inputReplace) return inputReplace;
+        return inputFind || textarea;
+      }
+
+      return lastActiveInputTarget || textarea;
+    }
+
+    // Har input par focus memory bind karna
+    ['focus', 'click', 'input'].forEach(ev => {
+      document.getElementById('inputModalFind')?.addEventListener(ev, () => trackInputFocus(document.getElementById('inputModalFind')));
+      document.getElementById('inputModalReplace')?.addEventListener(ev, () => trackInputFocus(document.getElementById('inputModalReplace')));
+      document.getElementById('codeTextarea')?.addEventListener(ev, () => trackInputFocus(document.getElementById('codeTextarea')));
+    });
+
+    // Accessory buttons dabane par search box se focus na chhin sake
+    document.getElementById('accessoryBar')?.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) {
+        e.preventDefault();
+      }
+    });
+
+    function insertTextAtCursor(text) {
+      const el = getActiveInputElement();
+      if (!el) return;
+
+      const isInput = (el.tagName === 'INPUT');
+      const start = el.selectionStart ?? el.value.length;
+      const end = el.selectionEnd ?? el.value.length;
+      const val = el.value || '';
+
+      if (isInput && text === '\n') {
+        document.getElementById('btnSearchNext')?.click();
+        return;
+      }
+
+      el.value = val.substring(0, start) + text + val.substring(end);
+      el.selectionStart = el.selectionEnd = start + text.length;
+
+      if (!isInput) {
+        if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+        if (typeof updateLineNumbers === 'function') updateLineNumbers();
+        if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+        if (typeof markActiveModified === 'function') markActiveModified();
+        if (typeof recordHistory === 'function') recordHistory();
+      } else {
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
 
     function setupQuickEditSearch() {
       const modal = document.getElementById('modalSearchQuickEdit');
@@ -4338,76 +4392,209 @@ CRITICAL OPERATIONAL RULES:
       const inputReplace = document.getElementById('inputModalReplace');
       const checkCase = document.getElementById('checkModalCase');
       const checkRegex = document.getElementById('checkModalRegex');
+      const counterLabel = document.getElementById('labelSearchCounter');
+      const btnPrev = document.getElementById('btnSearchPrev');
+      const btnNext = document.getElementById('btnSearchNext');
+      const btnToggleReplace = document.getElementById('btnToggleReplaceTray');
+      const trayReplace = document.getElementById('trayReplaceControls');
+      const btnClose = document.getElementById('btnModalClose');
+      const btnClearFind = document.getElementById('btnClearSearchInput');
+      const editorStage = document.getElementById('editorStage');
 
       if (!modal || !inputFind) return;
 
-      document.getElementById('btnModalSearch')?.addEventListener('click', () => {
-        const q = inputFind.value.trim();
-        if (!q) return;
-        const text = textarea ? textarea.value : "";
-        const flags = (checkCase && checkCase.checked) ? 'g' : 'gi';
+      // ✕ Search Clear Button Event
+      btnClearFind?.addEventListener('click', (e) => {
+        e.preventDefault();
+        inputFind.value = '';
+        rebuildMatches(false);
+        if (counterLabel) counterLabel.textContent = '0/0';
+        if (visualHighlightBar) visualHighlightBar.style.display = 'none';
+        inputFind.focus();
+      });
+
+      // 🛡️ DYNAMIC VISUAL CYBER NEON HIGHLIGHT BAR
+            // 🛡️ ZERO-LAG ROCK-SOLID LINE HIGHLIGHT (PAGE KE SATH 100% CHIPKA RAHEGA)
+      let visualHighlightBar = document.getElementById('searchActiveHighlightBar');
+      if (!visualHighlightBar && editorStage) {
+        visualHighlightBar = document.createElement('div');
+        visualHighlightBar.id = 'searchActiveHighlightBar';
+        visualHighlightBar.className = 'hidden pointer-events-none absolute left-0 right-0 z-[1]';
+        visualHighlightBar.style.cssText = 'height: 20.15px; background: rgba(0, 242, 254, 0.24); border-top: 1px solid rgba(0, 242, 254, 0.6); border-bottom: 1px solid rgba(0, 242, 254, 0.6); pointer-events: none; transition: none !important; will-change: top;';
+        editorStage.appendChild(visualHighlightBar);
+      }
+
+      let searchMatches = [];
+      let currentMatchIndex = -1;
+      let activeMatchLineIndex = -1;
+
+            function enforceGboardHardLock() {}
+
+      function updateVisualHighlightPosition() {
+        if (!visualHighlightBar || activeMatchLineIndex < 1 || !textarea) return;
+        const lineHeight = 20.15;
+        const rawTop = 8 + (activeMatchLineIndex - 1) * lineHeight;
+        const scrolledTop = rawTop - textarea.scrollTop;
+
+        visualHighlightBar.style.top = `${scrolledTop}px`;
+        visualHighlightBar.style.display = (scrolledTop >= -25 && scrolledTop <= textarea.clientHeight + 25) ? 'block' : 'none';
+      }
+
+      textarea?.addEventListener('scroll', updateVisualHighlightPosition);
+
+      function getSearchRegex(isGlobal = true) {
+        const q = inputFind.value;
+        if (!q) return null;
+        const isCase = checkCase && checkCase.checked;
+        const isReg = checkRegex && checkRegex.checked;
+        const flags = isGlobal ? (isCase ? 'g' : 'gi') : (isCase ? '' : 'i');
         try {
-          const pattern = (checkRegex && checkRegex.checked) ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(pattern, flags);
-          const match = regex.exec(text);
-          if (match && textarea) {
-            textarea.focus();
-            textarea.setSelectionRange(match.index, match.index + match[0].length);
-            modal.classList.add('hidden');
-            updateCursorIndicator();
-            triggerToast("Found match!");
-          } else {
-            triggerToast("Text not found!");
-          }
+          const pattern = isReg ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return new RegExp(pattern, flags);
         } catch(e) {
-          triggerToast("Invalid search pattern");
+          return null;
         }
+      }
+
+      function rebuildMatches(keepIndex = false) {
+        searchMatches = [];
+        const text = textarea ? textarea.value : '';
+        const regex = getSearchRegex(true);
+
+        if (regex && text) {
+          let m;
+          while ((m = regex.exec(text)) !== null) {
+            searchMatches.push({ start: m.index, end: m.index + m[0].length });
+            if (m.index === regex.lastIndex) regex.lastIndex++;
+          }
+        }
+
+        if (searchMatches.length === 0) {
+          currentMatchIndex = -1;
+          activeMatchLineIndex = -1;
+          if (counterLabel) counterLabel.textContent = '0/0';
+          if (visualHighlightBar) visualHighlightBar.style.display = 'none';
+        } else {
+          if (!keepIndex || currentMatchIndex < 0 || currentMatchIndex >= searchMatches.length) {
+            currentMatchIndex = 0;
+          }
+          if (counterLabel) counterLabel.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
+        }
+      }
+
+      function jumpToMatch(index) {
+        if (!textarea || index < 0 || index >= searchMatches.length) return;
+        const target = searchMatches[index];
+
+        textarea.setSelectionRange(target.start, target.end);
+
+        const textUpToMatch = textarea.value.substring(0, target.start);
+        activeMatchLineIndex = textUpToMatch.split('\n').length;
+
+        const lineHeight = 20.15;
+        const targetScroll = (activeMatchLineIndex * lineHeight) - (textarea.clientHeight / 2);
+        textarea.scrollTop = Math.max(0, targetScroll);
+        if (gutter) gutter.scrollTop = textarea.scrollTop;
+
+        updateVisualHighlightPosition();
+
+        if (counterLabel) counterLabel.textContent = `${index + 1}/${searchMatches.length}`;
+        updateCursorIndicator();
+      }
+
+      inputFind.addEventListener('input', () => {
+        rebuildMatches(false);
+        if (searchMatches.length > 0) {
+          jumpToMatch(0);
+        }
+      });
+
+      btnNext?.addEventListener('click', (e) => {
+        e.preventDefault();
+        enforceGboardHardLock();
+        if (searchMatches.length === 0) rebuildMatches(false);
+        if (searchMatches.length === 0) {
+          triggerToast("No match found");
+          return;
+        }
+        currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+        jumpToMatch(currentMatchIndex);
+      });
+
+      btnPrev?.addEventListener('click', (e) => {
+        e.preventDefault();
+        enforceGboardHardLock();
+        if (searchMatches.length === 0) rebuildMatches(false);
+        if (searchMatches.length === 0) {
+          triggerToast("No match found");
+          return;
+        }
+        currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+        jumpToMatch(currentMatchIndex);
+      });
+
+      btnToggleReplace?.addEventListener('click', (e) => {
+        e.preventDefault();
+        trayReplace?.classList.toggle('hidden');
+        enforceGboardHardLock();
       });
 
       document.getElementById('btnModalReplace')?.addEventListener('click', () => {
-        const q = inputFind.value;
-        const rep = inputReplace.value;
-        if (!q || !textarea) return;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const selText = textarea.value.substring(start, end);
-        if (selText.toLowerCase() === q.toLowerCase()) {
-          textarea.setRangeText(rep, start, end, 'end');
-          updateLineNumbers();
-          updateSyntaxHighlightingOptimized();
-          updateCursorIndicator();
-          markActiveModified();
-          recordHistory();
-          triggerToast("Replaced!");
+        if (searchMatches.length === 0 || currentMatchIndex < 0 || !textarea) return;
+        const curMatch = searchMatches[currentMatchIndex];
+        const repVal = inputReplace ? inputReplace.value : '';
+
+        recordHistory();
+        textarea.setRangeText(repVal, curMatch.start, curMatch.end, 'end');
+
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        updateCursorIndicator();
+        markActiveModified();
+
+        rebuildMatches(false);
+        if (searchMatches.length > 0) {
+          jumpToMatch(currentMatchIndex % searchMatches.length);
         }
+        triggerToast("Replaced!");
       });
 
       document.getElementById('btnModalReplaceAll')?.addEventListener('click', () => {
-        const q = inputFind.value;
-        const rep = inputReplace.value;
-        if (!q || !textarea) return;
-        const flags = (checkCase && checkCase.checked) ? 'g' : 'gi';
-        try {
-          const pattern = (checkRegex && checkRegex.checked) ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(pattern, flags);
-          textarea.value = textarea.value.replace(regex, rep);
-          updateLineNumbers();
-          updateSyntaxHighlightingOptimized();
-          updateCursorIndicator();
-          markActiveModified();
-          recordHistory();
-          modal.classList.add('hidden');
-          triggerToast("Replaced All!");
-        } catch(e) {
-          triggerToast("Replace failed");
-        }
+        const regex = getSearchRegex(true);
+        if (!regex || !textarea) return;
+        const repVal = inputReplace ? inputReplace.value : '';
+
+        recordHistory();
+        textarea.value = textarea.value.replace(regex, repVal);
+
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        updateCursorIndicator();
+        markActiveModified();
+
+        rebuildMatches(false);
+        triggerToast("Replaced All!");
       });
 
-      document.getElementById('btnModalClose')?.addEventListener('click', () => modal.classList.add('hidden'));
+      checkCase?.addEventListener('change', () => { rebuildMatches(false); if (searchMatches.length) jumpToMatch(0); });
+      checkRegex?.addEventListener('change', () => { rebuildMatches(false); if (searchMatches.length) jumpToMatch(0); });
+
+      btnClose?.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.classList.add('hidden');
+        searchMatches = [];
+        currentMatchIndex = -1;
+        activeMatchLineIndex = -1;
+        if (visualHighlightBar) visualHighlightBar.style.display = 'none';
+      });
 
       const openSearch = () => {
         modal.classList.remove('hidden');
+        enforceGboardHardLock();
         inputFind.focus();
+        inputFind.select();
+        rebuildMatches(false);
+        if (searchMatches.length > 0) jumpToMatch(0);
       };
 
       document.getElementById('btnHeaderSearch')?.addEventListener('click', openSearch);
@@ -4439,9 +4626,18 @@ CRITICAL OPERATIONAL RULES:
       const content = textarea.value;
       cur.content = content;
 
+            // 🛡️ STRICT EXTENSION LOCK: User ka diya extension locked rahega (.json append blocked)
       let cleanName = (cur.name || 'untitled.html').trim();
-      cleanName = cleanName.replace(/\.json$/i, '').replace(/\.txt$/i, '');
-      if (!cleanName.includes('.')) cleanName += '.html';
+      
+      // Agar galti se pehle se .json chipak gaya ho (.js.json ya .html.json) toh use hatayein:
+      cleanName = cleanName.replace(/\.js\.json$/i, ".js")
+                           .replace(/\.html\.json$/i, ".html")
+                           .replace(/\.css\.json$/i, ".css");
+
+      // Agar user ne bina dot ke naam likha hai, sirf tabhi extension lagega:
+      if (!cleanName.includes('.')) {
+        cleanName += (cur.content && cur.content.includes('<html')) ? '.html' : '.js';
+      }
       cur.name = cleanName;
 
       if (cur.fileHandle && !cur.isNewFile && !forceSaveAs) {
@@ -4461,26 +4657,34 @@ CRITICAL OPERATIONAL RULES:
           ? content.normalize('NFC') 
           : (content || '');
 
+                // Dynamic MIME Resolver (Prevents Android from forcing .json / .html)
+        let mimeType = 'text/html';
+        if (cleanName.endsWith('.js')) mimeType = 'text/javascript';
+        else if (cleanName.endsWith('.json')) mimeType = 'application/json';
+        else if (cleanName.endsWith('.css')) mimeType = 'text/css';
+        else if (cleanName.endsWith('.txt')) mimeType = 'text/plain';
+
         if ('showSaveFilePicker' in window) {
           try {
             const handle = await window.showSaveFilePicker({
               suggestedName: cleanName,
               types: [{
-                description: 'HTML & Code Source File',
-                accept: { 'text/html': ['.html', '.htm', '.js', '.css', '.txt', '.json', '.md', '.py'] }
+                description: 'Code Source File',
+                accept: { [mimeType]: ['.' + cleanName.split('.').pop()] }
               }]
             });
             const writable = await handle.createWritable();
             await writable.write(safeContent);
             await writable.close();
 
+            let savedName = (handle.name || cleanName).replace(/\.js\.json$/i, ".js");
             cur.fileHandle = handle;
-            cur.name = handle.name || cleanName;
+            cur.name = savedName;
             cur.content = safeContent;
             cur.isModified = false;
             cur.isNewFile = false;
             cur.folderName = 'Selected Folder';
-            cur.filePath = `/storage/emulated/0/${cur.name}`;
+            cur.filePath = `/storage/emulated/0/${savedName}`;
             cur.lastModified = Date.now();
             renderTabStrip();
             await storeSave('workspace_tabs', fileTabs);
@@ -4492,8 +4696,8 @@ CRITICAL OPERATIONAL RULES:
         }
 
         try {
-          // Explicit UTF-8 Blob declaration: Phone storage Hindi ko corrupt nahi karega
-          const blob = new Blob([safeContent], { type: 'text/html;charset=utf-8' });
+          // Dynamic Clean UTF-8 Blob
+          const blob = new Blob([safeContent], { type: `${mimeType};charset=utf-8` });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -5859,7 +6063,7 @@ CRITICAL OPERATIONAL RULES:
   exportTabAsZip(true);
 });
 
-// ⚡ EXTRACT JS TO NEW TAB (DOMParser + Unicode NFC Engine)
+// ⚡ EXTRACT JS TO NEW TAB (Auto-Strip, Link & Undo Protected Engine)
 document.getElementById('optExtractJs')?.addEventListener('click', () => {
   document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
 
@@ -5874,9 +6078,9 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(code, 'text/html');
-    const scripts = Array.from(doc.querySelectorAll('script'));
+    const allScripts = Array.from(doc.querySelectorAll('script'));
 
-    if (!scripts || scripts.length === 0) {
+    if (!allScripts || allScripts.length === 0) {
       triggerToast("No <script> tags found in file!");
       return;
     }
@@ -5884,7 +6088,7 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
     const extractedBlocks = [];
     let blockIndex = 1;
 
-    for (const s of scripts) {
+    for (const s of allScripts) {
       const src = s.getAttribute('src');
       const innerJs = s.textContent || s.innerText || '';
 
@@ -5902,38 +6106,93 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
     }
 
     let finalJsCode = extractedBlocks.join('\n\n');
-    // 🛡️ UNICODE SHIELD: Protect Hindi strings & Unicode inside JS
     if (typeof finalJsCode.normalize === 'function') {
       finalJsCode = finalJsCode.normalize('NFC');
     }
 
-    const baseName = (cur?.name || 'document.html').replace(/\.[^/.]+$/, "");
-    const newName = `${baseName}.app.js`;
+        let baseName = (cur?.name || 'document.html').replace(/\.(html|htm|js|json|css|txt)$/i, "");
+    baseName = baseName.replace(/\.app$/i, "").replace(/\.js$/i, "");
+    const newName = `${baseName}.js`;
     const folderName = cur?.folderName || 'Internal Storage';
     const fullPath = (folderName !== 'Internal Storage') 
       ? `/storage/emulated/0/${folderName}/${newName}` 
       : `/storage/emulated/0/${newName}`;
 
-    const newTab = {
-      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-      name: newName,
-      content: finalJsCode,
-      isModified: true,
-      fileHandle: null,
-      dirHandle: cur?.dirHandle || null,
-      isNewFile: true,
-      filePath: fullPath,
-      folderName: folderName,
-      lastModified: Date.now(),
-      fileSize: new Blob([finalJsCode], { type: 'application/javascript;charset=utf-8' }).size,
-      cursorPos: 0,
-      scrollTop: 0
+    const executeExtraction = (stripFromHtml = false) => {
+      // 1. Create and Open New JS Tab
+      const newTab = {
+        id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        name: newName,
+        content: finalJsCode,
+        isModified: true,
+        fileHandle: null,
+        dirHandle: cur?.dirHandle || null,
+        isNewFile: true,
+        filePath: fullPath,
+        folderName: folderName,
+        lastModified: Date.now(),
+        fileSize: new Blob([finalJsCode], { type: 'application/javascript;charset=utf-8' }).size,
+        cursorPos: 0,
+        scrollTop: 0
+      };
+
+      // 2. Agar user ne Clean & Link chuna hai toh Original HTML ko auto-clean karein
+      if (stripFromHtml && cur && textarea) {
+        if (typeof recordHistory === 'function') recordHistory();
+
+        // Safe DOM Strip: Sirf inline scripts ko hatana (CDN links ko nahi chhedna)
+        const stripDoc = new DOMParser().parseFromString(code, 'text/html');
+        const toRemove = stripDoc.querySelectorAll('script');
+        toRemove.forEach(sc => {
+          if (!sc.getAttribute('src') && sc.textContent.trim()) {
+            sc.remove();
+          }
+        });
+
+        // Nayi script tag link inject karna
+        const externalScriptTag = stripDoc.createElement('script');
+        externalScriptTag.setAttribute('src', newName);
+        if (stripDoc.body) {
+          stripDoc.body.appendChild(externalScriptTag);
+        } else {
+          stripDoc.documentElement.appendChild(externalScriptTag);
+        }
+
+        let cleanedHtml = '<!DOCTYPE html>\n' + stripDoc.documentElement.outerHTML;
+        if (typeof cleanedHtml.normalize === 'function') {
+          cleanedHtml = cleanedHtml.normalize('NFC');
+        }
+
+        // Original Tab Memory aur Editor me apply
+        cur.content = cleanedHtml;
+        cur.isModified = true;
+        textarea.value = cleanedHtml;
+
+        if (typeof autoFormatCurrentDocument === 'function') {
+          autoFormatCurrentDocument();
+        } else {
+          if (typeof updateLineNumbers === 'function') updateLineNumbers();
+          if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+        }
+      }
+
+      fileTabs.push(newTab);
+      if (typeof renderTabStrip === 'function') renderTabStrip();
+      if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
+      triggerToast(stripFromHtml ? `Extracted & Linked <script src="${newName}"> ⚡` : `Extracted ${blockIndex - 1} block(s) into ${newName} ⚡`);
     };
 
-    fileTabs.push(newTab);
-    if (typeof renderTabStrip === 'function') renderTabStrip();
-    if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
-    triggerToast(`Extracted ${blockIndex - 1} JS block(s) into ${newName} ⚡`);
+    // User Choice Dialog (Choice A: Clean & Link vs Choice B: Safe Copy Only)
+    showProfessionalPopup({
+      title: "Extract JavaScript Engine",
+      message: `Found ${blockIndex - 1} inline script block(s).\n\nKya aap original HTML se inline script hata kar '<script src="${newName}">' link karna chahte hain?`,
+      confirmText: "Clean & Link HTML",
+      cancelText: "Copy Only (Safe)",
+      iconType: "info",
+      onConfirm: () => executeExtraction(true),
+      onCancel: () => executeExtraction(false)
+    });
+
   } catch (err) {
     triggerToast("Error extracting scripts: " + err.message);
   }
@@ -6231,359 +6490,29 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
       setupConflictShieldSystem();
       setupGeminiCopilotStudio();
       setupGeminiKeyManager();
-               // =========================================================================
-    // STYLE 1: CLEAN ERGONOMIC QWERTY CYBER KEYBOARD & PERMANENT DOCK ENGINE
-    // =========================================================================
-    let isCustomKbdActive = false;
-    let isKbdShiftActive = false;
-    let isKbdSymMode = false;
-
-    // Turbo Auto-Repeat Backspace Timers
-    let bkspInitialTimeout = null;
-    let bkspRepeatInterval = null;
-
-       // Big Ergonomic QWERTY Layouts
-    const STYLE1_QWERTY_LOWER = [
-      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-      ['SHIFT', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BKSP']
-    ];
-
-    const STYLE1_QWERTY_UPPER = [
-      ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-      ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-      ['SHIFT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BKSP']
-    ];
-
-    // Numbers & Extra Symbols Mode (?123)
-    const STYLE1_NUM_SYMS = [
-      ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-      ['+', '-', '*', '/', '%', '&', '|', '^', '!', '?'],
-      ['ABC', '~', '`', '@', '#', '$', '\\', '_', 'BKSP']
-    ];
-
-           // =========================================================================
-    // SMART DUAL-SENSORY ENGINE: GBOARD HAPTICS + ACOUSTIC CLICK (ANZARG CORE)
-    // =========================================================================
-    let kbdAudioCtx = null;
-    function playAcousticThock(pitch = 320, duration = 0.022, vol = 0.05) {
-      try {
-        if (!kbdAudioCtx) {
-          kbdAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (kbdAudioCtx.state === 'suspended') {
-          kbdAudioCtx.resume();
-        }
-        const osc = kbdAudioCtx.createOscillator();
-        const gain = kbdAudioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(pitch, kbdAudioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(80, kbdAudioCtx.currentTime + duration);
-        gain.gain.setValueAtTime(vol, kbdAudioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, kbdAudioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(kbdAudioCtx.destination);
-        osc.start();
-        osc.stop(kbdAudioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function triggerKeyHaptic(type = 'char') {
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        try {
-          if (type === 'char') {
-            navigator.vibrate([18, 12, 10]); // Gboard style micro-snap
-            playAcousticThock(340, 0.018, 0.04);
-          } else if (type === 'delete') {
-            navigator.vibrate([28, 15, 14]); // Crisp Warning snap
-            playAcousticThock(260, 0.024, 0.06);
-          } else if (type === 'action') {
-            navigator.vibrate([35, 20, 20]); // Deep space/enter solid thump
-            playAcousticThock(200, 0.035, 0.08);
-          } else if (type === 'toggle') {
-            navigator.vibrate([15, 25, 15]); // Double click feel for shift/sym
-            playAcousticThock(420, 0.020, 0.05);
-          }
-        } catch (e) {}
-      }
-    }
-
-    // Flash Highlight on Key Press
-    function flashVisualKey(btn) {
-      if (!btn) return;
-      btn.classList.add('!bg-cyan-400', '!text-black', '!border-cyan-300', 'scale-95', 'shadow-md', 'shadow-cyan-400/50');
-      setTimeout(() => {
-        btn.classList.remove('!bg-cyan-400', '!text-black', '!border-cyan-300', 'scale-95', 'shadow-md', 'shadow-cyan-400/50');
-      }, 90);
-    }
-
-        function renderStyle1Keyboard() {
-      const grid = document.getElementById('cyberKbdGrid');
-      if (!grid) return;
-
-      grid.innerHTML = '';
-      const layout = isKbdSymMode ? STYLE1_NUM_SYMS : (isKbdShiftActive ? STYLE1_QWERTY_UPPER : STYLE1_QWERTY_LOWER);
-
-      // 2. Big Fat Key Matrix
-      layout.forEach(row => {
-        const rowEl = document.createElement('div');
-        rowEl.className = "flex justify-center space-x-1 mb-1";
-
-        row.forEach(key => {
-          const btn = document.createElement('button');
-          btn.type = "button";
-
-          if (key === 'SHIFT') {
-            btn.className = `w-12 h-11 rounded-xl font-mono text-sm font-bold flex items-center justify-center border transition ${isKbdShiftActive ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/30' : 'bg-[#1b222d] text-slate-300 border-slate-700'}`;
-            btn.textContent = "⇧";
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
-            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
-          } else if (key === 'BKSP') {
-            btn.className = "w-12 h-11 rounded-xl bg-red-500/20 text-red-300 font-mono text-base font-bold flex items-center justify-center border border-red-500/40 active:bg-red-500 active:text-white transition";
-            btn.textContent = "⌫";
-
-            // Continuous Long Press Auto-Repeat Logic
-            const startBackspace = (e) => {
-              e.preventDefault();
-              triggerKeyHaptic('delete');
-              flashVisualKey(btn);
-              executeSingleBackspace();
-
-              clearTimeout(bkspInitialTimeout);
-              clearInterval(bkspRepeatInterval);
-
-              // 320ms hold threshold, then rapid delete every 45ms
-              bkspInitialTimeout = setTimeout(() => {
-                bkspRepeatInterval = setInterval(() => {
-                  triggerKeyHaptic('delete');
-                  executeSingleBackspace();
-                }, 45);
-              }, 320);
-            };
-
-            const stopBackspace = () => {
-              clearTimeout(bkspInitialTimeout);
-              clearInterval(bkspRepeatInterval);
-            };
-
-            btn.addEventListener('touchstart', startBackspace, { passive: false });
-            btn.addEventListener('touchend', stopBackspace);
-            btn.addEventListener('touchcancel', stopBackspace);
-            btn.addEventListener('mousedown', startBackspace);
-            btn.addEventListener('mouseup', stopBackspace);
-            btn.addEventListener('mouseleave', stopBackspace);
-
-          } else if (key === 'ABC') {
-            btn.className = "w-12 h-11 rounded-xl bg-amber-500/20 text-amber-300 font-mono text-xs font-bold flex items-center justify-center border border-amber-500/40 transition";
-            btn.textContent = "ABC";
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
-            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
-          } else {
-            btn.className = "grow max-w-[42px] h-11 rounded-xl bg-[#161b22] text-white font-mono text-xl font-bold flex items-center justify-center border border-slate-700/80 active:scale-95 transition shadow-sm tracking-wide";
-            btn.textContent = key;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); }, { passive: false });
-            btn.addEventListener('mousedown', (e) => { e.preventDefault(); flashVisualKey(btn); handleStyle1Input(key); });
-          }
-
-          rowEl.appendChild(btn);
-        });
-        grid.appendChild(rowEl);
-      });
-
-      // 3. Bottom Dual-Thumb Action Row
-      const bottomRow = document.createElement('div');
-      bottomRow.className = "flex justify-between space-x-1.5 mt-0.5";
-      bottomRow.innerHTML = `
-        <button type="button" id="s1KeyMode" class="w-14 h-11 rounded-xl bg-[#1b222d] text-amber-300 font-mono text-xs font-bold border border-amber-500/40 active:bg-amber-400 active:text-black flex items-center justify-center">${isKbdSymMode ? 'ABC' : '?123'}</button>
-        <button type="button" id="s1KeyTab" class="w-14 h-11 rounded-xl bg-[#1b222d] text-slate-300 font-mono text-xs font-bold border border-slate-700 active:bg-cyan-500 active:text-black flex items-center justify-center">TAB</button>
-        <button type="button" id="s1KeySpace" class="grow h-11 rounded-xl bg-[#161b22] text-slate-300 font-mono text-xs font-bold border border-slate-700 active:bg-cyan-500 active:text-black flex items-center justify-center shadow-sm">SPACE</button>
-        <button type="button" id="s1KeyEnter" class="w-16 h-11 rounded-xl bg-cyan-600/30 text-cyan-300 font-mono text-sm font-bold border border-cyan-500/50 active:bg-cyan-500 active:text-black flex items-center justify-center shadow-sm">↵</button>
-      `;
-
-      const bMode = bottomRow.querySelector('#s1KeyMode');
-      const bTab = bottomRow.querySelector('#s1KeyTab');
-      const bSpace = bottomRow.querySelector('#s1KeySpace');
-      const bEnter = bottomRow.querySelector('#s1KeyEnter');
-
-      bMode.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('toggle'); flashVisualKey(bMode); isKbdSymMode = !isKbdSymMode; renderStyle1Keyboard(); }, { passive: false });
-      bMode.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('toggle'); flashVisualKey(bMode); isKbdSymMode = !isKbdSymMode; renderStyle1Keyboard(); });
-
-      bTab.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('char'); flashVisualKey(bTab); insertTextAtCursor('  '); }, { passive: false });
-      bTab.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('char'); flashVisualKey(bTab); insertTextAtCursor('  '); });
-
-      bSpace.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bSpace); insertTextAtCursor(' '); }, { passive: false });
-      bSpace.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bSpace); insertTextAtCursor(' '); });
-
-      bEnter.addEventListener('touchstart', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bEnter); insertTextAtCursor('\n'); }, { passive: false });
-      bEnter.addEventListener('mousedown', (e) => { e.preventDefault(); triggerKeyHaptic('action'); flashVisualKey(bEnter); insertTextAtCursor('\n'); });
-
-      grid.appendChild(bottomRow);
-    }
-
-        function insertTextAtCursor(text) {
-      const textarea = document.getElementById('codeTextarea');
-      if (!textarea) return;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const val = textarea.value;
-
-      textarea.value = val.substring(0, start) + text + val.substring(end);
-      textarea.selectionStart = textarea.selectionEnd = start + text.length;
-
-      if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
-      if (typeof updateLineNumbers === 'function') updateLineNumbers();
-      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
-      if (typeof markActiveModified === 'function') markActiveModified();
-      if (typeof recordHistory === 'function') recordHistory();
-    }
-
-    function executeSingleBackspace() {
-      const textarea = document.getElementById('codeTextarea');
-      if (!textarea) return;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const val = textarea.value;
-
-      if (start === end && start > 0) {
-        textarea.value = val.substring(0, start - 1) + val.substring(end);
-        textarea.selectionStart = textarea.selectionEnd = start - 1;
-      } else if (start !== end) {
-        textarea.value = val.substring(0, start) + val.substring(end);
-        textarea.selectionStart = textarea.selectionEnd = start;
-      }
-      if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
-      if (typeof updateLineNumbers === 'function') updateLineNumbers();
-      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
-      if (typeof markActiveModified === 'function') markActiveModified();
-      if (typeof recordHistory === 'function') recordHistory();
-    }
-
-    function moveEditorCursor(delta) {
-      const ta = document.getElementById('codeTextarea');
-      if (!ta) return;
-      const newPos = Math.max(0, Math.min(ta.value.length, ta.selectionStart + delta));
-      ta.selectionStart = ta.selectionEnd = newPos;
-      if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
-    }
-
-    function handleStyle1Input(key) {
-      const textarea = document.getElementById('codeTextarea');
-      if (!textarea) return;
-
-      if (key === 'SHIFT') {
-        triggerKeyHaptic('toggle');
-        isKbdShiftActive = !isKbdShiftActive;
-        renderStyle1Keyboard();
-        return;
-      }
-      if (key === 'ABC') {
-        triggerKeyHaptic('toggle');
-        isKbdSymMode = false;
-        renderStyle1Keyboard();
-        return;
-      }
-
-      triggerKeyHaptic('char');
-      insertTextAtCursor(key);
-      if (isKbdShiftActive) {
-        isKbdShiftActive = false;
-        renderStyle1Keyboard();
-      }
-    }
-
-    // Permanent Dock Anchor Engine (3-Way Cycle)
+                   // 🛡️ PERMANENT DOCK ANCHOR ENGINE (CLEAN & 100% LIGHTWEIGHT)
     function setupPermanentDockEngine() {
       const anchorBtn = document.getElementById('btnPermanentDockAnchor');
       const anchorIcon = document.getElementById('labelDockAnchorIcon');
-      const accBar = document.getElementById('accessoryBar');
       const bottomBar = document.getElementById('bottomQuickEditBar');
 
       let dockCycle = 0;
-
       anchorBtn?.addEventListener('click', (e) => {
         e.preventDefault();
-        triggerKeyHaptic(25);
         dockCycle = (dockCycle + 1) % 2;
-
         if (dockCycle === 1) {
           bottomBar?.classList.add('hidden');
           if (anchorIcon) anchorIcon.textContent = '▲';
           triggerToast("Action bar collapsed (More Code View)");
         } else {
           bottomBar?.classList.remove('hidden');
-          accBar?.classList.remove('hidden');
           if (anchorIcon) anchorIcon.textContent = '▼';
           triggerToast("Action bar restored");
         }
       });
     }
 
-    function setupCyberKeyboardEngine() {
-      const toggleBtn = document.getElementById('btnToggleCustomKeyboard');
-      const kbdContainer = document.getElementById('customCyberKeyboard');
-      const textarea = document.getElementById('codeTextarea');
-      const labelIcon = document.getElementById('labelKbdModeIcon');
-      const labelText = document.getElementById('labelKbdModeText');
-
-      function applyKbdState() {
-        if (isCustomKbdActive) {
-          kbdContainer?.classList.remove('hidden');
-          textarea?.setAttribute('inputmode', 'none');
-          if (labelIcon) labelIcon.textContent = '⚡';
-          if (labelText) labelText.textContent = 'SLIM';
-          toggleBtn?.classList.add('bg-cyan-500/30', 'border-cyan-300');
-          renderStyle1Keyboard();
-        } else {
-          kbdContainer?.classList.add('hidden');
-          textarea?.removeAttribute('inputmode');
-          if (labelIcon) labelIcon.textContent = '⌨️';
-          if (labelText) labelText.textContent = 'SYS';
-          toggleBtn?.classList.remove('bg-cyan-500/30', 'border-cyan-300');
-        }
-      }
-
-      toggleBtn?.addEventListener('click', () => {
-        triggerKeyHaptic(25);
-        isCustomKbdActive = !isCustomKbdActive;
-        localStorage.setItem('studio_custom_kbd_mode', isCustomKbdActive ? 'true' : 'false');
-        applyKbdState();
-        triggerToast(isCustomKbdActive ? 'Slim Cyber Keyboard: Active ⚡' : 'System Keyboard (Gboard): Active ⌨️');
-      });
-
-      const savedMode = localStorage.getItem('studio_custom_kbd_mode');
-      if (savedMode === 'true') isCustomKbdActive = true;
-      applyKbdState();
-
-      setupPermanentDockEngine();
-
-      // Settings Modal Sync
-      const settingsKbdSelect = document.getElementById('settingKbdModeSelect');
-      const settingsRestoreBtn = document.getElementById('btnSettingsRestoreBars');
-
-      if (settingsKbdSelect) {
-        settingsKbdSelect.value = isCustomKbdActive ? 'custom' : 'system';
-        settingsKbdSelect.addEventListener('change', (e) => {
-          isCustomKbdActive = (e.target.value === 'custom');
-          localStorage.setItem('studio_custom_kbd_mode', isCustomKbdActive ? 'true' : 'false');
-          applyKbdState();
-          triggerToast(isCustomKbdActive ? 'Slim Cyber Keyboard: ON ⚡' : 'System Keyboard (Gboard): Active ⌨️');
-        });
-      }
-
-            settingsRestoreBtn?.addEventListener('click', () => {
-        triggerKeyHaptic(30);
-        const accBar = document.getElementById('accessoryBar');
-        const bottomBar = document.getElementById('bottomQuickEditBar');
-        accBar?.classList.remove('hidden');
-        bottomBar?.classList.remove('hidden');
-        userSettings.miniBar = true;
-        userSettings.actionBar = true;
-        scheduleAutoSave();
-        triggerToast("Navigation Dock 100% Restored! ⚡");
-          });
-    }
-
-    setupCyberKeyboardEngine();
+    setupPermanentDockEngine();
 
       const accBar = document.getElementById('accessoryBar');
       const resBtnRow1 = document.getElementById('btnRestoreAccessoryBar');

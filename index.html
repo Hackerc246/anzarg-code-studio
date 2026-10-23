@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.2 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.3 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -494,35 +494,37 @@
           <path d="M12 2L2 21H7L12 11L17 21H22L12 2Z" fill="url(#anzargGradA)" />
           <path d="M7.5 15.5H16.5L14.5 12H9.5L7.5 15.5Z" fill="#38bdf8" />
         </svg>
-        <span class="font-black text-sm tracking-wider text-white font-sans drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">NZARG</span>
-        <span id="badgeHeaderAppVersion" class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#161b22] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 border border-cyan-500/40 shadow-[0_0_8px_rgba(0,242,254,0.2)]">v8.0</span>
+                <div class="flex items-baseline select-none">
+          <span class="font-black text-sm tracking-wider text-white font-sans drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">NZARG</span>
+          <span id="badgeHeaderAppVersion" class="text-[9px] font-mono font-bold text-cyan-400 ml-0.5 -translate-y-1 drop-shadow-[0_0_6px_rgba(0,242,254,0.4)]">v8.2</span>
+        </div>
       </div>
     </div>
 
-    <!-- Center: Quick Action Cluster (Undo, Redo, Save) -->
-    <div class="flex items-center space-x-0.5 bg-black/25 border border-[var(--surface-border)] p-0.5 rounded-xl shrink-0 mx-auto">
-      <button id="btnHeaderUndo" title="Undo" class="p-1.5 rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
-        <i data-lucide="undo-2" class="w-4 h-4"></i>
-      </button>
-      <button id="btnHeaderRedo" title="Redo" class="p-1.5 rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
-        <i data-lucide="redo-2" class="w-4 h-4"></i>
-      </button>
-      <div class="w-px h-3.5 bg-[var(--surface-border)] mx-0.5"></div>
-      <button id="btnHeaderSave" title="Save File" class="p-1.5 rounded-lg hover:bg-emerald-500/20 active:scale-90 text-emerald-400 hover:text-emerald-300 transition">
-        <i data-lucide="save" class="w-4 h-4"></i>
-      </button>
-    </div>
+      <!-- Center: Clean Minimal Action Cluster (Undo, Redo, Save) -->
+    <div class="flex items-center space-x-0.5 bg-black/30 border border-slate-700/60 p-0.5 rounded-xl shrink-0 mr-2">
+    <button id="btnHeaderUndo" title="Undo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
+      <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+    </button>
+    <button id="btnHeaderRedo" title="Redo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
+      <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
+    </button>
+    <div class="w-px h-3 bg-slate-700/60 mx-0.5"></div>
+    <button id="btnHeaderSave" title="Save File" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-emerald-500/20 active:scale-90 text-emerald-400 hover:text-emerald-300 transition">
+      <i data-lucide="save" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
     <div class="flex items-center space-x-0.5">
-      <!-- GET APP TICKER BUTTON -->
-      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1.5 py-1 px-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-400 hover:from-cyan-500/30 hover:to-emerald-500/30 active:scale-95 border border-cyan-500/40 mr-1 shadow-sm transition-all overflow-hidden">
-        <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
-        <div id="wrapperInstallTicker" class="ticker-viewport max-w-[85px] transition-all">
-          <div class="ticker-track">
-            <span class="ticker-item text-cyan-300">Get App</span>
-            <span class="ticker-item text-emerald-300">Install App</span>
-          </div>
+          <!-- COMPACT SMART INSTALL BUTTON -->
+    <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1 px-2 rounded-xl bg-gradient-to-r from-cyan-500/15 to-emerald-500/15 text-cyan-300 hover:from-cyan-500/25 hover:to-emerald-500/25 active:scale-95 border border-cyan-500/30 shadow-sm transition-all overflow-hidden shrink-0">
+      <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
+      <div id="wrapperInstallTicker" class="ticker-viewport max-w-[58px] transition-all">
+        <div class="ticker-track">
+          <span class="ticker-item text-[10px] font-medium text-cyan-300">Get App</span>
+          <span class="ticker-item text-[10px] font-medium text-emerald-300">Install</span>
         </div>
-            </button>
+      </div>
+    </button>
 
       <!-- FUTURE ACTIONS EMPTY SLOT (RESERVED FOR NEW FEATURES) -->
       <div id="slotHeaderFutureActions" class="flex items-center space-x-1"></div>
@@ -1976,7 +1978,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.2',
+      version: '8.3',
       edition: 'Developer Master Edition'
     };
 

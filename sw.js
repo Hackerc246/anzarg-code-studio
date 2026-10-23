@@ -1,24 +1,24 @@
 // ===================================================================================
-//   ANZARG CODE STUDIO - ZERO-TOUCH DYNAMIC SERVICE WORKER
-//   Copyright (c) 2026 ANZARG (All Rights Reserved)
+//   ANZARG CODE STUDIO - ULTRA RESILIENT OFFLINE SERVICE WORKER
+//   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
+//   Version: Production Shield Master (Zero-Crash • Dual Guard Architecture)
 // ===================================================================================
 
-// URL Parameter se Dynamic Version auto-read karega (?v=X.X)
+// Dynamic Version Query Parameter (?v=X.X) se bind karega
 const swUrl = new URL(location);
-const dynamicVer = swUrl.searchParams.get('v') || '1.0';
+const dynamicVer = swUrl.searchParams.get('v') || '7.9';
 const CACHE_NAME = `anzarg-studio-v${dynamicVer}`;
 
-// Local static core files
+// 1. Local Core Static Shell
 const LOCAL_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png',
-  './anzarg-apstore.png'
+  './icon-512.png'
 ];
 
-// External library bundles (100% Offline UI, Icons, ZIP, Cropper & Highlighting Guard)
+// 2. External Essential CDN Dependencies (Offline Pre-cache targets)
 const EXTERNAL_ASSETS = [
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest',
@@ -33,18 +33,20 @@ const EXTERNAL_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap'
 ];
 
-// Install: Fresh assets cache karein (With Redirect & Opaque Guard)
+// INSTALL EVENT: Core Shell & External Dependencies ko cache mein store karna
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
+      // Local Assets Cache
       for (const localUrl of LOCAL_ASSETS) {
         try {
           await cache.add(localUrl);
         } catch (err) {
-          console.warn('Local asset caching warning:', localUrl);
+          console.warn('[SW Install] Local asset bypass/warning:', localUrl);
         }
       }
 
+      // External CDN Assets Cache (CORS & No-CORS Safety Guard)
       for (const url of EXTERNAL_ASSETS) {
         try {
           const req = new Request(url, { mode: 'cors', redirect: 'follow' });
@@ -65,14 +67,14 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate: Purane kisi bhi version ka cache turant delete karein
+// ACTIVATE EVENT: Purane out-of-date caches ko hatana par active version ko protect karna
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('Purana cache deleted:', key);
+            console.log('[SW Activate] Purana version cache safely cleaned:', key);
             return caches.delete(key);
           }
         })
@@ -82,27 +84,40 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Reset command listener
+// ===================================================================================
+// SMART FACTORY RESET & CACHE SHIELD GUARD
+// ===================================================================================
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'CLEAR_ALL_CACHES') {
+  if (event.data && (event.data.action === 'CLEAR_ALL_CACHES' || event.data.action === 'SAFE_USER_RESET')) {
     event.waitUntil(
-      caches.keys().then((keys) => Promise.all(keys.map(k => caches.delete(k))))
-        .then(() => {
-          if (event.source && event.source.postMessage) {
-            event.source.postMessage({ action: 'CACHES_CLEARED_SUCCESS' });
+      caches.keys().then(async (keys) => {
+        for (const key of keys) {
+          // GUARD: Active App Engine Cache ko delete hone se 100% bachayega
+          if (key === CACHE_NAME) {
+            console.log('[SW Cache Shield Active]: App Core Engine Protected from Deletion ->', key);
+            continue; 
           }
-        })
+          // Sirf purane ya orphan caches ko purge karega
+          await caches.delete(key);
+        }
+      }).then(() => {
+        if (event.source && event.source.postMessage) {
+          event.source.postMessage({ action: 'CACHES_CLEARED_SUCCESS' });
+        }
+      })
     );
   }
 });
 
-// Fetch Interceptor: 100% Offline-First Stale-While-Revalidate Strategy
+// ===================================================================================
+// FETCH INTERCEPTOR: ZERO-CRASH & SILENT AUTO-HEALING ENGINE
+// ===================================================================================
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (!url.protocol.startsWith('http')) return;
 
-  // Live AI API calls ko cache se bypass rakhein
+  // Live AI APIs aur Worker proxy calls ko offline cache se bypass rakhein
   if (url.hostname.includes('googleapis.com') && url.pathname.includes('generateContent')) return;
   if (url.hostname.includes('workers.dev')) return;
 
@@ -110,23 +125,27 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: isSameOrigin }).then(async (cachedResponse) => {
-      // Fallback exact URL string match for redirected CDN assets
+      // Direct string URL fallback match (Redirected CDNs ke liye)
       const finalCached = cachedResponse || (await caches.match(event.request.url));
 
+      // CASE 1: Agar asset local cache mein maujood hai
       if (finalCached) {
-        // Background silent refresh jab internet chalu ho
-        fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, networkResponse.clone());
-              });
-            }
-          })
-          .catch(() => {});
+        // Silent Background Auto-Healing (Jab internet active ho toh silent update karega)
+        if (navigator.onLine) {
+          fetch(event.request)
+            .then((networkResponse) => {
+              if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(event.request, networkResponse.clone());
+                });
+              }
+            })
+            .catch(() => {});
+        }
         return finalCached;
       }
 
+      // CASE 2: Agar cache mein nahi mila toh network se mangwayega
       try {
         const networkResponse = await fetch(event.request);
         if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
@@ -137,14 +156,22 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       } catch (err) {
+        // CASE 3: COMPLETE OFFLINE GUARD (ERR_FAILED crash ko 100% rokna)
         const isNav = event.request.mode === 'navigate' || 
                       (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
+        
         if (isNav) {
-          return (await caches.match('./', { ignoreSearch: true })) || 
-                 (await caches.match('./index.html', { ignoreSearch: true }));
+          const fallbackShell = (await caches.match('./', { ignoreSearch: true })) || 
+                                (await caches.match('./index.html', { ignoreSearch: true }));
+          if (fallbackShell) return fallbackShell;
         }
-        // Safe empty response taaki offline me browser console error na feke
-        return new Response('', { status: 200, statusText: 'Offline Guard Active' });
+
+        // Kisi script ya asset ke fail hone par blank safe response taaki white/black screen na aaye
+        return new Response('/* Offline Guard Active */', { 
+          status: 200, 
+          statusText: 'Offline Guard Active',
+          headers: { 'Content-Type': 'text/javascript' }
+        });
       }
     })
   );

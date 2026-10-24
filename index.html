@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.3 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.4 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -482,53 +482,62 @@
       <button id="btnOpenDrawer" aria-label="Open Navigation Drawer" class="p-1.5 rounded-lg hover:bg-black/5 active:scale-95 text-[var(--text-muted)] hover:text-[var(--text-main)] transition">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-            <!-- Brand Identity (A + NZARG + v8.0) -->
-      <div class="flex items-center space-x-1.5 select-none shrink-0">
-        <svg class="w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(0,242,254,0.45)]" viewBox="0 0 24 24" fill="none">
-          <defs>
-            <linearGradient id="anzargGradA" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00f2fe" />
-              <stop offset="100%" stop-color="#2563eb" />
-            </linearGradient>
-          </defs>
-          <path d="M12 2L2 21H7L12 11L17 21H22L12 2Z" fill="url(#anzargGradA)" />
-          <path d="M7.5 15.5H16.5L14.5 12H9.5L7.5 15.5Z" fill="#38bdf8" />
-        </svg>
-                <div class="flex items-baseline select-none">
-          <span class="font-black text-sm tracking-wider text-white font-sans drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">NZARG</span>
-          <span id="badgeHeaderAppVersion" class="text-[9px] font-mono font-bold text-cyan-400 ml-0.5 -translate-y-1 drop-shadow-[0_0_6px_rgba(0,242,254,0.4)]">v8.2</span>
+                  <!-- Dynamic Brand Area: User Banner Slot OR Default Stylish Vector -->
+      <div id="wrapperHeaderBrand" class="flex items-center select-none shrink-0 overflow-hidden">
+        <!-- 1. Custom Uploaded Banner Image (Initially hidden if not uploaded) -->
+        <img id="headerCustomBanner" alt="Custom Brand" class="hidden h-7 w-auto max-w-[115px] object-contain drop-shadow select-none pointer-events-none" />
+
+        <!-- 2. Default Stylish Brand Vector (A + NZARG + v8.3 Stack) -->
+        <div id="defaultHeaderBrand" class="flex items-center space-x-1.5 select-none">
+          <svg class="w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(0,242,254,0.45)]" viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="anzargGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#2563eb" />
+              </linearGradient>
+            </defs>
+            <path d="M12 2L2 21H7L12 11L17 21H22L12 2Z" fill="url(#anzargGradA)" />
+            <path d="M7.5 15.5H16.5L14.5 12H9.5L7.5 15.5Z" fill="#38bdf8" />
+          </svg>
+          <div class="flex flex-col items-center justify-center leading-none select-none">
+            <span class="font-black text-xs tracking-widest text-white font-sans leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">NZARG</span>
+            <span id="badgeHeaderAppVersion" class="text-[7.5px] font-mono font-bold text-cyan-300 tracking-wider leading-none px-1 py-0.2 mt-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30">v8.3</span>
+          </div>
         </div>
       </div>
     </div>
 
-      <!-- Center: Clean Minimal Action Cluster (Undo, Redo, Save) -->
-    <div class="flex items-center space-x-0.5 bg-black/30 border border-slate-700/60 p-0.5 rounded-xl shrink-0 mr-2">
-    <button id="btnHeaderUndo" title="Undo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
-      <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
-    </button>
-    <button id="btnHeaderRedo" title="Redo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
-      <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
-    </button>
-    <div class="w-px h-3 bg-slate-700/60 mx-0.5"></div>
-    <button id="btnHeaderSave" title="Save File" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-emerald-500/20 active:scale-90 text-emerald-400 hover:text-emerald-300 transition">
-      <i data-lucide="save" class="w-3.5 h-3.5"></i>
-    </button>
-  </div>
-    <div class="flex items-center space-x-0.5">
-          <!-- COMPACT SMART INSTALL BUTTON -->
-    <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1 px-2 rounded-xl bg-gradient-to-r from-cyan-500/15 to-emerald-500/15 text-cyan-300 hover:from-cyan-500/25 hover:to-emerald-500/25 active:scale-95 border border-cyan-500/30 shadow-sm transition-all overflow-hidden shrink-0">
-      <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
-      <div id="wrapperInstallTicker" class="ticker-viewport max-w-[58px] transition-all">
-        <div class="ticker-track">
-          <span class="ticker-item text-[10px] font-medium text-cyan-300">Get App</span>
-          <span class="ticker-item text-[10px] font-medium text-emerald-300">Install</span>
-        </div>
+    <!-- Smart Flexible Spacer (Khatam karega dono taraf ka awkward gap) -->
+    <div class="flex-1 min-w-[8px]"></div>
+
+    <!-- Right Unified Tool Dock (Actions + Install + Run) -->
+    <div class="flex items-center space-x-1 shrink-0">
+      <!-- DYNAMIC ACTION CLUSTER (Install hone ke baad right side par dikhega) -->
+      <div id="clusterUndoRedoSave" class="hidden flex items-center space-x-0.5 bg-black/30 border border-slate-700/60 p-0.5 rounded-xl shrink-0 mr-1 shadow-inner">
+        <button id="btnHeaderUndo" title="Undo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
+          <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="btnHeaderRedo" title="Redo" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 text-slate-300 hover:text-white transition">
+          <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <div class="w-px h-3 bg-slate-700/60 mx-0.5"></div>
+        <button id="btnHeaderSave" title="Save File" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-emerald-500/20 active:scale-90 text-emerald-400 hover:text-emerald-300 transition">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i>
+        </button>
       </div>
-    </button>
 
-      <!-- FUTURE ACTIONS EMPTY SLOT (RESERVED FOR NEW FEATURES) -->
-      <div id="slotHeaderFutureActions" class="flex items-center space-x-1"></div>
+      <!-- COMPACT SMART INSTALL BUTTON (Install hone se pehle active rahega) -->
+      <button id="btnHeaderInstall" title="Install Application" class="hidden flex items-center space-x-1 py-1 px-2 rounded-xl bg-gradient-to-r from-cyan-500/15 to-emerald-500/15 text-cyan-300 hover:from-cyan-500/25 hover:to-emerald-500/25 active:scale-95 border border-cyan-500/30 shadow-sm transition-all overflow-hidden shrink-0">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400 shrink-0 animate-bounce"></i>
+        <div id="wrapperInstallTicker" class="ticker-viewport max-w-[58px] transition-all">
+          <div class="ticker-track">
+            <span class="ticker-item text-[10px] font-medium text-cyan-300">Get App</span>
+            <span class="ticker-item text-[10px] font-medium text-emerald-300">Install</span>
+          </div>
+        </div>
+      </button>
 
+      <!-- RUN BUTTON -->
       <button id="btnHeaderRun" title="Live Preview" class="p-1.5 rounded-lg hover:bg-black/5 text-cyan-500 hover:text-cyan-400 active:scale-90 transition">
         <i data-lucide="play" class="w-4 h-4 fill-cyan-400/20"></i>
       </button>
@@ -1533,9 +1542,9 @@
           <span class="text-base font-bold tracking-tight block truncate uppercase drop-shadow-md">ANZARG CODE STUDIO</span>
           <span class="block text-[10px] text-cyan-200 uppercase tracking-widest font-semibold drop-shadow-sm">Pro Code Studio</span>
           <p class="text-[11px] text-cyan-100/90 mt-0.5 drop-shadow-sm">100% Offline • Quick Precision</p>
+                  </div>
         </div>
       </div>
-    </div>
 
     <div class="flex-1 overflow-y-auto py-2.5 text-sm space-y-0.5">
       <div class="px-4 py-1.5 text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase">AI & Tools</div>
@@ -1652,46 +1661,103 @@
           </div>
         </div>
 
+                <!-- 1. STUDIO LOGO ADJUST (Preview + Pencil + Reset + Upload) -->
         <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
-          <div class="flex items-center space-x-3 cursor-pointer" id="settingLogoPreviewClickable" title="Tap to Adjust">
-            <div id="settingLogoPreviewBox" class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
-              <i data-lucide="camera" class="w-6 h-6 text-cyan-500" id="settingLogoFallback"></i>
-              <img id="settingLogoImg" class="w-full h-full object-cover hidden" alt="Avatar">
+          <div class="flex items-center space-x-3 cursor-pointer" id="settingLogoPreviewClickable" title="Tap to Adjust Studio Logo">
+            <div id="settingLogoPreviewBox" class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative group">
+              <i data-lucide="camera" class="w-5 h-5 text-cyan-400" id="settingLogoFallback"></i>
+              <img id="settingLogoImg" class="w-full h-full object-cover hidden absolute inset-0" alt="Studio Logo">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                <i data-lucide="pencil" class="w-3.5 h-3.5 text-white"></i>
+              </div>
             </div>
             <div>
-              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
+              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1.5">
                 <span>Studio Logo</span>
-                <span class="text-[10px] text-cyan-400 font-normal">Adjust</span>
+                <span class="text-[9.5px] text-cyan-400 font-mono bg-cyan-950/60 px-1 py-0.2 rounded border border-cyan-500/20">Avatar</span>
               </div>
-              <div class="text-[10px] text-[var(--text-muted)]">Upload & Crop</div>
+              <div class="text-[10px] text-[var(--text-muted)]">Profile & workspace avatar</div>
             </div>
           </div>
-          <button id="btnTriggerPhotoUpload" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
-            Upload
-          </button>
+          <div class="flex items-center space-x-1.5 shrink-0">
+            <button id="btnTriggerLogoPencil" type="button" title="Crop & Re-adjust Logo" class="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-300 hover:text-cyan-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="pencil" class="w-3.5 h-3.5 text-cyan-400"></i>
+            </button>
+            <button id="btnResetLogoInSettings" type="button" title="Remove & Reset Default Logo" class="p-1.5 rounded-lg bg-black/20 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+            <button id="btnTriggerPhotoUpload" type="button" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+              Upload
+            </button>
+          </div>
         </div>
 
-        <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between">
-          <div class="flex items-center space-x-3 cursor-pointer" id="settingBannerPreviewClickable" title="Tap to Adjust">
-            <div id="settingBannerPreviewBox" class="w-14 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
+        <!-- 2. DRAWER BANNER ADJUST (Preview + Pencil + Reset + Upload) -->
+        <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between mt-2.5">
+          <div class="flex items-center space-x-3 cursor-pointer" id="settingBannerPreviewClickable" title="Tap to Adjust Drawer Banner">
+            <div id="settingBannerPreviewBox" class="w-14 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative group">
               <i data-lucide="image" class="w-5 h-5 text-emerald-500" id="settingBannerFallback"></i>
-              <img id="settingBannerImg" class="w-full h-full object-cover hidden" alt="Banner">
+              <img id="settingBannerImg" class="w-full h-full object-cover hidden absolute inset-0" alt="Drawer Banner">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                <i data-lucide="pencil" class="w-3.5 h-3.5 text-white"></i>
+              </div>
             </div>
             <div>
-              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1">
+              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1.5">
                 <span>Drawer Banner</span>
-                <span class="text-[10px] text-emerald-400 font-normal">Adjust</span>
+                <span class="text-[9.5px] text-emerald-400 font-mono bg-emerald-950/60 px-1 py-0.2 rounded border border-emerald-500/20">Cover</span>
               </div>
-              <div class="text-[10px] text-[var(--text-muted)]">Cover Banner</div>
+              <div class="text-[10px] text-[var(--text-muted)]">Drawer top background banner</div>
             </div>
           </div>
-          <button id="btnTriggerBannerUpload" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
-            Upload
-          </button>
+          <div class="flex items-center space-x-1.5 shrink-0">
+            <button id="btnTriggerBannerPencil" type="button" title="Crop & Re-adjust Drawer Banner" class="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-300 hover:text-emerald-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="pencil" class="w-3.5 h-3.5 text-emerald-400"></i>
+            </button>
+            <button id="btnResetDrawerBannerInSettings" type="button" title="Remove & Reset Default Drawer Banner" class="p-1.5 rounded-lg bg-black/20 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+            <button id="btnTriggerBannerUpload" type="button" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+              Upload
+            </button>
+          </div>
         </div>
 
+        <!-- 3. HEADER BANNER ADJUST (Preview + Pencil + Reset + Upload) -->
+        <div class="p-3 bg-black/5 rounded-xl border border-[var(--surface-border)] flex items-center justify-between mt-2.5">
+          <div class="flex items-center space-x-3 cursor-pointer" id="settingHeaderBannerPreviewClickable" title="Tap to Adjust Header Brand">
+            <div id="settingHeaderBannerPreviewBox" class="w-14 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative group p-0.5">
+              <i data-lucide="layout-template" class="w-5 h-5 text-cyan-400" id="settingHeaderBannerFallback"></i>
+              <img id="settingHeaderBannerImg" class="w-full h-full object-contain hidden absolute inset-0 p-0.5" alt="Header Banner">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                <i data-lucide="pencil" class="w-3.5 h-3.5 text-white"></i>
+              </div>
+            </div>
+            <div>
+              <div class="font-bold text-[var(--text-main)] flex items-center space-x-1.5">
+                <span>Header Banner</span>
+                <span class="text-[9px] text-cyan-400 font-mono bg-cyan-950/60 px-1 py-0.2 rounded border border-cyan-500/20">3.5:1 ratio</span>
+              </div>
+              <div class="text-[10px] text-[var(--text-muted)]">Top header custom brand name</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-1.5 shrink-0">
+            <button id="btnTriggerHeaderBannerPencil" type="button" title="Crop & Re-adjust Header Banner" class="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-300 hover:text-cyan-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="pencil" class="w-3.5 h-3.5 text-cyan-400"></i>
+            </button>
+            <button id="btnResetHeaderBannerInSettings" type="button" title="Remove & Reset Default ANZARG Logo" class="p-1.5 rounded-lg bg-black/20 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 border border-[var(--surface-border)] active:scale-95 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+            <button id="btnTriggerHeaderBannerUpload" type="button" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg transition active:scale-95 shadow">
+              Upload
+            </button>
+          </div>
+        </div>
+
+        <!-- Hidden Native File Inputs -->
         <input type="file" id="inputProfileFile" accept="image/*" class="hidden">
         <input type="file" id="inputBannerFile" accept="image/*" class="hidden">
+        <input type="file" id="inputHeaderBannerFile" accept="image/*" class="hidden">
 
         <div class="flex items-center justify-between">
           <div>
@@ -1978,7 +2044,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.3',
+      version: '8.4',
       edition: 'Developer Master Edition'
     };
 
@@ -2312,55 +2378,105 @@
     }
 
     function setupPwaInstallFlow() {
-      const headerInstallBtn = document.getElementById('btnHeaderInstall');
-      const drawerInstallBtn = document.getElementById('dNavInstallApp');
-      const tickerWrapper = document.getElementById('wrapperInstallTicker');
+  const headerInstallBtn = document.getElementById('btnHeaderInstall');
+  const drawerInstallBtn = document.getElementById('btnDrawerInstall');
+  const tickerWrapper = document.getElementById('wrapperInstallTicker');
+  const clusterActions = document.getElementById('clusterUndoRedoSave');
 
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isStandalone) {
-        if (headerInstallBtn) headerInstallBtn.classList.add('hidden');
-        if (drawerInstallBtn) drawerInstallBtn.classList.add('hidden');
-        return;
+  const checkIsStandalone = () => {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone === true || 
+           document.referrer.includes('android-app://');
+  };
+
+  // Dynamic Header State Switcher
+  const updateLayoutForMode = () => {
+    const isStandalone = checkIsStandalone();
+
+    if (isStandalone) {
+      // 1. App Mode: Undo/Redo/Save ACTIVE, Install buttons permanently HIDDEN
+      if (clusterActions) {
+        clusterActions.classList.remove('hidden');
+        clusterActions.classList.add('flex');
       }
+      if (headerInstallBtn) headerInstallBtn.classList.add('!hidden');
+      if (drawerInstallBtn) drawerInstallBtn.classList.add('!hidden');
+    } else {
+      // 2. Browser Mode: Undo/Redo/Save HIDDEN
+      if (clusterActions) {
+        clusterActions.classList.add('hidden');
+        clusterActions.classList.remove('flex');
+      }
+      // Agar install prompt mil chuka hai, tabhi header install button dikhe
+      if (window.deferredInstallPrompt && headerInstallBtn) {
+        headerInstallBtn.classList.remove('hidden');
+      }
+    }
+  };
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredInstallPrompt = e;
-        if (headerInstallBtn) {
-          headerInstallBtn.classList.remove('hidden');
-          setTimeout(() => {
-            if (tickerWrapper) {
-              tickerWrapper.style.maxWidth = '0px';
-              tickerWrapper.style.opacity = '0';
-              setTimeout(() => tickerWrapper.classList.add('hidden'), 400);
-            }
-          }, 9500);
-        }
-        if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
-      });
+  // Run initial state setup
+  updateLayoutForMode();
 
-      const triggerInstallAction = async () => {
-        if (deferredInstallPrompt) {
-          deferredInstallPrompt.prompt();
-          const { outcome } = await deferredInstallPrompt.userChoice;
-          if (outcome === 'accepted') deferredInstallPrompt = null;
-        } else {
-          showProfessionalPopup({
-            title: "PWA Install Notice",
-            message: "App installation ready hai ya browser menu se 'Add to Home Screen' karein.",
-            iconType: "info"
-          });
-        }
-      };
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredInstallPrompt = e;
 
-      if (headerInstallBtn) headerInstallBtn.addEventListener('click', triggerInstallAction);
-      if (drawerInstallBtn) {
-        drawerInstallBtn.addEventListener('click', () => {
-          closeDrawerPanel();
-          triggerInstallAction();
+    if (!checkIsStandalone()) {
+      if (headerInstallBtn) {
+        headerInstallBtn.classList.remove('hidden');
+        setTimeout(() => {
+          if (tickerWrapper) {
+            tickerWrapper.style.maxWidth = '0px';
+            tickerWrapper.style.opacity = '0';
+            setTimeout(() => tickerWrapper.classList.add('hidden'), 400);
+          }
+        }, 9500);
+      }
+      if (drawerInstallBtn) drawerInstallBtn.classList.remove('hidden');
+    }
+  });
+
+  const triggerInstallAction = async () => {
+    if (window.deferredInstallPrompt) {
+      window.deferredInstallPrompt.prompt();
+      const { outcome } = await window.deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        window.deferredInstallPrompt = null;
+        updateLayoutForMode();
+      }
+    } else {
+      if (typeof showProfessionalPopup === 'function') {
+        showProfessionalPopup({
+          title: "PWA Install Notice",
+          message: "App installation ready hai ya browser menu (3-dots) se 'Install App' choose karein.",
+          iconType: "info"
         });
       }
     }
+  };
+
+  if (headerInstallBtn) headerInstallBtn.addEventListener('click', triggerInstallAction);
+  if (drawerInstallBtn) {
+    drawerInstallBtn.addEventListener('click', () => {
+      if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
+      triggerInstallAction();
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    window.deferredInstallPrompt = null;
+    updateLayoutForMode();
+    if (typeof triggerToast === 'function') {
+      triggerToast('App installed successfully!');
+    }
+  });
+
+  try {
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', () => {
+      updateLayoutForMode();
+    });
+  } catch (err) {}
+}
 
     function triggerToast(text) {
       const toast = document.getElementById('appToast');
@@ -5352,141 +5468,259 @@ CRITICAL OPERATIONAL RULES:
     }
 
     function setupLogoAndBannerCropperStudio() {
-      const logoInput = document.getElementById('inputProfileFile');
-      const bannerInput = document.getElementById('inputBannerFile');
-      const cropModal = document.getElementById('modalCropStudio');
-      const cropImage = document.getElementById('cropperImageTarget');
-      const titleLabel = document.getElementById('labelCropModalTitle');
+  const logoInput = document.getElementById('inputProfileFile');
+  const bannerInput = document.getElementById('inputBannerFile');
+  const headerBannerInput = document.getElementById('inputHeaderBannerFile');
+  const cropModal = document.getElementById('modalCropStudio');
+  const cropImage = document.getElementById('cropperImageTarget');
+  const titleLabel = document.getElementById('labelCropModalTitle');
 
-      document.getElementById('btnTriggerPhotoUpload')?.addEventListener('click', () => {
-        currentCropTarget = 'logo';
-        if (titleLabel) titleLabel.textContent = "Crop & Adjust Studio Logo";
-        logoInput?.click();
-      });
+  let cropperInstance = null;
+  let currentCropTarget = 'logo'; // 'logo' | 'banner' | 'headerBanner'
 
-      document.getElementById('btnTriggerBannerUpload')?.addEventListener('click', () => {
-        currentCropTarget = 'banner';
-        if (titleLabel) titleLabel.textContent = "Crop & Adjust Drawer Banner";
-        bannerInput?.click();
-      });
+  // Header Banner UI Synchronizer (Header + Settings Preview)
+  const applyHeaderBannerToUI = (dataUrl) => {
+    const hImg = document.getElementById('headerCustomBanner');
+    const defBrand = document.getElementById('defaultHeaderBrand');
+    const sImg = document.getElementById('settingHeaderBannerImg');
+    const sFallback = document.getElementById('settingHeaderBannerFallback');
 
-      document.getElementById('settingLogoPreviewClickable')?.addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
-        if (orig) openCropperModalWithImage(orig, 'logo');
-        else { currentCropTarget = 'logo'; logoInput?.click(); }
-      });
-
-      document.getElementById('drawerLogoAvatar')?.addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo');
-        if (orig) openCropperModalWithImage(orig, 'logo');
-        else { currentCropTarget = 'logo'; logoInput?.click(); }
-      });
-
-      document.getElementById('settingBannerPreviewClickable')?.addEventListener('click', async () => {
-        const orig = await storeGet('studio_custom_banner_orig') || await storeGet('studio_custom_banner');
-        if (orig) openCropperModalWithImage(orig, 'banner');
-        else { currentCropTarget = 'banner'; bannerInput?.click(); }
-      });
-
-      function openCropperModalWithImage(imageSrc, type) {
-        currentCropTarget = type;
-        if (titleLabel) titleLabel.textContent = (type === 'logo') ? "Crop & Adjust Studio Logo" : "Crop & Adjust Drawer Banner";
-        if (cropImage) cropImage.src = imageSrc;
-        cropModal?.classList.remove('hidden');
-
-        if (cropperInstance) {
-          cropperInstance.destroy();
-          cropperInstance = null;
-        }
-
-        setTimeout(() => {
-          if (cropImage) {
-            cropperInstance = new Cropper(cropImage, {
-              aspectRatio: (type === 'logo') ? 1 : (2.4 / 1),
-              viewMode: 1,
-              dragMode: 'move',
-              autoCropArea: 0.95,
-              restore: false,
-              guides: true,
-              center: true,
-              highlight: false,
-              cropBoxMovable: true,
-              cropBoxResizable: true,
-              toggleDragModeOnDblclick: false
-            });
-          }
-        }, 120);
-      }
-
-      const handleImageSelection = (file, type) => {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async (evt) => {
-          const rawData = evt.target.result;
-          if (type === 'logo') await storeSave('studio_custom_logo_orig', rawData);
-          else await storeSave('studio_custom_banner_orig', rawData);
-          openCropperModalWithImage(rawData, type);
-        };
-        reader.readAsDataURL(file);
-      };
-
-      logoInput?.addEventListener('change', (e) => {
-        handleImageSelection(e.target.files[0], 'logo');
-        logoInput.value = '';
-      });
-
-      bannerInput?.addEventListener('change', (e) => {
-        handleImageSelection(e.target.files[0], 'banner');
-        bannerInput.value = '';
-      });
-
-      document.getElementById('btnCropZoomIn')?.addEventListener('click', () => cropperInstance?.zoom(0.1));
-      document.getElementById('btnCropZoomOut')?.addEventListener('click', () => cropperInstance?.zoom(-0.1));
-      document.getElementById('btnCropRotate')?.addEventListener('click', () => cropperInstance?.rotate(90));
-
-            const closeCropper = () => {
-        cropModal?.classList.add('hidden');
-        if (cropperInstance) {
-          cropperInstance.destroy();
-          cropperInstance = null;
-        }
-        // Agar Settings modal se khula tha toh dashboard par fekane ke badle settings par wapis aayega
-        const settingsModal = document.getElementById('modalSettings');
-        if (settingsModal) {
-          settingsModal.classList.remove('hidden');
-        }
-      };
-
-      document.getElementById('btnCropCancel')?.addEventListener('click', closeCropper);
-      document.getElementById('btnCropCancelTop')?.addEventListener('click', closeCropper);
-
-      document.getElementById('btnCropApply')?.addEventListener('click', async () => {
-        if (!cropperInstance) return;
-        const canvas = cropperInstance.getCroppedCanvas({
-          maxWidth: (currentCropTarget === 'logo') ? 350 : 800,
-          maxHeight: (currentCropTarget === 'logo') ? 350 : 400,
-          imageSmoothingEnabled: true,
-          imageSmoothingQuality: 'high'
-        });
-
-        const dataUrl = canvas.toDataURL('image/png', 0.92);
-
-                if (currentCropTarget === 'logo') {
-          await storeSave('studio_custom_logo', dataUrl);
-          applyLogoToUI(dataUrl);
-          triggerToast("Logo Saved!");
-        } else {
-          await storeSave('studio_custom_banner', dataUrl);
-          applyBannerToUI(dataUrl);
-          triggerToast("Banner Saved!");
-        }
-        closeCropper();
-        const settingsModal = document.getElementById('modalSettings');
-        if (settingsModal) {
-          settingsModal.classList.remove('hidden');
-        }
-      });
+    if (!dataUrl) {
+      if (hImg) { hImg.src = ''; hImg.classList.add('hidden'); }
+      if (defBrand) defBrand.classList.remove('hidden');
+      if (sImg) { sImg.src = ''; sImg.classList.add('hidden'); }
+      if (sFallback) sFallback.classList.remove('hidden');
+      return;
     }
+
+    if (hImg) { hImg.src = dataUrl; hImg.classList.remove('hidden'); }
+    if (defBrand) defBrand.classList.add('hidden');
+    if (sImg) { sImg.src = dataUrl; sImg.classList.remove('hidden'); }
+    if (sFallback) sFallback.classList.add('hidden');
+  };
+
+  // Initial Sync from Storage on Load
+  (async () => {
+    const savedHeader = (typeof storeGet === 'function' ? await storeGet('studio_custom_header_banner') : null) || 
+                        localStorage.getItem('anzarg_header_custom_banner');
+    if (savedHeader) applyHeaderBannerToUI(savedHeader);
+  })();
+
+  // 1. UPLOAD BUTTONS (Fresh Gallery Pick)
+  document.getElementById('btnTriggerPhotoUpload')?.addEventListener('click', () => {
+    currentCropTarget = 'logo';
+    if (titleLabel) titleLabel.textContent = "Crop & Adjust Studio Logo";
+    logoInput?.click();
+  });
+
+  document.getElementById('btnTriggerBannerUpload')?.addEventListener('click', () => {
+    currentCropTarget = 'banner';
+    if (titleLabel) titleLabel.textContent = "Crop & Adjust Drawer Banner";
+    bannerInput?.click();
+  });
+
+  document.getElementById('btnTriggerHeaderBannerUpload')?.addEventListener('click', () => {
+    currentCropTarget = 'headerBanner';
+    if (titleLabel) titleLabel.textContent = "Crop & Adjust Header Banner";
+    headerBannerInput?.click();
+  });
+
+  // 2. PENCIL & PREVIEW CLICK (Re-adjust existing OR Pick new)
+  const handlePencilOrAdjust = async (targetType) => {
+    currentCropTarget = targetType;
+    let orig = null;
+    let inputEl = logoInput;
+    let titleText = "Crop & Adjust Studio Logo";
+
+    if (targetType === 'logo') {
+      orig = (typeof storeGet === 'function' ? (await storeGet('studio_custom_logo_orig') || await storeGet('studio_custom_logo')) : null);
+      inputEl = logoInput;
+      titleText = "Crop & Adjust Studio Logo";
+    } else if (targetType === 'banner') {
+      orig = (typeof storeGet === 'function' ? (await storeGet('studio_custom_banner_orig') || await storeGet('studio_custom_banner')) : null);
+      inputEl = bannerInput;
+      titleText = "Crop & Adjust Drawer Banner";
+    } else if (targetType === 'headerBanner') {
+      orig = (typeof storeGet === 'function' ? (await storeGet('studio_custom_header_banner_orig') || await storeGet('studio_custom_header_banner')) : null) || 
+             localStorage.getItem('anzarg_header_custom_banner');
+      inputEl = headerBannerInput;
+      titleText = "Crop & Adjust Header Banner";
+    }
+
+    if (titleLabel) titleLabel.textContent = titleText;
+
+    if (orig) {
+      openCropperModalWithImage(orig, targetType);
+    } else {
+      inputEl?.click();
+    }
+  };
+
+  // Logo Pencil & Click
+  document.getElementById('btnTriggerLogoPencil')?.addEventListener('click', () => handlePencilOrAdjust('logo'));
+  document.getElementById('settingLogoPreviewClickable')?.addEventListener('click', () => handlePencilOrAdjust('logo'));
+  document.getElementById('drawerLogoAvatar')?.addEventListener('click', () => handlePencilOrAdjust('logo'));
+
+  // Drawer Banner Pencil & Click
+  document.getElementById('btnTriggerBannerPencil')?.addEventListener('click', () => handlePencilOrAdjust('banner'));
+  document.getElementById('settingBannerPreviewClickable')?.addEventListener('click', () => handlePencilOrAdjust('banner'));
+
+  // Header Banner Pencil & Click
+  document.getElementById('btnTriggerHeaderBannerPencil')?.addEventListener('click', () => handlePencilOrAdjust('headerBanner'));
+  document.getElementById('settingHeaderBannerPreviewClickable')?.addEventListener('click', () => handlePencilOrAdjust('headerBanner'));
+
+  // 3. RESET BUTTONS (Remove custom & restore original defaults)
+  document.getElementById('btnResetLogoInSettings')?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (typeof storeSave === 'function') {
+      await storeSave('studio_custom_logo', null);
+      await storeSave('studio_custom_logo_orig', null);
+    }
+    if (typeof applyLogoToUI === 'function') applyLogoToUI(null);
+    if (typeof triggerToast === 'function') triggerToast("Logo reset to default");
+  });
+
+  document.getElementById('btnResetDrawerBannerInSettings')?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (typeof storeSave === 'function') {
+      await storeSave('studio_custom_banner', null);
+      await storeSave('studio_custom_banner_orig', null);
+    }
+    if (typeof applyBannerToUI === 'function') applyBannerToUI(null);
+    if (typeof triggerToast === 'function') triggerToast("Drawer banner reset to default");
+  });
+
+  document.getElementById('btnResetHeaderBannerInSettings')?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (typeof storeSave === 'function') {
+      await storeSave('studio_custom_header_banner', null);
+      await storeSave('studio_custom_header_banner_orig', null);
+    }
+    localStorage.removeItem('anzarg_header_custom_banner');
+    applyHeaderBannerToUI(null);
+    if (typeof triggerToast === 'function') triggerToast("Header brand reset to ANZARG");
+  });
+
+  // 4. CROPPER ENGINE LAUNCHER (With Distinct Dynamic Aspect Ratios)
+  function openCropperModalWithImage(imageSrc, type) {
+    currentCropTarget = type;
+    if (cropImage) cropImage.src = imageSrc;
+    cropModal?.classList.remove('hidden');
+
+    if (cropperInstance) {
+      cropperInstance.destroy();
+      cropperInstance = null;
+    }
+
+    // Target Specific Aspect Ratio
+    let targetRatio = 1; // Logo: 1:1
+    if (type === 'banner') targetRatio = (2.4 / 1); // Drawer Cover: 2.4:1
+    if (type === 'headerBanner') targetRatio = (3.5 / 1); // Header Brand: 3.5:1
+
+    setTimeout(() => {
+      if (cropImage && typeof Cropper === 'function') {
+        cropperInstance = new Cropper(cropImage, {
+          aspectRatio: targetRatio,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.95,
+          restore: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false
+        });
+      }
+    }, 120);
+  }
+
+  // File Change Handlers
+  const handleImageSelection = (file, type) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const rawData = evt.target.result;
+      if (typeof storeSave === 'function') {
+        if (type === 'logo') await storeSave('studio_custom_logo_orig', rawData);
+        else if (type === 'banner') await storeSave('studio_custom_banner_orig', rawData);
+        else if (type === 'headerBanner') await storeSave('studio_custom_header_banner_orig', rawData);
+      }
+      openCropperModalWithImage(rawData, type);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  logoInput?.addEventListener('change', (e) => {
+    handleImageSelection(e.target.files[0], 'logo');
+    logoInput.value = '';
+  });
+
+  bannerInput?.addEventListener('change', (e) => {
+    handleImageSelection(e.target.files[0], 'banner');
+    bannerInput.value = '';
+  });
+
+  headerBannerInput?.addEventListener('change', (e) => {
+    handleImageSelection(e.target.files[0], 'headerBanner');
+    headerBannerInput.value = '';
+  });
+
+  // Zoom & Rotate Controls
+  document.getElementById('btnCropZoomIn')?.addEventListener('click', () => cropperInstance?.zoom(0.1));
+  document.getElementById('btnCropZoomOut')?.addEventListener('click', () => cropperInstance?.zoom(-0.1));
+  document.getElementById('btnCropRotate')?.addEventListener('click', () => cropperInstance?.rotate(90));
+
+  const closeCropper = () => {
+    cropModal?.classList.add('hidden');
+    if (cropperInstance) {
+      cropperInstance.destroy();
+      cropperInstance = null;
+    }
+    const settingsModal = document.getElementById('modalSettingsStudio');
+    if (settingsModal) settingsModal.classList.remove('hidden');
+  };
+
+  document.getElementById('btnCropCancel')?.addEventListener('click', closeCropper);
+  document.getElementById('btnCropCancelTop')?.addEventListener('click', closeCropper);
+
+  // 5. APPLY CROP & EXPORT
+  document.getElementById('btnCropApply')?.addEventListener('click', async () => {
+    if (!cropperInstance) return;
+
+    let targetW = 256;
+    let targetH = 256;
+    if (currentCropTarget === 'banner') { targetW = 800; targetH = 333; }
+    if (currentCropTarget === 'headerBanner') { targetW = 420; targetH = 120; }
+
+    const canvas = cropperInstance.getCroppedCanvas({
+      width: targetW,
+      height: targetH,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+
+    const dataUrl = canvas.toDataURL('image/png', 0.95);
+
+    if (currentCropTarget === 'logo') {
+      if (typeof storeSave === 'function') await storeSave('studio_custom_logo', dataUrl);
+      if (typeof applyLogoToUI === 'function') applyLogoToUI(dataUrl);
+      if (typeof triggerToast === 'function') triggerToast("Logo Saved!");
+    } else if (currentCropTarget === 'banner') {
+      if (typeof storeSave === 'function') await storeSave('studio_custom_banner', dataUrl);
+      if (typeof applyBannerToUI === 'function') applyBannerToUI(dataUrl);
+      if (typeof triggerToast === 'function') triggerToast("Drawer Banner Saved!");
+    } else if (currentCropTarget === 'headerBanner') {
+      if (typeof storeSave === 'function') await storeSave('studio_custom_header_banner', dataUrl);
+      localStorage.setItem('anzarg_header_custom_banner', dataUrl);
+      applyHeaderBannerToUI(dataUrl);
+      if (typeof triggerToast === 'function') triggerToast("Header Banner Saved!");
+    }
+
+    closeCropper();
+  });
+}
 
     function setupZipImporter() {
       const zipInput = document.getElementById('fallbackZipInput');
@@ -6883,7 +7117,8 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
     window.addEventListener('DOMContentLoaded', async () => {
       if (window.lucide) lucide.createIcons();
       registerServiceWorker();
-      setupPwaInstallFlow();
+            setupPwaInstallFlow();
+           
       setupLaunchQueueReceiver();
       await initIndexedDB();
       requestPersistentStorage();

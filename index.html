@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.4 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.5 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -131,7 +131,7 @@
       --syn-number: #d97706;
     }
 
-    body.theme-cyberpunk {
+        body.theme-cyberpunk {
       --bg-base: #10002b;
       --surface: #240046;
       --surface-border: #7b2cbf;
@@ -154,6 +154,56 @@
       --syn-comment: #9d4edd;
       --syn-punct: #ff9e00;
       --syn-number: #38b000;
+    }
+
+    body.theme-dracula {
+      --bg-base: #1e1f29;
+      --surface: #282a36;
+      --surface-border: #44475a;
+      --editor-bg: #191a21;
+      --accent: #bd93f9;
+      --accent-secondary: #50fa7b;
+      --text-main: #f8f8f2;
+      --text-muted: #6272a4;
+      --editor-text: #f8f8f2;
+      --editor-highlight: rgba(189, 147, 249, 0.35);
+      
+      --gutter-bg: #1e1f29;
+      --gutter-text: #6272a4;
+      --gutter-border: #282a36;
+
+      --syn-tag: #ff79c6;
+      --syn-attr-name: #50fa7b;
+      --syn-string: #f1fa8c;
+      --syn-keyword: #ff79c6;
+      --syn-comment: #6272a4;
+      --syn-punct: #ffb86c;
+      --syn-number: #bd93f9;
+    }
+
+    body.theme-monokai {
+      --bg-base: #1e1f1c;
+      --surface: #272822;
+      --surface-border: #3e3d32;
+      --editor-bg: #191a17;
+      --accent: #a6e22e;
+      --accent-secondary: #fd971f;
+      --text-main: #f8f8f2;
+      --text-muted: #75715e;
+      --editor-text: #f8f8f2;
+      --editor-highlight: rgba(249, 38, 114, 0.35);
+      
+      --gutter-bg: #1e1f1c;
+      --gutter-text: #75715e;
+      --gutter-border: #272822;
+
+      --syn-tag: #f92672;
+      --syn-attr-name: #a6e22e;
+      --syn-string: #e6db74;
+      --syn-keyword: #f92672;
+      --syn-comment: #75715e;
+      --syn-punct: #fd971f;
+      --syn-number: #ae81ff;
     }
 
     * {
@@ -568,6 +618,10 @@
             <i data-lucide="wand-2" class="w-4 h-4 text-sky-400"></i>
             <span>Auto-Format Code</span>
           </button>
+                    <button id="optSmartRangeSelect" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-bold">
+            <i data-lucide="scan-line" class="w-4 h-4 text-cyan-400"></i>
+            <span>Smart Range Select & Patch</span>
+          </button>
           <div class="h-px bg-[var(--surface-border)] my-1"></div>
           <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
@@ -704,7 +758,8 @@
   <div id="accessoryBar" class="h-10 bg-[var(--surface)] border-t border-[var(--surface-border)] flex items-center px-1.5 space-x-1 shrink-0 select-none overflow-x-auto no-scrollbar z-20 relative transition-colors">
     <button id="btnKeyCtrl" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">CTRL</button>
     <button id="btnKeyAlt" class="px-2.5 h-7 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALT</button>
-    <button id="btnKeySelectAll" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALL</button>
+        <button id="btnKeySelectAll" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">ALL</button>
+    <button id="btnKeyRangeSelect" title="Select Line Range" class="px-2 h-7 bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">RANGE</button>
     <button id="btnKeyCopy" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">COPY</button>
     <button id="btnKeyPaste" class="px-2 h-7 bg-black/5 hover:bg-black/10 text-[var(--accent-secondary)] text-[11px] font-mono font-bold rounded-lg active:scale-95 transition shrink-0">PASTE</button>
     
@@ -1776,11 +1831,13 @@
             <div class="font-medium text-[var(--text-main)]">Theme & Color Mode</div>
             <div class="text-[10px] text-[var(--text-muted)]">Auto OS Sync / Light / Dark</div>
           </div>
-          <select id="settingSelectTheme" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2 py-1 text-[var(--text-main)] focus:outline-none">
+                    <select id="settingSelectTheme" class="bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-lg px-2 py-1 text-[var(--text-main)] focus:outline-none">
             <option value="system">Auto (System Default)</option>
             <option value="material-darker">Dark Slate (Default)</option>
             <option value="theme-light">Clean Light Mode</option>
             <option value="cyberpunk">Cyberpunk Neon</option>
+            <option value="dracula">Dracula Official</option>
+            <option value="monokai">Monokai Pro</option>
           </select>
         </div>
         <div class="flex items-center justify-between">
@@ -2033,18 +2090,111 @@
         <button id="btnCancelOverwrite" class="px-3.5 py-2 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-xl transition">
           Cancel
         </button>
-        <button id="btnProceedOverwrite" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md transition active:scale-95">
+                <button id="btnProceedOverwrite" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md transition active:scale-95">
           Yes, Save
         </button>
       </div>
     </div>
   </div>
+
+  <!-- SMART RANGE SELECTOR & CODE ARMOR MODAL -->
+  <div id="modalSmartRangeSelect" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
+    <div class="material-card-elevated w-full max-w-sm p-4 text-xs text-[var(--text-main)] space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)]">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-cyan-500/15 border border-cyan-500/30 rounded-xl text-cyan-400">
+            <i data-lucide="scan-line" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-cyan-300">Smart Range Selector</h3>
+            <span class="text-[9px] text-[var(--text-muted)] font-mono">Code Armor • Zero-Drag Selection</span>
+          </div>
+        </div>
+        <button id="btnCloseRangeModal" class="p-1 text-[var(--text-muted)] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Line Range Inputs -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">From Line:</label>
+          <input type="number" id="inputSelRangeFrom" min="1" placeholder="e.g. 12" class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] focus:border-cyan-400 rounded-xl font-mono text-cyan-300 text-xs outline-none">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">To Line:</label>
+          <input type="number" id="inputSelRangeTo" min="1" placeholder="e.g. 130" class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] focus:border-cyan-400 rounded-xl font-mono text-cyan-300 text-xs outline-none">
+        </div>
+      </div>
+
+      <!-- Real-time Range Stats & Armor Badge -->
+      <div class="p-2 bg-black/30 border border-slate-800 rounded-xl flex items-center justify-between font-mono text-[10px]">
+        <span id="labelRangeStats" class="text-amber-300">0 Lines Selected</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">🛡️ Armor Active</span>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="grid grid-cols-2 gap-1.5 pt-1">
+        <button id="btnRangeActionSelect" class="py-2 px-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition shadow">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Select Range</span>
+        </button>
+        <button id="btnRangeActionCopy" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy Block</span>
+        </button>
+      </div>
+
+      <!-- Clean & Replace Code Box -->
+      <div class="space-y-1 pt-1 border-t border-[var(--surface-border)]">
+        <div class="flex items-center justify-between">
+          <label class="block text-[10px] font-bold text-emerald-400 uppercase">Paste New Replacement Code:</label>
+          <span class="text-[9px] text-[var(--text-muted)] font-mono">Auto-cleans markdown</span>
+        </div>
+        <textarea id="inputRangeReplacementText" rows="3" placeholder="AI code yahan paste karein. Chat words aur broken symbols auto-filter ho jayenge..." class="w-full p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] focus:border-emerald-500 rounded-xl font-mono text-[11px] text-emerald-300 outline-none resize-none"></textarea>
+      </div>
+
+      <div class="flex items-center space-x-2 pt-1">
+        <button id="btnRangeActionDelete" class="py-2 px-3 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 rounded-xl font-bold active:scale-95 transition flex items-center space-x-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Delete Range</span>
+        </button>
+        <button id="btnRangeActionCleanReplace" class="flex-1 py-2 px-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-bold active:scale-95 transition shadow flex items-center justify-center space-x-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>Clean & Replace Range</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <!-- FLOATING SELECTION CAPSULE (STICKY LOCK CONTROLS) -->
+  <div id="floatingSelectionCapsule" class="hidden fixed bottom-14 left-1/2 -translate-x-1/2 bg-[#161b22]/95 border border-cyan-400/50 rounded-2xl shadow-2xl px-2 py-1.5 z-40 backdrop-blur-md flex items-center space-x-1 font-mono text-xs select-none">
+    <!-- Interactive Re-Edit Badge -->
+    <button id="labelCapsuleRangeInfo" type="button" title="Tap to Re-edit Range" class="px-2 py-0.5 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-300 text-[10px] font-bold border border-cyan-500/40 flex items-center space-x-1 active:scale-95 transition">
+      <span id="labelCapsuleRangeText">Ln 1-50</span>
+      <span class="text-[9px]">✎</span>
+    </button>
+    <!-- Line Nudgers (-) & (+) -->
+    <button id="btnCapsuleNudgeDec" type="button" title="Decrease 1 Line (-)" class="w-5 h-6 rounded-md bg-slate-800 hover:bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center text-xs active:scale-90 transition">-</button>
+    <button id="btnCapsuleNudgeInc" type="button" title="Increase 1 Line (+)" class="w-5 h-6 rounded-md bg-slate-800 hover:bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center text-xs active:scale-90 transition">+</button>
+    <div class="w-px h-3.5 bg-slate-700/80 mx-0.5"></div>
+    <!-- 1-Tap Code Armor Replace Button -->
+    <button id="btnCapsulePasteReplace" type="button" title="1-Tap Clean Replace from Clipboard" class="p-1.5 rounded-lg hover:bg-emerald-500/20 text-emerald-400 active:scale-90 transition"><i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i></button>
+    <!-- Standard Controls -->
+    <button id="btnCapsuleCopy" type="button" title="Copy Selected" class="p-1.5 rounded-lg hover:bg-white/10 text-cyan-300 active:scale-90 transition"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+    <button id="btnCapsuleCut" type="button" title="Cut Selected" class="p-1.5 rounded-lg hover:bg-white/10 text-amber-300 active:scale-90 transition"><i data-lucide="scissors" class="w-3.5 h-3.5"></i></button>
+    <button id="btnCapsuleComment" type="button" title="Toggle Comment" class="p-1.5 rounded-lg hover:bg-white/10 text-emerald-300 active:scale-90 transition font-bold text-xs">//</button>
+    <button id="btnCapsuleDelete" type="button" title="Delete Block" class="p-1.5 rounded-lg hover:bg-rose-500/20 text-rose-400 active:scale-90 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+    <div class="w-px h-3.5 bg-slate-700/80 mx-0.5"></div>
+    <button id="btnCapsuleDismiss" type="button" title="Clear Selection" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white active:scale-90 transition text-xs font-bold">✕</button>
+  </div>
+
     <script>
     // =========================================================================
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.4',
+      version: '8.5',
       edition: 'Developer Master Edition'
     };
 
@@ -2299,14 +2449,47 @@
       triggerToast("Copied to Clipboard");
     }
 
+        // ACTIVE LINE NEON HIGHLIGHT BAR CONTROLLER
+    let activeEditorLineBar = null;
+
+    function ensureActiveLineBar() {
+      const stage = document.getElementById('editorStage');
+      if (!stage) return null;
+      if (!activeEditorLineBar) {
+        activeEditorLineBar = document.createElement('div');
+        activeEditorLineBar.id = 'editorActiveLineBar';
+        activeEditorLineBar.style.cssText = 'position:absolute; left:0; right:0; height:20.15px; pointer-events:none; background:rgba(0, 242, 254, 0.08); border-left:3px solid var(--accent); box-shadow:inset 0 0 12px rgba(0, 242, 254, 0.05); z-index:0; transition:top 0.04s ease-out;';
+        stage.appendChild(activeEditorLineBar);
+
+        textarea?.addEventListener('scroll', () => {
+          updateActiveLinePosition();
+        });
+      }
+      return activeEditorLineBar;
+    }
+
+    let currentCursorLineNum = 1;
+    function updateActiveLinePosition() {
+      if (!textarea || !activeEditorLineBar) return;
+      const lineHeight = 20.15;
+      const rawTop = 8 + (currentCursorLineNum - 1) * lineHeight;
+      const scrolledTop = rawTop - textarea.scrollTop;
+      activeEditorLineBar.style.top = `${scrolledTop}px`;
+      activeEditorLineBar.style.display = (scrolledTop >= -25 && scrolledTop <= textarea.clientHeight + 25) ? 'block' : 'none';
+    }
+
     function updateCursorIndicator() {
       if (!textarea || !badgeLineCol) return;
       const pos = textarea.selectionStart;
       const text = textarea.value.substring(0, pos);
       const lines = text.split('\n');
-      const currentLine = lines.length;
+      currentCursorLineNum = lines.length;
       const currentCol = lines[lines.length - 1].length + 1;
-      badgeLineCol.textContent = `Ln ${currentLine}, Col ${currentCol}`;
+      badgeLineCol.textContent = `Ln ${currentCursorLineNum}, Col ${currentCol}`;
+
+      // Update Active Neon Bar
+      ensureActiveLineBar();
+      updateActiveLinePosition();
 
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (cur) {
@@ -2581,15 +2764,63 @@
       }, 700);
     }
 
+        // REAL-TIME REACTIVE SAVE BUTTON CONTROLLER
+    function updateSaveButtonState(isModified) {
+      const btnHeaderSave = document.getElementById('btnHeaderSave');
+      const btnBottomSave = document.getElementById('btnBottomSave');
+      const dotUnsaved = document.getElementById('dotUnsaved');
+
+      if (isModified) {
+        if (dotUnsaved) dotUnsaved.classList.remove('hidden');
+        if (btnHeaderSave) {
+          btnHeaderSave.removeAttribute('disabled');
+          btnHeaderSave.classList.remove('opacity-35', 'pointer-events-none', 'grayscale');
+          btnHeaderSave.classList.add('text-emerald-400', 'hover:text-emerald-300');
+        }
+        if (btnBottomSave) {
+          btnBottomSave.removeAttribute('disabled');
+          btnBottomSave.classList.remove('opacity-35', 'pointer-events-none', 'grayscale');
+          btnBottomSave.classList.add('text-emerald-500');
+        }
+      } else {
+        if (dotUnsaved) dotUnsaved.classList.add('hidden');
+        if (btnHeaderSave) {
+          btnHeaderSave.setAttribute('disabled', 'true');
+          btnHeaderSave.classList.add('opacity-35', 'pointer-events-none', 'grayscale');
+          btnHeaderSave.classList.remove('text-emerald-400', 'hover:text-emerald-300');
+        }
+        if (btnBottomSave) {
+          btnBottomSave.setAttribute('disabled', 'true');
+          btnBottomSave.classList.add('opacity-35', 'pointer-events-none', 'grayscale');
+          btnBottomSave.classList.remove('text-emerald-500');
+        }
+      }
+    }
+
+            // BASELINE DIFF ENGINE (ACCURATE MODIFIED DETECTION)
     function markActiveModified() {
       const cur = fileTabs.find(t => t.id === activeFileId);
       if (cur && textarea) {
-        cur.content = textarea.value;
+        // Safe Baseline Init (Pehle purani value se baseline banayein)
+        if (cur.savedBaselineContent === undefined) {
+          cur.savedBaselineContent = cur.isNewFile ? '' : (cur.content || '');
+        }
+
+        const newText = textarea.value;
+        const isActuallyChanged = (newText !== cur.savedBaselineContent);
+        const wasModified = cur.isModified;
+
+        cur.content = newText;
         cur.cursorPos = textarea.selectionStart;
         cur.scrollTop = textarea.scrollTop;
-        cur.isModified = true;
-        const dot = document.getElementById('dotUnsaved');
-        if (dot) dot.classList.remove('hidden');
+        cur.isModified = isActuallyChanged;
+
+        updateSaveButtonState(isActuallyChanged);
+
+        if (wasModified !== isActuallyChanged) {
+          renderTabStrip();
+        }
+
         scheduleAutoSave();
       }
     }
@@ -3993,6 +4224,343 @@ CRITICAL OPERATIONAL RULES:
     }
 
     // =========================================================================
+    // SMART RANGE SELECTION & CODE ARMOR SANITIZER ENGINE
+    // =========================================================================
+    function sanitizeCodeArmor(rawCode, currentEditorVal, startPos) {
+      if (!rawCode) return "";
+      let cleaned = rawCode;
+
+      // 1. Strip Markdown Code Fences (```html, ```javascript, ```)
+      cleaned = cleaned.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '');
+
+      // 2. Strip AI Instruction Boilerplate
+      cleaned = cleaned.replace(/^\s*\/\/\s*(Replace with|Search text|Start|End|Shuru|Khatam|Step).*$/gmi, '');
+      cleaned = cleaned.replace(/^\s*(Kahan Se Kahan Tak Select Karna Hai\?|Exact Selection Range:|Screenshot).*$/gmi, '');
+
+      // 3. Remove leading/trailing blank lines introduced by stripped comments
+      const lines = cleaned.split('\n');
+      while (lines.length && !lines[0].trim()) lines.shift();
+      while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+
+      // 4. Duplicate Boundary Edge Check (Agar pehli line already editor mein mojood hai)
+      if (lines.length > 0 && currentEditorVal) {
+        const textBefore = currentEditorVal.substring(0, startPos).trimEnd();
+        const prevLine = textBefore.split('\n').pop()?.trim();
+        if (prevLine && prevLine === lines[0].trim()) {
+          lines.shift(); // Pehli duplicate line safely drop
+        }
+      }
+
+      return lines.join('\n');
+    }
+
+        function setupSmartRangeEngine() {
+      const modal = document.getElementById('modalSmartRangeSelect');
+      const btnClose = document.getElementById('btnCloseRangeModal');
+      const inputFrom = document.getElementById('inputSelRangeFrom');
+      const inputTo = document.getElementById('inputSelRangeTo');
+      const labelStats = document.getElementById('labelRangeStats');
+      const inputReplace = document.getElementById('inputRangeReplacementText');
+
+      const btnActionSelect = document.getElementById('btnRangeActionSelect');
+      const btnActionCopy = document.getElementById('btnRangeActionCopy');
+      const btnActionDelete = document.getElementById('btnRangeActionDelete');
+      const btnActionCleanReplace = document.getElementById('btnRangeActionCleanReplace');
+
+      // Floating Capsule Elements
+      const capsule = document.getElementById('floatingSelectionCapsule');
+      const capsuleRangeBtn = document.getElementById('labelCapsuleRangeInfo');
+      const capsuleRangeText = document.getElementById('labelCapsuleRangeText');
+      const btnNudgeDec = document.getElementById('btnCapsuleNudgeDec');
+      const btnNudgeInc = document.getElementById('btnCapsuleNudgeInc');
+      const btnCapPasteReplace = document.getElementById('btnCapsulePasteReplace');
+      const btnCapCopy = document.getElementById('btnCapsuleCopy');
+      const btnCapCut = document.getElementById('btnCapsuleCut');
+      const btnCapComment = document.getElementById('btnCapsuleComment');
+      const btnCapDelete = document.getElementById('btnCapsuleDelete');
+      const btnCapDismiss = document.getElementById('btnCapsuleDismiss');
+
+      // Active Range Tracking Memory
+      let activeRange = { startLine: 1, endLine: 1, startPos: 0, endPos: 0 };
+
+      const getLinesData = (fromLine, toLine) => {
+        if (!textarea) return null;
+        const lines = textarea.value.split('\n');
+        const startLineIdx = Math.max(1, Math.min(fromLine, lines.length));
+        const endLineIdx = Math.max(startLineIdx, Math.min(toLine, lines.length));
+
+        let startPos = 0;
+        for (let i = 0; i < startLineIdx - 1; i++) {
+          startPos += lines[i].length + 1;
+        }
+
+        let endPos = startPos;
+        for (let i = startLineIdx - 1; i < endLineIdx; i++) {
+          endPos += lines[i].length + (i === lines.length - 1 ? 0 : 1);
+        }
+
+        return { startPos, endPos, startLineIdx, endLineIdx, count: (endLineIdx - startLineIdx + 1) };
+      };
+
+      const updateStatsPreview = () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        if (data && labelStats) {
+          labelStats.textContent = `${data.count} Line(s) Selected (${data.endPos - data.startPos} chars)`;
+        }
+      };
+
+      inputFrom?.addEventListener('input', updateStatsPreview);
+      inputTo?.addEventListener('input', updateStatsPreview);
+
+      const applyRangeSelectionToEditor = (from, to, showToastMessage = true) => {
+        const data = getLinesData(from, to);
+        if (!data || !textarea) return;
+
+        activeRange = { startLine: data.startLineIdx, endLine: data.endLineIdx, startPos: data.startPos, endPos: data.endPos };
+
+        textarea.focus();
+        textarea.setSelectionRange(data.startPos, data.endPos);
+
+        const lineHeight = 20.15;
+        textarea.scrollTop = Math.max(0, (data.startLineIdx - 4) * lineHeight);
+        if (gutter) gutter.scrollTop = textarea.scrollTop;
+
+        if (capsule) {
+          if (capsuleRangeText) capsuleRangeText.textContent = `Ln ${data.startLineIdx}-${data.endLineIdx}`;
+          capsule.classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
+        }
+
+        updateCursorIndicator();
+        if (showToastMessage) triggerToast(`Lines ${data.startLineIdx} to ${data.endLineIdx} Locked ✓`);
+      };
+
+      const openRangeModalWithCurrent = (overrideFrom = null, overrideTo = null) => {
+        if (!textarea) return;
+        const lines = textarea.value.split('\n');
+
+        let defaultFrom = overrideFrom;
+        let defaultTo = overrideTo;
+
+        if (defaultFrom === null) {
+          const pos = textarea.selectionStart;
+          defaultFrom = textarea.value.substring(0, pos).split('\n').length;
+          defaultTo = Math.min(lines.length, defaultFrom + 5);
+        }
+
+        if (inputFrom) inputFrom.value = defaultFrom;
+        if (inputTo) inputTo.value = defaultTo;
+        if (inputReplace) inputReplace.value = '';
+
+        updateStatsPreview();
+        modal?.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      };
+
+      document.getElementById('optSmartRangeSelect')?.addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        openRangeModalWithCurrent();
+      });
+
+      document.getElementById('btnKeyRangeSelect')?.addEventListener('click', () => openRangeModalWithCurrent());
+      btnClose?.addEventListener('click', () => modal?.classList.add('hidden'));
+
+      // 1. SELECT RANGE & LOCK CAPSULE
+      btnActionSelect?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        modal?.classList.add('hidden');
+        applyRangeSelectionToEditor(from, to, true);
+      });
+
+      // 2. INTERACTIVE BADGE CLICK: RE-OPEN MODAL WITH CURRENT RANGE
+      capsuleRangeBtn?.addEventListener('click', () => {
+        openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
+      });
+
+      // 3. NUDGERS: (+) INCREASE 1 LINE & (-) DECREASE 1 LINE
+      btnNudgeInc?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lines = textarea ? textarea.value.split('\n').length : activeRange.endLine;
+        if (activeRange.endLine < lines) {
+          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine + 1, false);
+          triggerToast(`Extended to Ln ${activeRange.endLine} (+)`);
+        }
+      });
+
+      btnNudgeDec?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (activeRange.endLine > activeRange.startLine) {
+          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine - 1, false);
+          triggerToast(`Shrunk to Ln ${activeRange.endLine} (-)`);
+        }
+      });
+
+      // 4. CAPSULE DIRECT 1-TAP REPLACE FROM CLIPBOARD
+      btnCapPasteReplace?.addEventListener('click', async () => {
+        if (!textarea) return;
+        try {
+          let clipText = '';
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            clipText = await navigator.clipboard.readText();
+          }
+          if (!clipText.trim()) {
+            openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
+            triggerToast("Clipboard empty. Paste code in modal.");
+            return;
+          }
+
+          const cleanCode = sanitizeCodeArmor(clipText, textarea.value, activeRange.startPos);
+          recordHistory();
+          textarea.setRangeText(cleanCode, activeRange.startPos, activeRange.endPos, 'end');
+
+          textarea.focus();
+          textarea.setSelectionRange(activeRange.startPos, activeRange.startPos + cleanCode.length);
+          const lineHeight = 20.15;
+          textarea.scrollTop = Math.max(0, (activeRange.startLine - 4) * lineHeight);
+          if (gutter) gutter.scrollTop = textarea.scrollTop;
+
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          markActiveModified();
+          capsule?.classList.add('hidden');
+          triggerToast("Code Armor 1-Tap Swapped! 🛡️");
+        } catch (err) {
+          openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
+        }
+      });
+
+      // 5. COPY RANGE
+      btnActionCopy?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        if (!data) return;
+
+        const snippet = textarea.value.substring(data.startPos, data.endPos);
+        executeClipboardCopy(snippet);
+        modal?.classList.add('hidden');
+      });
+
+      // 6. DELETE RANGE
+      btnActionDelete?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        if (!data) return;
+
+        recordHistory();
+        textarea.setRangeText('', data.startPos, data.endPos, 'end');
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        markActiveModified();
+        modal?.classList.add('hidden');
+        capsule?.classList.add('hidden');
+        triggerToast(`Lines ${data.startLineIdx} to ${data.endLineIdx} Deleted!`);
+      });
+
+      // 7. CLEAN & REPLACE RANGE (INSIDE MODAL)
+      btnActionCleanReplace?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        const rawNewCode = inputReplace ? inputReplace.value : '';
+
+        if (!data || !rawNewCode.trim()) {
+          triggerToast("Paste replacement code first!");
+          return;
+        }
+
+        const cleanCode = sanitizeCodeArmor(rawNewCode, textarea.value, data.startPos);
+
+        recordHistory();
+        textarea.setRangeText(cleanCode, data.startPos, data.endPos, 'end');
+
+        textarea.focus();
+        textarea.setSelectionRange(data.startPos, data.startPos + cleanCode.length);
+        const lineHeight = 20.15;
+        textarea.scrollTop = Math.max(0, (data.startLineIdx - 4) * lineHeight);
+        if (gutter) gutter.scrollTop = textarea.scrollTop;
+
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        markActiveModified();
+        modal?.classList.add('hidden');
+        capsule?.classList.add('hidden');
+        triggerToast("Code Armor Cleaned & Replaced Successfully! 🛡️");
+      });
+
+      // CAPSULE STANDARD BUTTONS
+      btnCapDismiss?.addEventListener('click', () => {
+        capsule?.classList.add('hidden');
+        if (textarea) textarea.setSelectionRange(textarea.selectionEnd, textarea.selectionEnd);
+      });
+
+      btnCapCopy?.addEventListener('click', () => {
+        if (!textarea) return;
+        const txt = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+        if (txt) executeClipboardCopy(txt);
+      });
+
+      btnCapCut?.addEventListener('click', () => {
+        if (!textarea) return;
+        const s = textarea.selectionStart, e = textarea.selectionEnd;
+        const txt = textarea.value.substring(s, e);
+        if (txt) {
+          executeClipboardCopy(txt);
+          recordHistory();
+          textarea.setRangeText('', s, e, 'end');
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          markActiveModified();
+          capsule?.classList.add('hidden');
+          triggerToast("Cut to Clipboard");
+        }
+      });
+
+      btnCapDelete?.addEventListener('click', () => {
+        if (!textarea) return;
+        const s = textarea.selectionStart, e = textarea.selectionEnd;
+        if (s !== e) {
+          recordHistory();
+          textarea.setRangeText('', s, e, 'end');
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          markActiveModified();
+          capsule?.classList.add('hidden');
+          triggerToast("Selection Deleted");
+        }
+      });
+
+      btnCapComment?.addEventListener('click', () => {
+        if (!textarea) return;
+        const s = textarea.selectionStart, e = textarea.selectionEnd;
+        const selected = textarea.value.substring(s, e);
+        if (!selected) return;
+
+        recordHistory();
+        const curTab = fileTabs.find(t => t.id === activeFileId);
+        const isHtml = curTab ? curTab.name.endsWith('.html') : true;
+
+        let toggled = '';
+        if (isHtml) {
+          toggled = selected.startsWith('<!--') && selected.endsWith('-->')
+            ? selected.slice(4, -3)
+            : `<!-- ${selected} -->`;
+        } else {
+          toggled = selected.split('\n').map(l => l.startsWith('// ') ? l.slice(3) : `// ${l}`).join('\n');
+        }
+
+        textarea.setRangeText(toggled, s, e, 'select');
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        markActiveModified();
+        triggerToast("Comment Toggled //");
+      });
+    }
+    // =========================================================================
     // SMART CODE INJECTOR & PATCH STUDIO (UPGRADED: BOUNDARY-AWARE & FUZZY MATCH)
     // =========================================================================
     function setupSmartPatchStudio() {
@@ -4142,11 +4710,20 @@ CRITICAL OPERATIONAL RULES:
         }
 
         // Exact Match Pehle Check Karega
-        if (oldText && currentContent.includes(oldText)) {
+                if (oldText && currentContent.includes(oldText)) {
           recordHistory();
+          const matchIndex = currentContent.indexOf(oldText);
           textarea.value = currentContent.replace(oldText, newText);
           if (oldInput) oldInput.value = '';
           if (newInput) newInput.value = '';
+
+          // Smart Cursor Anchor: Replaced line par cursor aur screen lock
+          textarea.focus();
+          textarea.setSelectionRange(matchIndex, matchIndex + newText.length);
+          const lineNum = textarea.value.substring(0, matchIndex).split('\n').length;
+          textarea.scrollTop = Math.max(0, (lineNum - 4) * 20.15);
+          if (gutter) gutter.scrollTop = textarea.scrollTop;
+
           updateLineNumbers();
           updateSyntaxHighlightingOptimized();
           updateCursorIndicator();
@@ -4500,7 +5077,7 @@ CRITICAL OPERATIONAL RULES:
       if (labelFileName) labelFileName.textContent = tab.name;
     }
 
-    function renderTabStrip() {
+        function renderTabStrip() {
       const container = document.getElementById('tabStrip');
       if (!container) return;
       container.innerHTML = '';
@@ -4529,7 +5106,7 @@ CRITICAL OPERATIONAL RULES:
         tabEl.appendChild(closeBtn);
 
         tabEl.onclick = () => handleSwitchTab(tab.id);
-                tabEl.ondblclick = () => {
+        tabEl.ondblclick = () => {
           handleSwitchTab(tab.id);
           const inputRename = document.getElementById('inputRenameName');
           const modalRename = document.getElementById('modalRename');
@@ -4540,18 +5117,29 @@ CRITICAL OPERATIONAL RULES:
           }
         };
         container.appendChild(tabEl);
+
+        // Active Tab Smooth Auto-Center Logic
+        if (isActive) {
+          requestAnimationFrame(() => {
+            tabEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+        }
       });
 
-      const current = fileTabs.find(t => t.id === activeFileId);
+            const current = fileTabs.find(t => t.id === activeFileId);
       if (current) {
         const dotUnsaved = document.getElementById('dotUnsaved');
         if (dotUnsaved) dotUnsaved.classList.toggle('hidden', !current.isModified);
+        updateSaveButtonState(Boolean(current.isModified));
         updateAddressHeader(current);
       }
-    }
+    }      
 
-    function handleSwitchTab(id) {
+        function handleSwitchTab(id) {
       if (activeFileId === id) return;
+
+      // Smart Selection Capsule auto-dismiss on tab switch
+      document.getElementById('floatingSelectionCapsule')?.classList.add('hidden');
 
       if (activeFileId && textarea) {
         const prev = fileTabs.find(t => t.id === activeFileId);
@@ -4588,15 +5176,7 @@ CRITICAL OPERATIONAL RULES:
       scheduleAutoSave();
     }
 
-    function handleCloseTab(id) {
-      if (fileTabs.length === 1) {
-        showProfessionalPopup({
-          title: "Workspace Notice",
-          message: "Keep at least one tab open in workspace.",
-          iconType: "info"
-        });
-        return;
-      }
+    function executeTabCloseDirect(id) {
       const idx = fileTabs.findIndex(t => t.id === id);
       fileTabs = fileTabs.filter(t => t.id !== id);
 
@@ -4612,6 +5192,44 @@ CRITICAL OPERATIONAL RULES:
       }
       renderTabStrip();
       scheduleAutoSave();
+      triggerToast("Tab closed");
+    }
+
+    function handleCloseTab(id) {
+      if (fileTabs.length === 1) {
+        showProfessionalPopup({
+          title: "Workspace Notice",
+          message: "Keep at least one tab open in workspace.",
+          iconType: "info"
+        });
+        return;
+      }
+
+      const targetTab = fileTabs.find(t => t.id === id);
+      if (!targetTab) return;
+
+      // Active tab modified verification
+      if (targetTab.id === activeFileId && textarea && textarea.value !== targetTab.content) {
+        targetTab.isModified = true;
+        targetTab.content = textarea.value;
+      }
+
+      // UNSAVED TAB SAFETY DIALOG
+      if (targetTab.isModified) {
+        showProfessionalPopup({
+          title: "Unsaved Tab Detected",
+          message: `'${targetTab.name}' mein unsaved code hai.\n\nKya aap bina save kiye is tab ko close karna chahte hain?`,
+          confirmText: "Discard & Close",
+          cancelText: "Keep Tab",
+          iconType: "warning",
+          onConfirm: () => {
+            executeTabCloseDirect(id);
+          }
+        });
+        return;
+      }
+
+      executeTabCloseDirect(id);
     }
 
     function applyDockAnimation(element, styleType) {
@@ -4625,7 +5243,7 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
-    function setupAccessoryKeys() {
+        function setupAccessoryKeys() {
       const btnCtrl = document.getElementById('btnKeyCtrl');
       const btnAlt = document.getElementById('btnKeyAlt');
       const btnSelectAll = document.getElementById('btnKeySelectAll');
@@ -4735,11 +5353,63 @@ CRITICAL OPERATIONAL RULES:
         scheduleAutoSave();
       });
 
+      // SMART VIRTUAL KEY PAIRING & SELECTION-WRAPPING ENGINE
+      const pairMap = {
+        '{': '}',
+        '(': ')',
+        '[': ']',
+        '"': '"',
+        "'": "'",
+        '`': '`'
+      };
+
       document.querySelectorAll('.vkey').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
           const val = btn.textContent.trim();
-          if (val === 'Tab') insertTextAtCursor('    ');
-          else insertTextAtCursor(val);
+          if (val === 'Tab') {
+            insertTextAtCursor('    ');
+            return;
+          }
+
+          const targetEl = (typeof getActiveInputElement === 'function') ? getActiveInputElement() : textarea;
+          if (!targetEl) {
+            insertTextAtCursor(val);
+            return;
+          }
+
+          const start = targetEl.selectionStart ?? targetEl.value.length;
+          const end = targetEl.selectionEnd ?? targetEl.value.length;
+          const hasSelection = (start !== end);
+
+          // 1. Selection Wrapping (Selected text ke dono taraf bracket/quote wrap hoga)
+          if (hasSelection && pairMap[val]) {
+            const selectedText = targetEl.value.substring(start, end);
+            const wrapped = val + selectedText + pairMap[val];
+            targetEl.setRangeText(wrapped, start, end, 'select');
+            targetEl.selectionStart = start + 1;
+            targetEl.selectionEnd = end + 1;
+            if (targetEl === textarea) {
+              updateLineNumbers();
+              updateSyntaxHighlightingOptimized();
+              updateCursorIndicator();
+              markActiveModified();
+              recordHistory();
+            }
+            return;
+          }
+
+          // 2. Auto-Pairing & Centering (Bina selection ke brackets pair bankar cursor beech mein aayega)
+          if (!hasSelection && pairMap[val] && targetEl === textarea) {
+            const pairText = val + pairMap[val];
+            insertTextAtCursor(pairText);
+            targetEl.setSelectionRange(start + 1, start + 1);
+            updateCursorIndicator();
+            return;
+          }
+
+          // 3. Normal Insert
+          insertTextAtCursor(val);
         });
       });
 
@@ -5136,9 +5806,11 @@ CRITICAL OPERATIONAL RULES:
             cur.content = safeContent;
             cur.isModified = false;
             cur.isNewFile = false;
-            cur.folderName = 'Selected Folder';
+                        cur.folderName = 'Selected Folder';
             cur.filePath = `/storage/emulated/0/${savedName}`;
             cur.lastModified = Date.now();
+            cur.savedBaselineContent = safeContent;
+            updateSaveButtonState(false);
             renderTabStrip();
             await storeSave('workspace_tabs', fileTabs);
             showSavedSuccessModal(cur.filePath);
@@ -5163,9 +5835,11 @@ CRITICAL OPERATIONAL RULES:
           cur.content = safeContent;
           cur.isModified = false;
           cur.isNewFile = false;
-          cur.folderName = 'Download';
+                    cur.folderName = 'Download';
           cur.filePath = `/storage/emulated/0/Download/${cleanName}`;
           cur.lastModified = Date.now();
+          cur.savedBaselineContent = safeContent;
+          updateSaveButtonState(false);
           renderTabStrip();
           await storeSave('workspace_tabs', fileTabs);
           showSavedSuccessModal(cur.filePath);
@@ -5175,7 +5849,9 @@ CRITICAL OPERATIONAL RULES:
         }
       }
 
-      cur.isModified = false;
+                  cur.isModified = false;
+      cur.savedBaselineContent = cur.content;
+      updateSaveButtonState(false);
       renderTabStrip();
       await storeSave('workspace_tabs', fileTabs);
       showSavedSuccessModal(cur.filePath || `/storage/emulated/0/${cur.name}`);
@@ -5195,8 +5871,10 @@ CRITICAL OPERATIONAL RULES:
         await writable.write(safeVal);
         await writable.close();
 
-        cur.content = safeVal;
+                cur.content = safeVal;
         cur.isModified = false;
+        cur.savedBaselineContent = safeVal;
+        updateSaveButtonState(false);
         cur.lastModified = Date.now();
         renderTabStrip();
         await storeSave('workspace_tabs', fileTabs);
@@ -5352,9 +6030,10 @@ CRITICAL OPERATIONAL RULES:
         'modalPathDetails',
         'modalEditFolder',
         'modalDiagnosticReport',
-        'modalPatchStudio',
+                'modalPatchStudio',
         'modalConflictShield',
-              'modalAiCopilot',
+        'modalSmartRangeSelect',
+        'modalAiCopilot',
         'modalEditCopilotContext',
         'modalAppPopup'
       ];
@@ -5850,20 +6529,18 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
-    function applyAppTheme(themeName) {
-      document.body.classList.remove('theme-light', 'theme-cyberpunk');
+        function applyAppTheme(themeName) {
+      document.body.classList.remove('theme-light', 'theme-cyberpunk', 'theme-dracula', 'theme-monokai');
       let effective = themeName;
       if (themeName === 'system') {
         effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'material-darker' : 'theme-light';
       }
       if (effective === 'theme-light') document.body.classList.add('theme-light');
       else if (effective === 'cyberpunk') document.body.classList.add('theme-cyberpunk');
+      else if (effective === 'dracula') document.body.classList.add('theme-dracula');
+      else if (effective === 'monokai') document.body.classList.add('theme-monokai');
       updateSyntaxHighlightingOptimized();
     }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (userSettings.theme === 'system') applyAppTheme('system');
-    });
 
                                             function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
@@ -7038,11 +7715,17 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
       });
       document.getElementById('drawerOverlay')?.addEventListener('click', closeDrawerPanel);
 
-      const overflowBtn = document.getElementById('btnHeaderMore');
+            const overflowBtn = document.getElementById('btnHeaderMore');
       const overflowMenu = document.getElementById('menuOverflowDropdown');
       if (overflowBtn && overflowMenu) {
         overflowBtn.addEventListener('click', (e) => {
           e.stopPropagation();
+          // Real-time checkbox state sync
+          const chkWrap = document.getElementById('checkWordWrapState');
+          const chkReadOnly = document.getElementById('checkReadOnlyState');
+          if (chkWrap) chkWrap.checked = Boolean(userSettings.wordWrap);
+          if (chkReadOnly) chkReadOnly.checked = Boolean(textarea && textarea.readOnly);
+
           overflowMenu.classList.toggle('hidden');
         });
         document.addEventListener('click', (e) => {
@@ -7171,7 +7854,8 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
       setupLogoAndBannerCropperStudio();
       setupZipImporter();
       setupSmartPatchStudio();
-      setupConflictShieldSystem();
+            setupConflictShieldSystem();
+      setupSmartRangeEngine();
       setupGeminiCopilotStudio();
       setupGeminiKeyManager();
                    // 🛡️ PERMANENT DOCK ANCHOR ENGINE (CLEAN & 100% LIGHTWEIGHT)

@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.5 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.6 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -602,9 +602,9 @@
             <i data-lucide="bot" class="w-4 h-4 text-purple-400"></i>
             <span>Gemini AI Copilot Chat</span>
           </button>
-          <button id="optAuditConflicts" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-bold">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-400"></i>
-            <span>Scan Conflicts & Dead Code</span>
+                    <button id="optAuditConflicts" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-cyan-400 font-bold">
+            <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
+            <span>Check Code & Bugs</span>
           </button>
           <button id="optOpenPatchStudio" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-emerald-400 font-bold">
             <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
@@ -622,19 +622,32 @@
             <i data-lucide="scan-line" class="w-4 h-4 text-cyan-400"></i>
             <span>Smart Range Select & Patch</span>
           </button>
-          <div class="h-px bg-[var(--surface-border)] my-1"></div>
-          <button id="optSaveAs" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
-            <i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i>
-            <span>Save As / Export</span>
-          </button>
-                    <button id="optExportSingleZip" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs hover:bg-[var(--surface-hover)] text-slate-300 transition">
-            <i data-lucide="file-archive" class="w-4 h-4 text-cyan-400"></i>
-            <span>Export Active Tab as (.ZIP)</span>
-          </button>
-          <button id="optExtractJs" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs hover:bg-[var(--surface-hover)] text-amber-300 transition">
-            <i data-lucide="file-code" class="w-4 h-4 text-amber-400"></i>
-            <span>Extract JS to New Tab</span>
-          </button>
+                <!-- ⚡ CODE MODULAR & SPLIT TOOLS -->
+            <button id="optExtractJs" type="button" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs hover:bg-slate-800/80 text-amber-300 transition">
+              <i data-lucide="file-code-2" class="w-4 h-4 text-amber-400"></i>
+              <span>Extract JS (app.js)</span>
+            </button>
+            <button id="optExtractCss" type="button" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs hover:bg-slate-800/80 text-cyan-300 transition">
+              <i data-lucide="palette" class="w-4 h-4 text-cyan-400"></i>
+              <span>Extract CSS (style.css)</span>
+            </button>
+            <button id="optSplitModular" type="button" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs hover:bg-slate-800/80 text-emerald-300 transition">
+              <i data-lucide="boxes" class="w-4 h-4 text-emerald-400"></i>
+              <span>Split to HTML + CSS + JS (3 Tabs)</span>
+            </button>
+
+            <!-- ─── SEPARATOR DIVIDER ─── -->
+            <div class="h-px bg-[var(--surface-border)] my-1"></div>
+
+            <!-- 📁 FILE & EXPORT OPERATIONS -->
+            <button id="optSaveAs" type="button" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs hover:bg-slate-800/80 text-emerald-300 transition">
+              <i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i>
+              <span>Save As / Export</span>
+            </button>
+            <button id="optExportSingleZip" type="button" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs hover:bg-slate-800/80 text-cyan-300 transition">
+              <i data-lucide="file-archive" class="w-4 h-4 text-cyan-400"></i>
+              <span>Export Active Tab as (.ZIP)</span>
+            </button>
           <button id="optGoToLine" class="w-full text-left px-3.5 py-2 hover:bg-black/5 flex items-center space-x-2.5 text-[var(--text-main)]">
             <i data-lucide="list-ordered" class="w-4 h-4 text-cyan-500"></i>
             <span>Go to Line</span>
@@ -749,7 +762,7 @@
     </div>
 
     <!-- Floating Toast Message -->
-    <div id="appToast" class="hidden fixed bottom-14 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md pointer-events-none z-50 transition-all">
+    <div id="appToast" class="hidden fixed top-14 left-1/2 -translate-x-1/2 bg-slate-900/95 text-cyan-300 border border-cyan-500/40 px-4 py-2 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md pointer-events-none z-[99999] transition-all">
       Notification
     </div>
   </main>
@@ -1093,61 +1106,66 @@
     </div>
   </div>
 
-  <!-- CONFLICT SHIELD & OVERWRITE AUDITOR MODAL -->
+    <!-- IN-APP CONFLICT SHIELD & BUG SCANNER MODAL -->
   <div id="modalConflictShield" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
-    <div class="material-card-elevated w-full max-w-md p-4 text-xs text-[var(--text-main)] flex flex-col max-h-[92vh]">
-      <div class="flex items-center justify-between pb-2.5 border-b border-[var(--surface-border)] mb-3">
+    <div class="material-card-elevated w-full max-w-sm p-4 text-xs text-[var(--text-main)] space-y-3">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)]">
         <div class="flex items-center space-x-2">
-          <div class="p-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-400"></i>
+          <div class="p-1.5 bg-cyan-500/15 border border-cyan-500/30 rounded-xl text-cyan-400">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-sm font-bold text-cyan-400">Code Cleaner & Duplicate Check</h3>
-            <span class="text-[10px] text-[var(--text-muted)] font-mono">Overwrite • Duplicates • Dead Blocks</span>
+            <h3 class="text-xs font-bold text-cyan-300">Check Code & Bugs</h3>
+            <span class="text-[9px] text-[var(--text-muted)] font-mono">Scan on demand • No phone lag</span>
           </div>
         </div>
-        <button id="btnCloseConflictShield" class="text-[var(--text-muted)] hover:text-white p-1">
+        <button id="btnCloseConflictShield" class="p-1 text-[var(--text-muted)] hover:text-white">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 mb-3 font-mono text-center">
+      <!-- Live Counters (Simple English) -->
+      <div class="grid grid-cols-3 gap-2 text-center font-mono">
         <div class="p-2 bg-black/20 rounded-xl border border-[var(--surface-border)]">
-          <div class="text-[10px] text-[var(--text-muted)]">Duplicates</div>
-          <div id="countDuplicates" class="text-amber-400 font-bold text-sm">0</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Duplicate Lines</div>
+          <div id="statDupes" class="text-amber-400 font-bold text-sm">0</div>
         </div>
         <div class="p-2 bg-black/20 rounded-xl border border-[var(--surface-border)]">
-          <div class="text-[10px] text-[var(--text-muted)]">Overwrites</div>
-          <div id="countOverwrites" class="text-rose-400 font-bold text-sm">0</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Clashing Code</div>
+          <div id="statOverwrites" class="text-rose-400 font-bold text-sm">0</div>
         </div>
         <div class="p-2 bg-black/20 rounded-xl border border-[var(--surface-border)]">
-          <div class="text-[10px] text-[var(--text-muted)]">Dead Lines</div>
-          <div id="countDeadCode" class="text-cyan-400 font-bold text-sm">0</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Broken / Waste</div>
+          <div id="statDead" class="text-sky-400 font-bold text-sm">0</div>
         </div>
       </div>
 
-      <div id="boxConflictResults" class="space-y-2 flex-1 overflow-y-auto mb-3 max-h-60 pr-1"></div>
+      <!-- Status Banner -->
+      <div id="conflictStatusBanner" class="p-3 bg-slate-800/40 border border-slate-700 rounded-xl text-center">
+        <div id="conflictBannerTitle" class="text-slate-300 font-bold text-xs">Ready to Scan Active Tab</div>
+        <div id="conflictBannerSub" class="text-[10px] text-[var(--text-muted)] mt-0.5">Click "Scan Now" to check CSS, HTML & JS line-by-line.</div>
+      </div>
 
-      <div class="space-y-2 pt-2 border-t border-[var(--surface-border)]">
-        <div class="flex items-center space-x-2">
-          <button id="btnCopyReportForAI" class="flex-1 py-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition">
-            <i data-lucide="clipboard-copy" class="w-3.5 h-3.5"></i>
-            <span>Copy Report for AI</span>
-          </button>
-          <button id="btnAutoPurgeDead" class="px-3 py-2 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 rounded-xl font-bold flex items-center space-x-1 active:scale-95 transition">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Remove Dead Code</span>
-          </button>
-        </div>
+      <!-- Action Buttons (Sirf 3 Clear Buttons) -->
+      <div class="space-y-2 pt-1">
+        <!-- Button 1: Scan Now / Rescan (with 3-attempt guard) -->
+        <button id="btnTriggerShieldScan" type="button" class="w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold flex items-center justify-center space-x-1.5 active:scale-95 transition shadow">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span id="labelScanButtonText">Scan Now</span>
+        </button>
 
-        <div>
-          <label class="block text-[10px] uppercase font-bold text-emerald-400 mb-1">Paste AI Merged / Fix Code Directly:</label>
-          <div class="flex space-x-1.5">
-            <textarea id="inputAiFixDirect" rows="2" placeholder="Paste clean code from AI here..." class="flex-1 p-2 bg-[var(--editor-bg)] border border-[var(--surface-border)] rounded-xl text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
-            <button id="btnApplyAiFixDirect" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl active:scale-95 transition shrink-0 flex items-center justify-center shadow-md">
-              Apply
-            </button>
-          </div>
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Button 2: 1-Tap All Fix -->
+          <button id="btnApplyAllFixes" type="button" class="py-2 px-3 bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none" disabled>
+            <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+            <span>Fix All Issues</span>
+          </button>
+          <!-- Button 3: Cancel -->
+          <button id="btnDismissShieldModal" type="button" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span>Cancel</span>
+          </button>
         </div>
       </div>
     </div>
@@ -2105,9 +2123,9 @@
           <div class="p-1.5 bg-cyan-500/15 border border-cyan-500/30 rounded-xl text-cyan-400">
             <i data-lucide="scan-line" class="w-4 h-4"></i>
           </div>
-          <div>
+                    <div>
             <h3 class="text-xs font-bold text-cyan-300">Smart Range Selector</h3>
-            <span class="text-[9px] text-[var(--text-muted)] font-mono">Code Armor • Zero-Drag Selection</span>
+            <span class="text-[9px] text-[var(--text-muted)] font-mono">Auto-Clean • Safe Replace</span>
           </div>
         </div>
         <button id="btnCloseRangeModal" class="p-1 text-[var(--text-muted)] hover:text-white">
@@ -2127,10 +2145,10 @@
         </div>
       </div>
 
-      <!-- Real-time Range Stats & Armor Badge -->
+      <!-- Real-time Range Stats & Auto-Clean Badge -->
       <div class="p-2 bg-black/30 border border-slate-800 rounded-xl flex items-center justify-between font-mono text-[10px]">
         <span id="labelRangeStats" class="text-amber-300">0 Lines Selected</span>
-        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">🛡️ Armor Active</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">✨ Auto-Clean Active</span>
       </div>
 
       <!-- Quick Action Buttons -->
@@ -2168,7 +2186,7 @@
   </div>
 
     <!-- FLOATING SELECTION CAPSULE (STICKY LOCK CONTROLS) -->
-  <div id="floatingSelectionCapsule" class="hidden fixed bottom-14 left-1/2 -translate-x-1/2 bg-[#161b22]/95 border border-cyan-400/50 rounded-2xl shadow-2xl px-2 py-1.5 z-40 backdrop-blur-md flex items-center space-x-1 font-mono text-xs select-none">
+    <div id="floatingSelectionCapsule" class="hidden fixed left-1/2 -translate-x-1/2 bg-[#161b22]/95 border border-cyan-400/50 rounded-2xl shadow-2xl px-2 py-1.5 z-40 backdrop-blur-md flex items-center space-x-1 font-mono text-xs select-none max-w-[94vw]" style="bottom: 92px;">
     <!-- Interactive Re-Edit Badge -->
     <button id="labelCapsuleRangeInfo" type="button" title="Tap to Re-edit Range" class="px-2 py-0.5 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-300 text-[10px] font-bold border border-cyan-500/40 flex items-center space-x-1 active:scale-95 transition">
       <span id="labelCapsuleRangeText">Ln 1-50</span>
@@ -2194,7 +2212,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.5',
+      version: '8.6',
       edition: 'Developer Master Edition'
     };
 
@@ -2284,70 +2302,456 @@
       }
     }
 
-    // ZERO-BROWSER PROFESSIONAL POPUP SYSTEM
-    function showProfessionalPopup({ title = "Developer Notice", message = "", confirmText = "Confirm", cancelText = null, onConfirm = null, onCancel = null, iconType = "info" }) {
-      const modal = document.getElementById("modalAppPopup");
-      const titleEl = document.getElementById("popupTitleText");
-      const bodyEl = document.getElementById("popupMessageBody");
-      const iconEl = document.getElementById("popupIconBox");
-      const btnConfirm = document.getElementById("btnPopupConfirm");
-      const btnCancel = document.getElementById("btnPopupCancel");
+        // =========================================================================
+    // ZERO-BROWSER PROFESSIONAL POPUP & MODAL DIALOG CONTROLLER
+    // =========================================================================
+    function showProfessionalPopup({
+  title = "Developer Alert",
+  message = "",
+  confirmText = "Proceed",
+  cancelText = "Dismiss",
+  iconType = "info",
+  onConfirm = null,
+  onCancel = null
+} = {}) {
+  const modal = document.getElementById("modalAppPopup");
+  // 🛡️ EXACT MATCH WITH HTML IDs (Fixes "Developer Notice" freeze)
+  const titleEl = document.getElementById("popupTitleText") || document.getElementById("popupTitle");
+  const bodyEl = document.getElementById("popupMessageBody") || document.getElementById("popupBody");
+  const iconEl = document.getElementById("popupIconBox") || document.getElementById("popupIconContainer");
+  const btnConfirm = document.getElementById("btnPopupConfirm");
+  const btnCancel = document.getElementById("btnPopupCancel");
 
-      if (!modal) return;
+  if (!modal) return;
 
-      if (titleEl) titleEl.textContent = title;
-      if (bodyEl) bodyEl.textContent = message;
-      if (btnConfirm) btnConfirm.textContent = confirmText;
+  // 🛡️ TOP-LEVEL Z-INDEX LOCK
+  modal.style.zIndex = "99999";
+  modal.style.position = "fixed";
 
-      if (iconEl) {
-        if (iconType === "danger") {
-          iconEl.className = "w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-rose-400 bg-rose-500/15 border border-rose-500/40 shadow-rose-950/40 shadow-lg";
-          iconEl.innerHTML = `<i data-lucide="alert-triangle" class="w-7 h-7 text-rose-400 animate-pulse"></i>`;
-        } else if (iconType === "success") {
-          iconEl.className = "w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-emerald-400 bg-emerald-500/15 border border-emerald-500/40 shadow-emerald-950/40 shadow-lg";
-          iconEl.innerHTML = `<i data-lucide="shield-check" class="w-7 h-7 text-emerald-400"></i>`;
-        } else if (iconType === "key") {
-          iconEl.className = "w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-purple-400 bg-purple-500/15 border border-purple-500/40 shadow-purple-950/40 shadow-lg";
-          iconEl.innerHTML = `<i data-lucide="key" class="w-7 h-7 text-purple-400"></i>`;
-        } else if (iconType === "warning") {
-          iconEl.className = "w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-amber-400 bg-amber-500/15 border border-amber-500/40 shadow-amber-950/40 shadow-lg";
-          iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-7 h-7 text-amber-400"></i>`;
-        } else {
-          iconEl.className = "w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-cyan-400 bg-cyan-500/15 border border-cyan-500/40 shadow-cyan-950/40 shadow-lg";
-          iconEl.innerHTML = `<i data-lucide="info" class="w-7 h-7 text-cyan-400"></i>`;
+  if (titleEl) titleEl.textContent = title;
+  if (bodyEl) bodyEl.textContent = message;
+  if (btnConfirm) btnConfirm.textContent = confirmText;
+  if (btnCancel) {
+    btnCancel.textContent = cancelText;
+    btnCancel.style.display = cancelText ? "block" : "none";
+  }
+
+  if (iconEl) {
+    if (iconType === "danger") {
+      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30";
+      iconEl.innerHTML = `<i data-lucide="alert-triangle" class="w-7 h-7"></i>`;
+    } else if (iconType === "success") {
+      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+      iconEl.innerHTML = `<i data-lucide="shield-check" class="w-7 h-7"></i>`;
+    } else if (iconType === "key") {
+      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
+      iconEl.innerHTML = `<i data-lucide="key" class="w-7 h-7"></i>`;
+    } else if (iconType === "warning") {
+      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
+      iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-7 h-7"></i>`;
+    } else {
+      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+      iconEl.innerHTML = `<i data-lucide="info" class="w-7 h-7"></i>`;
+    }
+  }
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+
+  if (window.lucide) lucide.createIcons();
+
+  const cleanUp = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    if (btnConfirm) btnConfirm.onclick = null;
+    if (btnCancel) btnCancel.onclick = null;
+  };
+
+  if (btnConfirm) {
+    btnConfirm.onclick = () => {
+      cleanUp();
+      if (onConfirm) onConfirm();
+    };
+  }
+
+  if (btnCancel) {
+    btnCancel.onclick = () => {
+      cleanUp();
+      if (onCancel) onCancel();
+    };
+  }
+}
+
+    // Promise Wrapper For Non-Blocking In-App Confirmations (Zero Browser Popups)
+    function showStudioModalConfirm({ title = "Confirm Action", message = "", confirmText = "OK", cancelText = "Cancel", iconType = "warning" }) {
+      return new Promise((resolve) => {
+        showProfessionalPopup({
+          title,
+          message,
+          confirmText,
+          cancelText,
+          iconType,
+          onConfirm: () => resolve(true),
+          onCancel: () => resolve(false)
+        });
+      });
+    }
+
+            // =========================================================================
+    // 🧭 CORE DRAWER & NAVIGATION CONTROLS (GLOBAL ENGINE)
+    // =========================================================================
+    window.openDrawerPanel = function() {
+      const drawer = document.getElementById('drawerNav');
+      const overlay = document.getElementById('drawerOverlay');
+      if (drawer) drawer.classList.add('drawer-open');
+      if (overlay) overlay.classList.add('overlay-active');
+    };
+
+    window.closeDrawerPanel = function() {
+      const drawer = document.getElementById('drawerNav');
+      const overlay = document.getElementById('drawerOverlay');
+      if (drawer) drawer.classList.remove('drawer-open');
+      if (overlay) overlay.classList.remove('overlay-active');
+    };
+
+    // 🛡️ DEDICATED OVERFLOW MENU CONTROLLER (ZERO DOUBLE-TOGGLE)
+    window.toggleOverflowMenu = function(forceOpen) {
+      const menu = document.getElementById('menuOverflowDropdown');
+      if (!menu) return;
+      const isCurrentlyHidden = menu.classList.contains('hidden');
+      const shouldOpen = (forceOpen !== undefined) ? forceOpen : isCurrentlyHidden;
+
+      if (shouldOpen) {
+        menu.classList.remove('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+      } else {
+        menu.classList.add('hidden');
+        if (window.StudioNavRouter && window.StudioNavRouter.activeOrigin === 'overflowMenu') {
+          window.StudioNavRouter.activeOrigin = null;
         }
       }
+    };
 
-      if (btnCancel) {
-        if (cancelText) {
-          btnCancel.textContent = cancelText;
-          btnCancel.classList.remove("hidden");
-        } else {
-          btnCancel.classList.add("hidden");
+    // =========================================================================
+    // 🧭 ON-DEMAND SMART NAVIGATION ROUTER (ZERO CPU • EVENT-SHIELDED)
+    // =========================================================================
+    window.StudioNavRouter = {
+      activeOrigin: null, // 'overflowMenu' | 'drawer' | 'editor'
+
+      back: function(modalId) {
+        if (modalId) {
+          const targetModal = document.getElementById(modalId);
+          if (targetModal) {
+            targetModal.classList.add('hidden');
+            targetModal.classList.remove('flex');
+          }
         }
-      }
+        this.returnToOrigin();
+      },
 
-      modal.classList.remove("hidden");
-      if (window.lucide) lucide.createIcons();
+      returnToOrigin: function() {
+        const origin = this.activeOrigin;
+        this.activeOrigin = null;
 
-      const cleanUp = () => {
-        modal.classList.add("hidden");
-        btnConfirm.onclick = null;
-        if (btnCancel) btnCancel.onclick = null;
-      };
+        // 🛡️ EVENT BUBBLING SHIELD (40ms delay taaki click event menu ko turant re-close na kare)
+        setTimeout(() => {
+          if (origin === 'overflowMenu') {
+            window.toggleOverflowMenu(true);
+          } else if (origin === 'drawer') {
+            window.openDrawerPanel();
+          }
+        }, 40);
+      },
 
-      btnConfirm.onclick = () => {
-        cleanUp();
-        if (onConfirm) onConfirm();
-      };
+      handlePopupDismiss: function() {
+        const modalAppPopup = document.getElementById('modalAppPopup');
+        if (modalAppPopup) {
+          modalAppPopup.classList.add('hidden');
+          modalAppPopup.classList.remove('flex');
+        }
 
-      if (btnCancel) {
-        btnCancel.onclick = () => {
-          cleanUp();
-          if (onCancel) onCancel();
+        const openParentModal = document.querySelector('.material-card-elevated:not(#modalAppPopup):not(.hidden)');
+        if (openParentModal) {
+          return;
+        }
+
+        this.returnToOrigin();
+      },
+
+      init: function() {
+        const menu = document.getElementById('menuOverflowDropdown');
+        const btnMore = document.getElementById('btnHeaderMore');
+        const btnDrawer = document.getElementById('btnOpenDrawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+
+        // 1. 3-Dot Menu Toggle Button (Capture Phase + 250ms Debounce Shield)
+        let lastMoreTapTime = 0;
+        const handleMoreToggle = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          const now = Date.now();
+          if (now - lastMoreTapTime < 250) return; // Prevent Android ghost-tap / double toggle
+          lastMoreTapTime = now;
+          window.toggleOverflowMenu();
         };
+
+        if (btnMore) {
+          btnMore.onclick = null; // Purana inline listener clear karein
+          btnMore.addEventListener('click', handleMoreToggle, { capture: true });
+        }
+
+        // 2. Drawer Open & Overlay Click
+        btnDrawer?.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.openDrawerPanel();
+        });
+        drawerOverlay?.addEventListener('click', () => {
+          window.closeDrawerPanel();
+        });
+
+        // 3. 3-Dot Menu clicks origin memory lock
+        menu?.addEventListener('click', (e) => {
+          if (e.target.closest('button')) {
+            window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          }
+        });
+
+        // 4. Drawer Navigation clicks origin memory lock
+        document.getElementById('drawerNav')?.addEventListener('click', (e) => {
+          const btn = e.target.closest('button');
+          if (btn && btn.id !== 'btnCloseDrawer') {
+            window.StudioNavRouter.activeOrigin = 'drawer';
+          }
+        });
+
+        // 5. Direct Screen / Header Triggers (Editor origin lock)
+        const editorDirectButtons = [
+          'btnQuickAuditConflicts', 'btnHeaderQuickPatch', 'btnAddressAiCopilot',
+          'badgeCursorWrapper', 'btnKeyRangeSelect', 'btnPermanentDockAnchor'
+        ];
+        editorDirectButtons.forEach(id => {
+          document.getElementById(id)?.addEventListener('click', () => {
+            window.StudioNavRouter.activeOrigin = 'editor';
+          });
+        });
+
+        // 6. Sabhi Popups ke Cancel, Close & ✖️ buttons ki strict wiring
+        const popupRoutes = [
+          { btn: 'btnCloseConflictShield', modal: 'modalConflictShield' },
+          { btn: 'btnDismissShieldModal', modal: 'modalConflictShield' },
+          { btn: 'btnCloseDiagnosticModal', modal: 'modalDiagnosticReport' },
+          { btn: 'btnDiagnosticClose', modal: 'modalDiagnosticReport' },
+          { btn: 'btnClosePatchStudio', modal: 'modalPatchStudio' },
+          { btn: 'btnCancelPatchStudio', modal: 'modalPatchStudio' },
+          { btn: 'btnCloseRangeModal', modal: 'modalSmartRangeSelect' },
+          { btn: 'btnCancelGoTo', modal: 'modalGoToLine' },
+          { btn: 'btnCancelEncoding', modal: 'modalEncoding' },
+          { btn: 'btnCloseStats', modal: 'modalStats' },
+          { btn: 'btnCloseSettings', modal: 'modalSettings' },
+          { btn: 'btnCloseAboutStudio', modal: 'modalAboutStudio' },
+          { btn: 'btnExitLater', modal: 'modalExitConfirm' },
+          { btn: 'btnAreYouSureLater', modal: 'modalExitAreYouSure' },
+          { btn: 'btnCloseAiCopilot', modal: 'modalAiCopilot' },
+          { btn: 'btnClosePathModal', modal: 'modalPathDetails' },
+          { btn: 'btnCancelOverwrite', modal: 'modalConfirmOverwrite' },
+          { btn: 'btnCancelColor', modal: 'modalColor' },
+          { btn: 'btnCancelNewFile', modal: 'modalNewFile' },
+          { btn: 'btnCancelRename', modal: 'modalRename' },
+          { btn: 'btnCancelEditFolder', modal: 'modalEditFolder' },
+          { btn: 'btnCropCancel', modal: 'modalCropStudio' },
+          { btn: 'btnCropCancelTop', modal: 'modalCropStudio' }
+        ];
+
+        popupRoutes.forEach(route => {
+          const btnEl = document.getElementById(route.btn);
+          if (btnEl) {
+            btnEl.addEventListener('click', (e) => {
+              e.stopPropagation();
+              window.StudioNavRouter.back(route.modal);
+            });
+          }
+        });
+
+        // 7. Professional Alert Popups Dismiss (modalAppPopup)
+        document.getElementById('btnPopupCancel')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.StudioNavRouter.handlePopupDismiss();
+        });
+
+        // 8. Bahar Tap karne par 3-dot menu band ho jaye (100% SVG-Safe Node Check)
+        document.addEventListener('click', (e) => {
+          const m = document.getElementById('menuOverflowDropdown');
+          if (!m || m.classList.contains('hidden')) return;
+
+          const isInside = (id) => {
+            const el = document.getElementById(id);
+            return Boolean(el && (el === e.target || el.contains(e.target) || (e.target.closest && e.target.closest('#' + id))));
+          };
+
+          // Agar tap 3-dot button par ya menu ke andar hua hai toh band mat karo
+          if (isInside('btnHeaderMore') || isInside('menuOverflowDropdown')) {
+            return;
+          }
+
+          window.toggleOverflowMenu(false);
+        });
+      }
+    };
+
+    // Auto-Initialize on page load
+    window.StudioNavRouter.init();
+
+    
+    // =========================================================================
+    // CENTRAL UNIFIED BRAIN ENGINE (SINGLE SOURCE OF TRUTH FOR ALL TOOLS)
+    // =========================================================================
+    window.StudioBrain = {
+  lastReport: null,
+
+  // 1. Single-Pass Deep AST & Scope-Aware Parser
+  analyze: function(code) {
+    if (!code || typeof code !== 'string') {
+      this.lastReport = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], cssMap: new Map() };
+      return this.lastReport;
+    }
+
+    const lines = code.split('\n');
+    let duplicatesCount = 0;
+    let overwritesCount = 0;
+    let deadOrBrokenCount = 0;
+    const issuesList = [];
+
+    // Check A: Double Brackets / Syntax Traps (}} or } })
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (trimmed.includes('}}') || trimmed === '} }') {
+        deadOrBrokenCount++;
+        issuesList.push({ type: 'broken_brace', line: i + 1, text: trimmed });
       }
     }
+
+    // Check B: Scope-Aware CSS Selector Parser (Ignores @media, @keyframes & responsive rules)
+    const cssMap = new Map();
+    const tagStyleOpen = '<' + 'style';
+    const tagStyleClose = '<' + '/style>';
+
+    const scanCssContent = (cssText, baseLineOffset) => {
+      // 🛡️ SCOPE GUARD: Remove comments and safely tokenize @media / @keyframes
+      const cleanCss = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
+      
+      // Tokenize by brace depth to identify root vs nested media query scope
+      let depth = 0;
+      let inAtRule = false;
+      let currentSelector = '';
+      let selectorLine = baseLineOffset;
+
+      const cssLines = cleanCss.split('\n');
+      for (let lineIdx = 0; lineIdx < cssLines.length; lineIdx++) {
+        const line = cssLines[lineIdx];
+        const trimmed = line.trim();
+        const currentLineNum = baseLineOffset + lineIdx;
+
+        if (trimmed.startsWith('@media') || trimmed.startsWith('@supports') || trimmed.startsWith('@keyframes')) {
+          inAtRule = true;
+        }
+
+        for (let charIdx = 0; charIdx < line.length; charIdx++) {
+          const ch = line[charIdx];
+
+          if (ch === '{') {
+            depth++;
+            const rawSel = currentSelector.trim();
+            // Sirf ROOT scope (depth === 1) aur NON-AT-RULE selectors ki jaanch karein
+            if (depth === 1 && !inAtRule && rawSel && !rawSel.startsWith('@')) {
+              // Comma-separated selectors ko akele split na karein, full primary key match karein
+              const primaryKey = rawSel.replace(/\s+/g, ' ');
+              if (cssMap.has(primaryKey)) {
+                duplicatesCount++;
+                issuesList.push({ 
+                  type: 'css_duplicate', 
+                  name: primaryKey, 
+                  line: selectorLine 
+                });
+              } else {
+                cssMap.set(primaryKey, selectorLine);
+              }
+            }
+            currentSelector = '';
+          } else if (ch === '}') {
+            depth = Math.max(0, depth - 1);
+            if (depth === 0) {
+              inAtRule = false;
+            }
+            currentSelector = '';
+          } else {
+            if (depth === 0 || (depth === 1 && inAtRule)) {
+              if (currentSelector === '') selectorLine = currentLineNum;
+              currentSelector += ch;
+            }
+          }
+        }
+      }
+    };
+
+    // Extract styles from HTML or scan entire code if pure CSS
+    if (code.includes(tagStyleOpen)) {
+      const styleRegex = new RegExp(tagStyleOpen + '[^>]*>([\\s\\S]*?)' + tagStyleClose, 'gi');
+      let styleBlockMatch;
+      while ((styleBlockMatch = styleRegex.exec(code)) !== null) {
+        const blockStart = styleBlockMatch.index;
+        const linesBefore = code.substring(0, blockStart).split('\n').length;
+        scanCssContent(styleBlockMatch[1], linesBefore);
+      }
+    } else if (code.includes('{') && code.includes('}')) {
+      scanCssContent(code, 1);
+    }
+
+    // Check C: HTML Duplicate DOM IDs
+    const idRegex = /\bid=["']([^"']+)["']/g;
+    const idMap = new Map();
+    let idMatch;
+    while ((idMatch = idRegex.exec(code)) !== null) {
+      const domId = idMatch[1];
+      const lineNum = code.substring(0, idMatch.index).split('\n').length;
+      if (idMap.has(domId)) {
+        overwritesCount++;
+        issuesList.push({ type: 'id_collision', name: domId, line: lineNum });
+      } else {
+        idMap.set(domId, lineNum);
+      }
+    }
+
+    // Check D: JavaScript Duplicate Functions
+    const jsFuncRegex = /(?:function\s+([a-zA-Z0-9_$]+)|(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s*)?(?:function|\([^)]*\)\s*=>))/g;
+    const jsFuncMap = new Map();
+    let fnMatch;
+    while ((fnMatch = jsFuncRegex.exec(code)) !== null) {
+      const fnName = fnMatch[1] || fnMatch[2];
+      if (!fnName || fnName.length < 2) continue;
+      const lineNum = code.substring(0, fnMatch.index).split('\n').length;
+      if (jsFuncMap.has(fnName)) {
+        overwritesCount++;
+        issuesList.push({ type: 'func_collision', name: fnName, line: lineNum });
+      } else {
+        jsFuncMap.set(fnName, lineNum);
+      }
+    }
+
+    this.lastReport = {
+      dupes: duplicatesCount,
+      overwrites: overwritesCount,
+      dead: deadOrBrokenCount,
+      total: (duplicatesCount + overwritesCount + deadOrBrokenCount),
+      list: issuesList,
+      cssMap: cssMap
+    };
+
+    return this.lastReport;
+  }
+};
 
     function detectProjectFolder(fileName, content) {
       if (!content) return 'Internal Storage';
@@ -2896,17 +3300,28 @@
       }
     }
 
-        function analyzeCodeTwoTier(code) {
-      if (!code.trim()) return { hasError: false };
+                // Helper: Safe HTML Text Escaper (Prevents tags like </style> from vanishing)
+    function escapeHtmlEntities(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // =========================================================================
+    // CODE ERROR CHECKER ENGINE (ACCURATE AUTO-HEAL • ANTI-DASHBOARD LOCK)
+    // =========================================================================
+    function analyzeCodeTwoTier(code) {
+      if (!code || !code.trim()) return { hasError: false };
 
       // 1. TIER 1: CSS & BRACKETS SCANNER (<style> blocks ya pure CSS)
-      const styleMatches = code.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi);
-      for (const sm of styleMatches) {
-        const cssBody = sm[1];
-        const styleStartIndex = sm.index + sm[0].indexOf('>') + 1;
-        const linesBeforeStyle = code.substring(0, styleStartIndex).split('\n').length - 1;
-
-        // Check A: Selector ke baad missing '{' (jaise .pwa-close-btn ke baad direct property shuru hona)
+      const styleMatches = Array.from(code.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi));
+      
+      const scanCssBody = (cssBody, linesBeforeStyle) => {
+        // Check A: Selector ke baad missing '{'
         const missingBraceMatch = cssBody.match(/([.#a-zA-Z0-9_\-]+)\s*\n\s*([a-zA-Z\-]+)\s*:/);
         if (missingBraceMatch) {
           const matchOffset = cssBody.indexOf(missingBraceMatch[0]);
@@ -2919,7 +3334,8 @@
             col: 1,
             message: `CSS selector '${missingBraceMatch[1].trim()}' ke baad opening bracket '{' gayab hai.`,
             fixType: 'insert_css_open_bracket',
-            selector: missingBraceMatch[1].trim()
+            selector: missingBraceMatch[1].trim(),
+            linesBeforeStyle: linesBeforeStyle
           };
         }
 
@@ -2941,7 +3357,8 @@
               line: linesBeforeStyle + i + 1,
               col: 1,
               message: `Faltu closing bracket '}' mila jo kisi selector se linked nahi hai.`,
-              fixType: 'none'
+              fixType: 'none',
+              linesBeforeStyle: linesBeforeStyle
             };
           }
         }
@@ -2953,9 +3370,24 @@
             line: lastOpenLine,
             col: 1,
             message: `CSS block band nahi hua hai. Aakhri '}' bracket missing hai.`,
-            fixType: 'append_css_close_bracket'
+            fixType: 'append_css_close_bracket',
+            linesBeforeStyle: linesBeforeStyle
           };
         }
+        return null;
+      };
+
+      if (styleMatches.length > 0) {
+        for (const sm of styleMatches) {
+          const cssBody = sm[1];
+          const styleStartIndex = sm.index + sm[0].indexOf('>') + 1;
+          const linesBeforeStyle = code.substring(0, styleStartIndex).split('\n').length - 1;
+          const res = scanCssBody(cssBody, linesBeforeStyle);
+          if (res) return res;
+        }
+      } else if (code.includes('{') || code.includes('}')) {
+        const res = scanCssBody(code, 0);
+        if (res) return res;
       }
 
       // 2. TIER 2: JAVASCRIPT SYNTAX SCANNER
@@ -2965,7 +3397,6 @@
         const scriptIndex = m.index;
         const linesBeforeScript = code.substring(0, scriptIndex).split('\n').length - 1;
 
-        // Skip ES Module imports/exports from new Function crash
         if (/^\s*(import|export)\s+/m.test(jsBody)) continue;
 
         try {
@@ -2988,7 +3419,7 @@
         }
       }
 
-      // 3. TIER 3: HTML NESTING SCANNER (Comments aur Style safai ke sath)
+      // 3. TIER 3: HTML NESTING SCANNER (Comments, Script & Style Protected)
       let cleanHtml = code.replace(/<!--[\s\S]*?-->/g, (m) => '\n'.repeat(m.split('\n').length - 1));
       cleanHtml = cleanHtml.replace(/<script[\s\S]*?<\/script>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
       cleanHtml = cleanHtml.replace(/<style[\s\S]*?<\/style>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
@@ -3015,7 +3446,7 @@
               type: 'Unexpected Closing Tag',
               line: linesBefore.length,
               col: linesBefore[linesBefore.length - 1].length + 1,
-              message: `Mismatched </${tagName}> without matching opening tag.`,
+              message: `Mismatched &lt;/${escapeHtmlEntities(tagName)}&gt; without matching opening tag.`,
               fixType: 'none',
               tagName: tagName
             };
@@ -3034,7 +3465,7 @@
           type: 'Unclosed HTML Tag',
           line: linesBefore.length,
           col: linesBefore[linesBefore.length - 1].length + 1,
-          message: `Missing closing tag </${lastUnclosed.tag}>.`,
+          message: `Missing closing tag &lt;/${escapeHtmlEntities(lastUnclosed.tag)}&gt;.`,
           fixType: 'append_tag',
           tagName: lastUnclosed.tag
         };
@@ -3047,7 +3478,21 @@
       const modal = document.getElementById('modalDiagnosticReport');
       const box = document.getElementById('boxDiagnosticContent');
       const btnFix = document.getElementById('btnDiagnosticAutoFix');
+      const btnCloseTop = document.getElementById('btnCloseDiagnosticModal');
+      const btnCloseBottom = document.getElementById('btnDiagnosticClose');
       if (!modal || !box || !textarea) return;
+
+              // ANTI-DASHBOARD SHIELD: Modal band hone par 3-dot menu / origin par return
+        const safelyDismissDiagnosticModal = (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          modal.classList.add('hidden');
+          if (window.StudioNavRouter) {
+            window.StudioNavRouter.returnToOrigin();
+          }
+        };
+
+        if (btnCloseTop) btnCloseTop.onclick = safelyDismissDiagnosticModal;
+        if (btnCloseBottom) btnCloseBottom.onclick = safelyDismissDiagnosticModal;
 
       const report = analyzeCodeTwoTier(textarea.value);
       box.innerHTML = '';
@@ -3066,22 +3511,23 @@
           <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl space-y-2 font-mono">
             <div class="flex justify-between items-center text-rose-400 font-bold">
               <span>${report.type}</span>
-              <button id="btnJumpToErrorLine" class="text-[10px] bg-rose-950/80 hover:bg-rose-900 px-2.5 py-1 rounded-lg border border-rose-500/40 text-cyan-300 font-bold active:scale-95 transition flex items-center space-x-1">
+              <button id="btnJumpToErrorLine" type="button" class="text-[10px] bg-rose-950/80 hover:bg-rose-900 px-2.5 py-1 rounded-lg border border-rose-500/40 text-cyan-300 font-bold active:scale-95 transition flex items-center space-x-1">
                 <span>Ln ${report.line}, Col ${report.col}</span>
                 <span>Jump</span>
               </button>
             </div>
             <p class="text-[11px] text-[var(--text-main)]">${report.message}</p>
             <div class="p-2 bg-black/30 rounded-lg text-[10px] text-amber-300 border border-amber-500/20">
-              ${report.fixType === 'append_tag' ? `Safe Action: Engine will append &lt;/${report.tagName}&gt; safely.` : 
-                report.fixType === 'insert_css_open_bracket' ? `Safe Action: 1-Tap Auto-Fix selector ke aage '{' aur block band karega.` :
-                report.fixType === 'append_css_close_bracket' ? `Safe Action: Missing '}' bracket auto-close karega.` :
+              ${report.fixType === 'append_tag' ? `Safe Action: Engine will append &lt;/${escapeHtmlEntities(report.tagName)}&gt; at end of document.` : 
+                report.fixType === 'insert_css_open_bracket' ? `Safe Action: 1-Tap Auto-Fix selector '${escapeHtmlEntities(report.selector)}' ke aage '{' lagayega.` :
+                report.fixType === 'append_css_close_bracket' ? `Safe Action: Missing '}' ko &lt;/style&gt; se pehle auto-close karega.` :
                 'Action: Tap Jump above to inspect this exact line.'}
             </div>
           </div>
         `;
 
-        document.getElementById('btnJumpToErrorLine')?.addEventListener('click', () => {
+        document.getElementById('btnJumpToErrorLine')?.addEventListener('click', (e) => {
+          e.stopPropagation();
           modal.classList.add('hidden');
           jumpToEditorPosition(report.line, report.col);
         });
@@ -3101,45 +3547,87 @@
       if (window.lucide) lucide.createIcons();
     }
 
-        function executeSafeAutoFix() {
+        function executeSafeAutoFix(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       if (!currentDiagnosticFix || !textarea) return;
       const modal = document.getElementById('modalDiagnosticReport');
 
       recordHistory();
+      let val = textarea.value;
 
       if (currentDiagnosticFix.fixType === 'append_tag') {
-        insertTextAtCursor(`\n</${currentDiagnosticFix.tagName}>`);
-        triggerToast(`Auto-Healed: Inserted </${currentDiagnosticFix.tagName}>`);
-      } else if (currentDiagnosticFix.fixType === 'insert_css_open_bracket') {
-        const val = textarea.value;
-        const targetSelector = currentDiagnosticFix.selector;
-        const escSel = targetSelector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const tagToAppend = `\n</${currentDiagnosticFix.tagName}>`;
+        const bodyCloseIdx = val.lastIndexOf('</body>');
+        const htmlCloseIdx = val.lastIndexOf('</html>');
+        const insertIdx = bodyCloseIdx !== -1 ? bodyCloseIdx : (htmlCloseIdx !== -1 ? htmlCloseIdx : val.length);
 
-        // Full-Heal: Selector se lekar agle selector ya blank line tak ka block dhund kar { aur } dono lagana
-        const blockRegex = new RegExp(`(${escSel})\\s*\\n([\\s\\S]*?)(?=\\n\\s*\\n|\\n\\s*[.#a-zA-Z0-9_\\-]+\\s*\\{|<\\/style>)`);
-        if (blockRegex.test(val)) {
-          textarea.value = val.replace(blockRegex, (match, sel, props) => {
-            return `${sel} {\n${props}\n    }`;
-          });
-          triggerToast(`Auto-Healed: Enclosed ${targetSelector} in { }`);
+        val = val.slice(0, insertIdx) + tagToAppend + '\n' + val.slice(insertIdx);
+        textarea.value = val;
+        triggerToast(`Auto-Healed: Inserted </${currentDiagnosticFix.tagName}>`);
+
+      } else if (currentDiagnosticFix.fixType === 'insert_css_open_bracket') {
+        const targetSel = currentDiagnosticFix.selector;
+        const escSel = targetSel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const brokenPattern = new RegExp(`(${escSel})\\s*\\n(\\s*[a-zA-Z\\-]+\\s*:)`, 'm');
+        if (brokenPattern.test(val)) {
+          val = val.replace(brokenPattern, `$1 {\n$2`);
+          textarea.value = val;
+          triggerToast(`Auto-Healed: Inserted '{' for ${targetSel} ✨`);
         } else {
-          const simpleRegex = new RegExp(`(${escSel})\\s*\\n`);
-          if (simpleRegex.test(val)) {
-            textarea.value = val.replace(simpleRegex, `$1 {\n`);
-            triggerToast(`Auto-Healed: Inserted '{' for ${targetSelector}`);
+          const simplePattern = new RegExp(`(${escSel})\\s*\\n`, 'm');
+          if (simplePattern.test(val)) {
+            val = val.replace(simplePattern, `$1 {\n`);
+            textarea.value = val;
+            triggerToast(`Auto-Healed: Inserted '{' for ${targetSel}`);
           }
         }
+
       } else if (currentDiagnosticFix.fixType === 'append_css_close_bracket') {
-        insertTextAtCursor(`\n}\n`);
-        triggerToast(`Auto-Healed: Closed CSS block with '}'`);
+        // Line-aware unclosed CSS block fixer
+        const lines = val.split('\n');
+        const targetLine = currentDiagnosticFix.line ? Math.min(currentDiagnosticFix.line, lines.length) : lines.length;
+        
+        let inserted = false;
+        // Search forward from the unclosed line to find the next selector or style close
+        for (let i = targetLine; i < lines.length; i++) {
+          const trimmed = lines[i].trim();
+          if (trimmed.startsWith('</style>') || trimmed.match(/^[.#a-zA-Z0-9_\-]+\s*\{/)) {
+            lines.splice(i, 0, '    }');
+            inserted = true;
+            break;
+          }
+        }
+        if (!inserted) {
+          const styleCloseIdx = val.lastIndexOf('</style>');
+          if (styleCloseIdx !== -1) {
+            val = val.slice(0, styleCloseIdx) + '    }\n' + val.slice(styleCloseIdx);
+          } else {
+            val = val.trimEnd() + '\n}\n';
+          }
+        } else {
+          val = lines.join('\n');
+        }
+
+        textarea.value = val;
+        triggerToast("Auto-Healed: Closed CSS block with '}' ✨");
       }
 
       updateLineNumbers();
       updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
-      if (modal) modal.classList.add('hidden');
+      window.StudioBrain?.analyze(textarea.value);
+
+      if (modal) {
+        modal.classList.add('hidden');
+        window.history.pushState({ page: 'editor' }, '');
+      }
     }
+    
     // =========================================================================
     // POINT 1 & 2: KEY MANAGER WITH BACK-STACK NAVIGATION & CONFIRM DIALOG
     // =========================================================================
@@ -4012,249 +4500,461 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-            function auditWorkspaceConflicts() {
-      if (!textarea) return { duplicateFunctions: [], duplicateIds: [], emptyDivMatches: [], totalConflicts: 0, deadLinesCount: 0 };
-      const code = textarea.value;
-
-      // Comprehensive Function Scanner: declaration, arrow functions, and function expressions
-      const functionRegex = /(?:function\s+([a-zA-Z0-9_$]+)\s*\(|(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s*)?(?:function\s*\(|\([^)]*\)\s*=>|[a-zA-Z0-9_$]+\s*=>))/g;
-      const idRegex = /id=["']([a-zA-Z0-9_\-]+)["']/g;
-
-      const functionMap = new Map();
-      const idMap = new Map();
-
-      let match;
-      while ((match = functionRegex.exec(code)) !== null) {
-        const name = match[1] || match[2];
-        if (!name) continue;
-        const linesBefore = code.substring(0, match.index).split('\n');
-        const lineNum = linesBefore.length;
-        if (!functionMap.has(name)) functionMap.set(name, []);
-        functionMap.get(name).push(lineNum);
-      }
-
-      while ((match = idRegex.exec(code)) !== null) {
-        const idName = match[1];
-        const linesBefore = code.substring(0, match.index).split('\n');
-        const lineNum = linesBefore.length;
-        if (!idMap.has(idName)) idMap.set(idName, []);
-        idMap.get(idName).push(lineNum);
-      }
-
-      const duplicateFunctions = [];
-      functionMap.forEach((lines, name) => {
-        if (lines.length > 1) duplicateFunctions.push({ name, lines });
-      });
-
-      const duplicateIds = [];
-      idMap.forEach((lines, idName) => {
-        if (lines.length > 1) duplicateIds.push({ idName, lines });
-      });
-
-      // Safe Dead Tag Detection: Sirf wahi tags count honge jinme koi ID ya Class na ho
-      const emptyDivMatches = [];
-      const emptyRegex = /<div\s*>\s*<\/div>/g;
-      while ((match = emptyRegex.exec(code)) !== null) {
-        const lineNum = code.substring(0, match.index).split('\n').length;
-        emptyDivMatches.push(lineNum);
-      }
-
-      return {
-        duplicateFunctions,
-        duplicateIds,
-        emptyDivMatches,
-        totalConflicts: duplicateFunctions.length + duplicateIds.length,
-        deadLinesCount: emptyDivMatches.length
-      };
-    }
-
-    function openConflictShieldModal() {
-      const modal = document.getElementById('modalConflictShield');
-      const boxResults = document.getElementById('boxConflictResults');
-      const countDupEl = document.getElementById('countDuplicates');
-      const countOverEl = document.getElementById('countOverwrites');
-      const countDeadEl = document.getElementById('countDeadCode');
-
-      if (!modal || !boxResults) return;
-
-      const audit = auditWorkspaceConflicts();
-      boxResults.innerHTML = '';
-
-      if (countDupEl) countDupEl.textContent = audit.duplicateFunctions.length;
-      if (countOverEl) countOverEl.textContent = audit.duplicateIds.length;
-      if (countDeadEl) countDeadEl.textContent = audit.deadLinesCount;
-
-      if (audit.totalConflicts === 0 && audit.deadLinesCount === 0) {
-        boxResults.innerHTML = `
-          <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1">
-            <div class="text-sm font-bold text-emerald-400">All Clear • No Duplicate Code</div>
-            <p class="text-[10px] text-[var(--text-muted)]">Functions and DOM IDs are uniquely declared.</p>
-          </div>
-        `;
-      } else {
-        audit.duplicateFunctions.forEach(item => {
-          const row = document.createElement('div');
-          row.className = 'p-2.5 bg-black/30 rounded-xl border border-amber-500/30 space-y-1.5';
-          row.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-amber-300 font-mono text-[11px]">Duplicate function '${item.name}'</span>
-              <span class="text-[10px] text-rose-400 font-bold bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-500/30">OVERWRITE</span>
-            </div>
-            <div class="text-[10px] text-[var(--text-muted)] flex items-center space-x-2">
-              <span>Lines:</span>
-              ${item.lines.map(ln => `<button class="btn-jump-inline px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono hover:bg-cyan-500/30" data-line="${ln}">Ln ${ln}</button>`).join('')}
-            </div>
-          `;
-          boxResults.appendChild(row);
-        });
-
-        audit.duplicateIds.forEach(item => {
-          const row = document.createElement('div');
-          row.className = 'p-2.5 bg-black/30 rounded-xl border border-rose-500/30 space-y-1.5';
-          row.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-rose-300 font-mono text-[11px]">Duplicate ID '#${item.idName}'</span>
-              <span class="text-[10px] text-amber-400 font-bold bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">DOM CLASH</span>
-            </div>
-            <div class="text-[10px] text-[var(--text-muted)] flex items-center space-x-2">
-              <span>Lines:</span>
-              ${item.lines.map(ln => `<button class="btn-jump-inline px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono hover:bg-cyan-500/30" data-line="${ln}">Ln ${ln}</button>`).join('')}
-            </div>
-          `;
-          boxResults.appendChild(row);
-        });
-
-        boxResults.querySelectorAll('.btn-jump-inline').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const ln = parseInt(btn.getAttribute('data-line'), 10);
-            modal.classList.add('hidden');
-            jumpToEditorPosition(ln);
-          });
-        });
-      }
-
-      modal.classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
-    }
-
+               // =========================================================================
+    // CHECK CODE & BUGS ENGINE (LIVE ISSUE LIST • JUMP BUTTONS • 3/3 HARD STOP)
+    // =========================================================================
     function setupConflictShieldSystem() {
       const modal = document.getElementById('modalConflictShield');
       const btnClose = document.getElementById('btnCloseConflictShield');
-      const btnHeaderShield = document.getElementById('btnQuickAuditConflicts');
+      
+      const btnQuickShield = document.getElementById('btnQuickAuditConflicts');
       const optMoreShield = document.getElementById('optAuditConflicts');
       const dNavShield = document.getElementById('dNavTriggerConflictShield');
-      const btnCopyAI = document.getElementById('btnCopyReportForAI');
-      const btnPurgeDead = document.getElementById('btnAutoPurgeDead');
-      const btnApplyDirect = document.getElementById('btnApplyAiFixDirect');
-      const inputDirect = document.getElementById('inputAiFixDirect');
 
-      btnHeaderShield?.addEventListener('click', openConflictShieldModal);
+      const statDupes = document.getElementById('statDupes');
+      const statOverwrites = document.getElementById('statOverwrites');
+      const statDead = document.getElementById('statDead');
+      const bannerTitle = document.getElementById('conflictBannerTitle');
+      const bannerSub = document.getElementById('conflictBannerSub');
+      const statusBanner = document.getElementById('conflictStatusBanner');
+
+      const btnScan = document.getElementById('btnTriggerShieldScan');
+      const labelScanBtn = document.getElementById('labelScanButtonText');
+      const btnFixAll = document.getElementById('btnApplyAllFixes');
+      const btnDismiss = document.getElementById('btnDismissShieldModal');
+
+      let scanAttempts = 0;
+      let lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+
+      // Ensure Dynamic Scrollable Issue List Container exists inside modal card
+      let issuesListBox = document.getElementById('conflictIssuesListBox');
+      if (!issuesListBox && statusBanner && statusBanner.parentNode) {
+        issuesListBox = document.createElement('div');
+        issuesListBox.id = 'conflictIssuesListBox';
+        issuesListBox.className = 'hidden max-h-40 overflow-y-auto space-y-1.5 p-2 bg-black/30 border border-slate-800 rounded-xl font-mono text-[11px]';
+        statusBanner.parentNode.insertBefore(issuesListBox, statusBanner.nextSibling);
+      }
+
+      // Safe dismiss: Never redirects to mobile dashboard
+      const safelyDismissModal = () => {
+        modal?.classList.add('hidden');
+        if (issuesListBox) issuesListBox.classList.add('hidden');
+      };
+
+      const resetScanState = () => {
+        scanAttempts = 0;
+        lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+        if (statDupes) statDupes.textContent = '0';
+        if (statOverwrites) statOverwrites.textContent = '0';
+        if (statDead) statDead.textContent = '0';
+        if (labelScanBtn) labelScanBtn.textContent = 'Scan Now';
+        if (btnFixAll) {
+          btnFixAll.disabled = true;
+          btnFixAll.classList.add('opacity-40');
+        }
+        if (statusBanner) {
+          statusBanner.className = 'p-3 bg-slate-800/40 border border-slate-700 rounded-xl text-center';
+        }
+        if (bannerTitle) bannerTitle.textContent = 'Ready to Scan Active Tab';
+        if (bannerSub) bannerSub.textContent = 'Click "Scan Now" to check CSS, HTML & JS line-by-line.';
+        if (issuesListBox) {
+          issuesListBox.innerHTML = '';
+          issuesListBox.classList.add('hidden');
+        }
+      };
+
+      // Render Interactive Issues List with Jump Buttons
+      const renderIssuesListUI = (list) => {
+        if (!issuesListBox) return;
+        issuesListBox.innerHTML = '';
+
+        if (!list || list.length === 0) {
+          issuesListBox.classList.add('hidden');
+          return;
+        }
+
+        issuesListBox.classList.remove('hidden');
+        list.slice(0, 20).forEach(issue => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between p-1.5 bg-slate-900/80 border border-slate-800 rounded-lg';
+          
+          let title = issue.name || issue.text || 'Syntax Trap';
+          let tagType = issue.type === 'css_duplicate' ? 'CSS Duplicate' : issue.type === 'broken_brace' ? 'Broken Brace' : 'Collision';
+          
+          row.innerHTML = `
+            <div class="truncate mr-2">
+              <span class="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold mr-1">${tagType}</span>
+              <span class="text-slate-300 truncate font-semibold">${title}</span>
+            </div>
+            <button type="button" class="btn-jump-to-issue shrink-0 px-2 py-0.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded text-[10px] font-bold active:scale-95 transition" data-line="${issue.line || 1}">
+              Ln ${issue.line || 1} Jump
+            </button>
+          `;
+
+          row.querySelector('.btn-jump-to-issue')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const targetLine = parseInt(e.currentTarget.getAttribute('data-line'), 10) || 1;
+            safelyDismissModal();
+            if (typeof jumpToEditorPosition === 'function') {
+              jumpToEditorPosition(targetLine, 1);
+            }
+          });
+
+          issuesListBox.appendChild(row);
+        });
+      };
+
+            const openModal = () => {
+        resetScanState();
+        modal?.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      };
+
+      // Navigation Memory Locks
+      btnQuickShield?.addEventListener('click', () => {
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'editor';
+        openModal();
+      });
+
       optMoreShield?.addEventListener('click', () => {
         document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        openConflictShieldModal();
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+        openModal();
       });
+
       dNavShield?.addEventListener('click', () => {
-        closeDrawerPanel();
-        openConflictShieldModal();
-      });
-      btnClose?.addEventListener('click', () => modal?.classList.add('hidden'));
-
-      btnCopyAI?.addEventListener('click', () => {
-        const audit = auditWorkspaceConflicts();
-        const activeTab = fileTabs.find(t => t.id === activeFileId);
-        const currentName = activeTab ? activeTab.name : 'index.html';
-        let promptReport = `[ANZARG CODE STUDIO - CONFLICT & OVERWRITE AUDIT REPORT]\n\n`;
-        promptReport += `File: ${currentName}\n`;
-        promptReport += `Total Lines: ${textarea ? textarea.value.split('\n').length : 0}\n\n`;
-
-        promptReport += `1. DUPLICATE FUNCTIONS:\n`;
-        if (audit.duplicateFunctions.length === 0) promptReport += `- None\n`;
-        else {
-          audit.duplicateFunctions.forEach(f => {
-            promptReport += `- '${f.name}' at Lines: ${f.lines.join(', ')}\n`;
-          });
-        }
-
-        promptReport += `\n2. DUPLICATE DOM IDs:\n`;
-        if (audit.duplicateIds.length === 0) promptReport += `- None\n`;
-        else {
-          audit.duplicateIds.forEach(i => {
-            promptReport += `- '#${i.idName}' at Lines: ${i.lines.join(', ')}\n`;
-          });
-        }
-
-        promptReport += `\nINSTRUCTION: Merge duplicate functions into a clean implementation without losing active event handlers.`;
-        executeClipboardCopy(promptReport);
-        triggerToast("AI Audit Report Copied!");
+        if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'drawer';
+        openModal();
       });
 
-      btnPurgeDead?.addEventListener('click', () => {
-        if (!textarea) return;
-        const orig = textarea.value;
-        // SAFE PURGE: Sirf bina attribute wale pure empty <div > </div> hatenge
-        const cleaned = orig.replace(/<div\s*>\s*<\/div>\n?/g, '');
-        if (orig.length !== cleaned.length) {
-          recordHistory();
-          textarea.value = cleaned;
-          updateLineNumbers();
-          updateSyntaxHighlightingOptimized();
-          markActiveModified();
-          openConflictShieldModal();
-          triggerToast("Safe dead tags purged!");
+      // Smart Return: Cancel ya ✖️ dabane par usi menu par wapas le jayega
+      const handleExitShield = () => {
+        safelyDismissModal();
+        if (window.StudioNavRouter) {
+          window.StudioNavRouter.returnToOrigin();
+        }
+      };
+
+      btnClose?.addEventListener('click', handleExitShield);
+      btnDismiss?.addEventListener('click', handleExitShield);
+
+      // 1. Scan Trigger with Strict 3-Attempt Hard Stop
+      btnScan?.addEventListener('click', () => {
+        if (scanAttempts >= 3) {
+          if (navigator.vibrate) try { navigator.vibrate([40, 30, 40]); } catch(e){}
+          btnScan.classList.remove('btn-shake-active');
+          void btnScan.offsetWidth;
+          btnScan.classList.add('btn-shake-active');
+
+          showProfessionalPopup({
+            title: "Scan Limit Reached (3/3)",
+            message: "Active tab has already been verified 3 times.\n\nAll detected items are shown in the list with Jump buttons. Click 'Fix All Issues' or Cancel.",
+            confirmText: "Understood",
+            iconType: "info"
+          });
+          return;
+        }
+
+        scanAttempts++;
+
+        const report = window.StudioBrain ? window.StudioBrain.analyze(textarea ? textarea.value : '') : { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+        lastScannedIssues = report;
+
+        if (statDupes) statDupes.textContent = report.dupes;
+        if (statOverwrites) statOverwrites.textContent = report.overwrites;
+        if (statDead) statDead.textContent = report.dead;
+
+        if (labelScanBtn) {
+          labelScanBtn.textContent = `Rescan (${scanAttempts}/3)`;
+        }
+
+        renderIssuesListUI(report.list);
+
+        if (report.total > 0) {
+          if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/15 border border-amber-500/30 rounded-xl text-center';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-amber-300 font-bold text-xs';
+            bannerTitle.textContent = `Scan Complete: ${report.total} Issue(s) Found`;
+          }
+          if (bannerSub) bannerSub.textContent = 'Duplicates or syntax traps detected. Tap "Fix All Issues" to repair.';
+          if (btnFixAll) {
+            btnFixAll.disabled = false;
+            btnFixAll.classList.remove('opacity-40');
+          }
+          triggerToast(`Scan Complete: ${report.total} Issue(s) Found`);
         } else {
-          triggerToast("No unreferenced empty tags found!");
+          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-center';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-emerald-300 font-bold text-xs';
+            bannerTitle.textContent = 'All Clear • No Bug Found';
+          }
+          if (bannerSub) bannerSub.textContent = 'Active tab code is fully clean with zero conflicts.';
+          if (btnFixAll) {
+            btnFixAll.disabled = true;
+            btnFixAll.classList.add('opacity-40');
+          }
+          triggerToast("Scan Complete: No bug found! ✓");
         }
       });
 
-      btnApplyDirect?.addEventListener('click', () => {
-        const solutionCode = inputDirect.value.trim();
-        if (!solutionCode || !textarea) return;
+            // 2. Interactive Deep Fix-All Engine (Syntax-Balance Guard & Safe Repair)
+      btnFixAll?.addEventListener('click', () => {
+        if (!textarea) return;
+
+        if (lastScannedIssues.total === 0) {
+          if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch (e) {}
+          btnFixAll.classList.remove('btn-shake-active');
+          void btnFixAll.offsetWidth;
+          btnFixAll.classList.add('btn-shake-active');
+          triggerToast("Already fully cleaned. No issues found.");
+          return;
+        }
+
         recordHistory();
-        modal?.classList.add('hidden');
-        const patchModal = document.getElementById('modalPatchStudio');
-        const targetNewInput = document.getElementById('inputTargetNew');
-        if (targetNewInput) targetNewInput.value = solutionCode;
-        if (patchModal) {
-          patchModal.classList.remove('hidden');
-          document.getElementById('tabModeTarget')?.click();
-        }
-        inputDirect.value = '';
-        triggerToast("Loaded into Patch Studio");
-      });
-    }
+        const originalCode = textarea.value;
+        let code = originalCode;
 
+        // Step A: Fix double braces safe replace (only whitespace between braces)
+        code = code.replace(/\}\s+\}/g, '}');
+
+        // Step B: Smart Scope-Protected Line Cleaner
+        const lines = code.split('\n');
+        const outputLines = [];
+        let i = 0;
+        let inAtRuleScope = false;
+        let braceDepth = 0;
+
+        while (i < lines.length) {
+          const line = lines[i];
+          const trimmed = line.trim();
+
+          // Media query aur at-rules ka tracker
+          if (trimmed.startsWith('@media') || trimmed.startsWith('@keyframes') || trimmed.startsWith('@supports')) {
+            inAtRuleScope = true;
+          }
+
+          for (let c = 0; c < line.length; c++) {
+            if (line[c] === '{') braceDepth++;
+            else if (line[c] === '}') {
+              braceDepth = Math.max(0, braceDepth - 1);
+              if (braceDepth === 0) inAtRuleScope = false;
+            }
+          }
+
+          // Root CSS selector matching (Strictly skip media/keyframes rules from deletion)
+          const headerMatch = line.match(/^\s*([.#a-zA-Z0-9_\-\s,>+~*:[\]="']+)\s*\{/);
+          if (headerMatch && !inAtRuleScope && braceDepth <= 1) {
+            const rawSel = headerMatch[1].trim();
+            // Agar nested na ho aur na hi at-rule ho
+            if (!rawSel.startsWith('@') && lastScannedIssues?.cssMap?.has(rawSel)) {
+              const registeredLine = lastScannedIssues.cssMap.get(rawSel);
+              const currentLineIdx = i + 1;
+
+              // Agar yeh line registered duplicate line se aage ki exact match hai
+              if (currentLineIdx > registeredLine) {
+                // Find complete block to remove cleanly
+                let blockBraces = 0;
+                let foundEnd = false;
+                let skipIdx = i;
+
+                while (skipIdx < lines.length) {
+                  for (let ch of lines[skipIdx]) {
+                    if (ch === '{') blockBraces++;
+                    if (ch === '}') {
+                      blockBraces--;
+                      if (blockBraces === 0) {
+                        foundEnd = true;
+                        break;
+                      }
+                    }
+                  }
+                  skipIdx++;
+                  if (foundEnd) break;
+                }
+
+                if (foundEnd) {
+                  i = skipIdx;
+                  continue;
+                }
+              }
+            }
+          }
+
+          outputLines.push(line);
+          i++;
+        }
+
+        const candidateCode = outputLines.join('\n');
+
+        // 🛡️ PRE-FLIGHT SYNTAX BALANCE CHECK (ROLLBACK GUARD)
+        const countChar = (str, char) => (str.match(new RegExp('\\' + char, 'g')) || []).length;
+        const origOpen = countChar(originalCode, '{');
+        const origClose = countChar(originalCode, '}');
+        const candOpen = countChar(candidateCode, '{');
+        const candClose = countChar(candidateCode, '}');
+
+        // Agar bracket balance toota toh foran rollback karein
+        if (candOpen !== candClose || (origOpen === origClose && candOpen !== origOpen)) {
+          triggerToast("⚠️ Repair cancelled: Syntax safety balance preserved.");
+          return;
+        }
+
+        // Apply Verified Code
+        textarea.value = candidateCode;
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        markActiveModified();
+
+        // Re-analyze via StudioBrain to verify resolution
+        const newReport = window.StudioBrain ? window.StudioBrain.analyze(candidateCode) : { total: 0, list: [] };
+        lastScannedIssues = newReport;
+
+        if (statDupes) statDupes.textContent = newReport.dupes || 0;
+        if (statOverwrites) statOverwrites.textContent = newReport.overwrites || 0;
+        if (statDead) statDead.textContent = newReport.dead || 0;
+
+        renderIssuesListUI(newReport.list);
+
+        if (newReport.total === 0) {
+          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-emerald-300 font-bold text-xs';
+            bannerTitle.textContent = 'All Cleaned Successfully! (0 Issues)';
+          }
+          if (bannerSub) bannerSub.textContent = 'All duplicate rules and broken braces have been completely resolved.';
+          if (btnFixAll) {
+            btnFixAll.disabled = true;
+            btnFixAll.classList.add('opacity-40');
+          }
+          triggerToast("All Issues Fixed Safely! 🛡️");
+        } else {
+          if (bannerTitle) {
+            bannerTitle.textContent = `Repaired: ${newReport.total} Issue(s) Remaining`;
+          }
+          triggerToast(`Repaired with ${newReport.total} safe items remaining`);
+        }
+      });
+      }
+
+    // Auto-initialize Scanner Engine
+    setupConflictShieldSystem();
+
+           // =========================================================================
+    // SMART CODE CLEANER & GLOBAL COLLISION GUARD (IN-APP DIALOG • NO BROWSER POPUP)
     // =========================================================================
-    // SMART RANGE SELECTION & CODE ARMOR SANITIZER ENGINE
-    // =========================================================================
-    function sanitizeCodeArmor(rawCode, currentEditorVal, startPos) {
+    async function sanitizeCodeArmor(rawCode, currentEditorVal, startPos, endPos) {
       if (!rawCode) return "";
       let cleaned = rawCode;
 
-      // 1. Strip Markdown Code Fences (```html, ```javascript, ```)
+      // 1. Strip Markdown Code Fences (```html, ```css, ```js, etc.)
       cleaned = cleaned.replace(/```[a-zA-Z]*\n?/g, '').replace(/```/g, '');
 
-      // 2. Strip AI Instruction Boilerplate
+      // 2. Strip AI Instructions & Chat Words
       cleaned = cleaned.replace(/^\s*\/\/\s*(Replace with|Search text|Start|End|Shuru|Khatam|Step).*$/gmi, '');
       cleaned = cleaned.replace(/^\s*(Kahan Se Kahan Tak Select Karna Hai\?|Exact Selection Range:|Screenshot).*$/gmi, '');
 
-      // 3. Remove leading/trailing blank lines introduced by stripped comments
+      // 3. Remove Empty Blank Lines From Top and Bottom
       const lines = cleaned.split('\n');
       while (lines.length && !lines[0].trim()) lines.shift();
       while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
 
-      // 4. Duplicate Boundary Edge Check (Agar pehli line already editor mein mojood hai)
+      // 4. Safe Boundary Protection (Drop duplicate first line if already at cursor)
       if (lines.length > 0 && currentEditorVal) {
         const textBefore = currentEditorVal.substring(0, startPos).trimEnd();
         const prevLine = textBefore.split('\n').pop()?.trim();
         if (prevLine && prevLine === lines[0].trim()) {
-          lines.shift(); // Pehli duplicate line safely drop
+          lines.shift();
         }
       }
 
-      return lines.join('\n');
+      const finalSnippet = lines.join('\n');
+
+      // 5. GLOBAL 10,000-LINE CONFLICT & SCOPE GUARD
+      if (currentEditorVal && finalSnippet.trim()) {
+        const fullDoc = currentEditorVal;
+
+        // Check A: Scope Trap (Unclosed '{' bracket before cursor)
+        const textBeforeCursor = fullDoc.substring(0, startPos);
+        const openBraces = (textBeforeCursor.match(/\{/g) || []).length;
+        const closeBraces = (textBeforeCursor.match(/\}/g) || []).length;
+        if (openBraces > closeBraces && (finalSnippet.includes('{') && finalSnippet.includes('}'))) {
+          const proceed = await showStudioModalConfirm({
+            title: "Unclosed Bracket Warning",
+            message: "Warning: An opening bracket '{' is not closed before this position.\n\nPasting a new block here will create double brackets '}}' and break code.\n\nPress OK to Paste Anyway, or Cancel to stop.",
+            confirmText: "Paste Anyway",
+            cancelText: "Cancel",
+            iconType: "danger"
+          });
+          if (!proceed) return null;
+        }
+
+        // Check B: Exclude Current Selection Range (Prevents self-match false alarm)
+        const targetEnd = (typeof endPos === 'number') ? endPos : (textarea && textarea.selectionEnd > startPos ? textarea.selectionEnd : startPos);
+        const docWithoutTarget = fullDoc.substring(0, startPos) + fullDoc.substring(targetEnd);
+
+        // Check C: Smart Collision Detector via Unified StudioBrain
+        let conflictDetected = false;
+        let conflictName = "";
+
+        // 1. CSS Selector Collision (.class { or #id {)
+        const cssMatch = finalSnippet.match(/^\s*([.#a-zA-Z0-9_\-\s,>:+()]+)\{/m);
+        if (cssMatch && cssMatch[1]) {
+          const primarySel = cssMatch[1].trim().split(',')[0].trim();
+          if (primarySel.length > 2 && !primarySel.startsWith('@')) {
+            const escSel = primarySel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (new RegExp(`${escSel}\\s*\\{`).test(docWithoutTarget)) {
+              conflictDetected = true;
+              conflictName = `CSS rule "${primarySel}"`;
+            }
+          }
+        }
+
+        // 2. JS Function Collision (function name() or const name =)
+        if (!conflictDetected) {
+          const fnMatch = finalSnippet.match(/(?:function\s+([a-zA-Z0-9_$]+)|(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=)/);
+          const fnName = fnMatch ? (fnMatch[1] || fnMatch[2]) : null;
+          if (fnName && fnName.length > 2) {
+            const escFn = fnName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (new RegExp(`(?:function\\s+${escFn}|(?:const|let|var)\\s+${escFn}\\s*=)`).test(docWithoutTarget)) {
+              conflictDetected = true;
+              conflictName = `JavaScript identifier "${fnName}"`;
+            }
+          }
+        }
+
+        // 3. HTML Duplicate ID Collision (id="my-id")
+        if (!conflictDetected) {
+          const idMatch = finalSnippet.match(/\bid=["']([^"']+)["']/);
+          if (idMatch && idMatch[1]) {
+            const escId = idMatch[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (new RegExp(`\\bid=["']${escId}["']`).test(docWithoutTarget)) {
+              conflictDetected = true;
+              conflictName = `HTML ID "#${idMatch[1]}"`;
+            }
+          }
+        }
+
+        // In-App Professional Dialog (Zero Browser Popups)
+        if (conflictDetected) {
+          const allowDup = await showStudioModalConfirm({
+            title: "Duplicate Code Found",
+            message: `${conflictName} already exists on another line in this file.\n\nPress OK to Paste Anyway, or Cancel to stop duplicate.`,
+            confirmText: "Paste Anyway",
+            cancelText: "Cancel",
+            iconType: "warning"
+          });
+          if (!allowDup) return null;
+        }
+      }
+
+      return finalSnippet;
     }
 
-        function setupSmartRangeEngine() {
+            // =========================================================================
+    // SMART RANGE SELECTOR & FLOATING CAPSULE ENGINE (ZERO-GLUE LINE ARMOR)
+    // =========================================================================
+    function setupSmartRangeEngine() {
       const modal = document.getElementById('modalSmartRangeSelect');
       const btnClose = document.getElementById('btnCloseRangeModal');
       const inputFrom = document.getElementById('inputSelRangeFrom');
@@ -4262,30 +4962,106 @@ CRITICAL OPERATIONAL RULES:
       const labelStats = document.getElementById('labelRangeStats');
       const inputReplace = document.getElementById('inputRangeReplacementText');
 
-      const btnActionSelect = document.getElementById('btnRangeActionSelect');
-      const btnActionCopy = document.getElementById('btnRangeActionCopy');
-      const btnActionDelete = document.getElementById('btnRangeActionDelete');
-      const btnActionCleanReplace = document.getElementById('btnRangeActionCleanReplace');
+      const btnSelect = document.getElementById('btnRangeActionSelect');
+      const btnCopy = document.getElementById('btnRangeActionCopy');
+      const btnDelete = document.getElementById('btnRangeActionDelete');
+      const btnCleanReplace = document.getElementById('btnRangeActionCleanReplace');
 
-      // Floating Capsule Elements
+      const optMore = document.getElementById('optSmartRangeSelect');
+      const btnKeyRange = document.getElementById('btnKeyRangeSelect');
+
+      // Floating Capsule & Controls
       const capsule = document.getElementById('floatingSelectionCapsule');
       const capsuleRangeBtn = document.getElementById('labelCapsuleRangeInfo');
       const capsuleRangeText = document.getElementById('labelCapsuleRangeText');
-      const btnNudgeDec = document.getElementById('btnCapsuleNudgeDec');
       const btnNudgeInc = document.getElementById('btnCapsuleNudgeInc');
+      const btnNudgeDec = document.getElementById('btnCapsuleNudgeDec');
       const btnCapPasteReplace = document.getElementById('btnCapsulePasteReplace');
       const btnCapCopy = document.getElementById('btnCapsuleCopy');
       const btnCapCut = document.getElementById('btnCapsuleCut');
-      const btnCapComment = document.getElementById('btnCapsuleComment');
       const btnCapDelete = document.getElementById('btnCapsuleDelete');
       const btnCapDismiss = document.getElementById('btnCapsuleDismiss');
+      const btnToggleComment = document.getElementById('btnCapsuleComment');
 
-      // Active Range Tracking Memory
       let activeRange = { startLine: 1, endLine: 1, startPos: 0, endPos: 0 };
+                  // 🖐️ TOUCH DRAG & DROP ENGINE (STRICT TOUCH ISOLATION - NO PAGE SCROLL)
+      if (capsule) {
+        capsule.style.touchAction = 'none'; // Native browser scroll freeze on capsule
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let initialLeft = 0, initialTop = 0;
 
+        capsule.addEventListener('touchstart', (e) => {
+          // Buttons (Jaise +, -, Copy, Replace, Delete) par tap karne par drag na ho
+          if (e.target.closest('button')) return;
+          
+          isDragging = true;
+          const touch = e.touches[0];
+          const rect = capsule.getBoundingClientRect();
+          startX = touch.clientX;
+          startY = touch.clientY;
+          initialLeft = rect.left;
+          initialTop = rect.top;
+
+          // Freeze auto-centering to prevent snapping
+          capsule.style.transform = 'none';
+          capsule.style.bottom = 'auto';
+          capsule.style.left = `${initialLeft}px`;
+          capsule.style.top = `${initialTop}px`;
+        }, { passive: false });
+
+        capsule.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          
+          // 🛡️ HARD STOP: Page aur Code Textarea ka scroll 100% block karein
+          e.preventDefault();
+          e.stopPropagation();
+
+          const touch = e.touches[0];
+          const deltaX = touch.clientX - startX;
+          const deltaY = touch.clientY - startY;
+
+          let newLeft = initialLeft + deltaX;
+          let newTop = initialTop + deltaY;
+
+          // Safe Screen Boundaries: Screen ke baahar na jaaye
+          const maxLeft = window.innerWidth - capsule.offsetWidth - 8;
+          const maxTop = window.innerHeight - capsule.offsetHeight - 8;
+
+          newLeft = Math.max(8, Math.min(newLeft, maxLeft));
+          newTop = Math.max(8, Math.min(newTop, maxTop));
+
+          capsule.style.left = `${newLeft}px`;
+          capsule.style.top = `${newTop}px`;
+        }, { passive: false });
+
+        const stopDrag = (e) => {
+          if (isDragging) {
+            isDragging = false;
+            if (e && e.cancelable) e.preventDefault();
+          }
+        };
+
+        capsule.addEventListener('touchend', stopDrag, { passive: false });
+        capsule.addEventListener('touchcancel', stopDrag, { passive: false });
+      }
+
+            const safelyCloseRangeModal = () => {
+        modal?.classList.add('hidden');
+        if (window.StudioNavRouter) {
+          window.StudioNavRouter.returnToOrigin();
+        }
+      };
+
+      const safelyDismissCapsule = () => {
+        capsule?.classList.add('hidden');
+      };
+
+      // 🛡️ ACCURATE LINE RANGE CALCULATOR (FULL LINE BOUNDARY PRESERVED)
       const getLinesData = (fromLine, toLine) => {
         if (!textarea) return null;
-        const lines = textarea.value.split('\n');
+        const val = textarea.value;
+        const lines = val.split('\n');
         const startLineIdx = Math.max(1, Math.min(fromLine, lines.length));
         const endLineIdx = Math.max(startLineIdx, Math.min(toLine, lines.length));
 
@@ -4294,111 +5070,166 @@ CRITICAL OPERATIONAL RULES:
           startPos += lines[i].length + 1;
         }
 
-        let endPos = startPos;
-        for (let i = startLineIdx - 1; i < endLineIdx; i++) {
-          endPos += lines[i].length + (i === lines.length - 1 ? 0 : 1);
+        let endPos = 0;
+        for (let i = 0; i < endLineIdx; i++) {
+          endPos += lines[i].length + 1;
         }
+        endPos = Math.min(endPos, val.length);
 
-        return { startPos, endPos, startLineIdx, endLineIdx, count: (endLineIdx - startLineIdx + 1) };
+        return { startPos, endPos, startLineIdx, endLineIdx, lineCount: (endLineIdx - startLineIdx + 1) };
       };
 
-      const updateStatsPreview = () => {
-        const from = parseInt(inputFrom.value, 10) || 1;
-        const to = parseInt(inputTo.value, 10) || from;
-        const data = getLinesData(from, to);
-        if (data && labelStats) {
-          labelStats.textContent = `${data.count} Line(s) Selected (${data.endPos - data.startPos} chars)`;
-        }
-      };
-
-      inputFrom?.addEventListener('input', updateStatsPreview);
-      inputTo?.addEventListener('input', updateStatsPreview);
-
-      const applyRangeSelectionToEditor = (from, to, showToastMessage = true) => {
+      const applyRangeSelectionToEditor = (from, to, showFloatingCapsule = true) => {
         const data = getLinesData(from, to);
         if (!data || !textarea) return;
 
-        activeRange = { startLine: data.startLineIdx, endLine: data.endLineIdx, startPos: data.startPos, endPos: data.endPos };
+        activeRange = {
+          startLine: data.startLineIdx,
+          endLine: data.endLineIdx,
+          startPos: data.startPos,
+          endPos: data.endPos
+        };
 
         textarea.focus();
         textarea.setSelectionRange(data.startPos, data.endPos);
-
         const lineHeight = 20.15;
         textarea.scrollTop = Math.max(0, (data.startLineIdx - 4) * lineHeight);
         if (gutter) gutter.scrollTop = textarea.scrollTop;
 
-        if (capsule) {
-          if (capsuleRangeText) capsuleRangeText.textContent = `Ln ${data.startLineIdx}-${data.endLineIdx}`;
+        if (showFloatingCapsule && capsule) {
           capsule.classList.remove('hidden');
-          if (window.lucide) lucide.createIcons();
+          if (capsuleRangeText) {
+            capsuleRangeText.textContent = `Ln ${data.startLineIdx}-${data.endLineIdx}`;
+          }
         }
-
-        updateCursorIndicator();
-        if (showToastMessage) triggerToast(`Lines ${data.startLineIdx} to ${data.endLineIdx} Locked ✓`);
       };
 
-      const openRangeModalWithCurrent = (overrideFrom = null, overrideTo = null) => {
+      const openRangeModalWithCurrent = (presetRange = null) => {
         if (!textarea) return;
-        const lines = textarea.value.split('\n');
+        let fromLine = 1;
+        let toLine = 1;
 
-        let defaultFrom = overrideFrom;
-        let defaultTo = overrideTo;
-
-        if (defaultFrom === null) {
-          const pos = textarea.selectionStart;
-          defaultFrom = textarea.value.substring(0, pos).split('\n').length;
-          defaultTo = Math.min(lines.length, defaultFrom + 5);
+        if (presetRange) {
+          fromLine = presetRange.startLine;
+          toLine = presetRange.endLine;
+        } else {
+          const selStart = textarea.selectionStart;
+          const selEnd = textarea.selectionEnd;
+          const textUpToStart = textarea.value.substring(0, selStart);
+          const textUpToEnd = textarea.value.substring(0, selEnd);
+          fromLine = textUpToStart.split('\n').length;
+          toLine = textUpToEnd.split('\n').length;
         }
 
-        if (inputFrom) inputFrom.value = defaultFrom;
-        if (inputTo) inputTo.value = defaultTo;
+        if (inputFrom) inputFrom.value = fromLine;
+        if (inputTo) inputTo.value = toLine;
         if (inputReplace) inputReplace.value = '';
 
-        updateStatsPreview();
+        const data = getLinesData(fromLine, toLine);
+        if (labelStats && data) {
+          labelStats.textContent = `${data.lineCount} Line(s) Selected (${data.endPos - data.startPos} chars)`;
+        }
+
         modal?.classList.remove('hidden');
         if (window.lucide) lucide.createIcons();
       };
 
-      document.getElementById('optSmartRangeSelect')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        openRangeModalWithCurrent();
+      // Auto-Trigger Capsule on Touch Selection in Editor
+      textarea?.addEventListener('mouseup', () => {
+        if (textarea.selectionStart !== textarea.selectionEnd) {
+          const before = textarea.value.substring(0, textarea.selectionStart);
+          const sel = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+          const startLine = before.split('\n').length;
+          const endLine = startLine + sel.split('\n').length - 1;
+          activeRange = { startLine, endLine, startPos: textarea.selectionStart, endPos: textarea.selectionEnd };
+          if (capsule) {
+            capsule.classList.remove('hidden');
+            if (capsuleRangeText) capsuleRangeText.textContent = `Ln ${startLine}-${endLine}`;
+          }
+        }
       });
 
-      document.getElementById('btnKeyRangeSelect')?.addEventListener('click', () => openRangeModalWithCurrent());
-      btnClose?.addEventListener('click', () => modal?.classList.add('hidden'));
+            optMore?.addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+        openRangeModalWithCurrent();
+      });
+      btnKeyRange?.addEventListener('click', () => openRangeModalWithCurrent());
 
-      // 1. SELECT RANGE & LOCK CAPSULE
-      btnActionSelect?.addEventListener('click', () => {
+      btnClose?.addEventListener('click', safelyCloseRangeModal);
+      btnCapDismiss?.addEventListener('click', safelyDismissCapsule);
+
+      const handleInputChange = () => {
+        const from = parseInt(inputFrom?.value || '1', 10);
+        const to = parseInt(inputTo?.value || '1', 10);
+        const data = getLinesData(from, to);
+        if (labelStats && data) {
+          labelStats.textContent = `${data.lineCount} Line(s) Selected (${data.endPos - data.startPos} chars)`;
+        }
+      };
+      inputFrom?.addEventListener('input', handleInputChange);
+      inputTo?.addEventListener('input', handleInputChange);
+
+      btnSelect?.addEventListener('click', () => {
         const from = parseInt(inputFrom.value, 10) || 1;
         const to = parseInt(inputTo.value, 10) || from;
         modal?.classList.add('hidden');
         applyRangeSelectionToEditor(from, to, true);
+        triggerToast(`Selected Lines ${from} to ${to} 🎯`);
       });
 
-      // 2. INTERACTIVE BADGE CLICK: RE-OPEN MODAL WITH CURRENT RANGE
       capsuleRangeBtn?.addEventListener('click', () => {
-        openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
+        openRangeModalWithCurrent(activeRange);
       });
 
-      // 3. NUDGERS: (+) INCREASE 1 LINE & (-) DECREASE 1 LINE
       btnNudgeInc?.addEventListener('click', (e) => {
         e.preventDefault();
-        const lines = textarea ? textarea.value.split('\n').length : activeRange.endLine;
-        if (activeRange.endLine < lines) {
-          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine + 1, false);
-          triggerToast(`Extended to Ln ${activeRange.endLine} (+)`);
+        const lines = textarea ? textarea.value.split('\n') : [];
+        if (activeRange.endLine < lines.length) {
+          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine + 1, true);
+          triggerToast(`Extended to Ln ${activeRange.endLine}`);
         }
       });
 
       btnNudgeDec?.addEventListener('click', (e) => {
         e.preventDefault();
         if (activeRange.endLine > activeRange.startLine) {
-          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine - 1, false);
-          triggerToast(`Shrunk to Ln ${activeRange.endLine} (-)`);
+          applyRangeSelectionToEditor(activeRange.startLine, activeRange.endLine - 1, true);
+          triggerToast(`Shrunk to Ln ${activeRange.endLine}`);
         }
       });
 
-      // 4. CAPSULE DIRECT 1-TAP REPLACE FROM CLIPBOARD
+      // 🛡️ ZERO-GLUE REPLACEMENT DISPATCHER (PREVENTS LINE MERGING)
+      const executeCleanReplacement = async (rawCode, startPos, endPos, startLine, endLine) => {
+        if (!textarea) return;
+        const cleanCode = await sanitizeCodeArmor(rawCode, textarea.value, startPos, endPos);
+        if (cleanCode === null) return;
+
+        recordHistory();
+
+        let formattedReplacement = cleanCode;
+        const fullDoc = textarea.value;
+
+        // Agar replacement ke baad agla character exist karta hai aur wo newline nahi hai toh newline jodein
+        if (endPos < fullDoc.length && fullDoc[endPos] !== '\n' && !formattedReplacement.endsWith('\n')) {
+          formattedReplacement += '\n';
+        }
+
+        textarea.setRangeText(formattedReplacement, startPos, endPos, 'end');
+        textarea.focus();
+        textarea.setSelectionRange(startPos, startPos + formattedReplacement.length);
+
+        const lineHeight = 20.15;
+        textarea.scrollTop = Math.max(0, (startLine - 4) * lineHeight);
+        if (gutter) gutter.scrollTop = textarea.scrollTop;
+
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        markActiveModified();
+        capsule?.classList.add('hidden');
+        triggerToast("Safely Cleaned & Replaced! ✨");
+      };
+
       btnCapPasteReplace?.addEventListener('click', async () => {
         if (!textarea) return;
         try {
@@ -4407,62 +5238,17 @@ CRITICAL OPERATIONAL RULES:
             clipText = await navigator.clipboard.readText();
           }
           if (!clipText.trim()) {
-            openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
-            triggerToast("Clipboard empty. Paste code in modal.");
+            openRangeModalWithCurrent(activeRange);
+            triggerToast("Clipboard empty. Paste code manually.");
             return;
           }
-
-          const cleanCode = sanitizeCodeArmor(clipText, textarea.value, activeRange.startPos);
-          recordHistory();
-          textarea.setRangeText(cleanCode, activeRange.startPos, activeRange.endPos, 'end');
-
-          textarea.focus();
-          textarea.setSelectionRange(activeRange.startPos, activeRange.startPos + cleanCode.length);
-          const lineHeight = 20.15;
-          textarea.scrollTop = Math.max(0, (activeRange.startLine - 4) * lineHeight);
-          if (gutter) gutter.scrollTop = textarea.scrollTop;
-
-          updateLineNumbers();
-          updateSyntaxHighlightingOptimized();
-          markActiveModified();
-          capsule?.classList.add('hidden');
-          triggerToast("Code Armor 1-Tap Swapped! 🛡️");
+          await executeCleanReplacement(clipText, activeRange.startPos, activeRange.endPos, activeRange.startLine, activeRange.endLine);
         } catch (err) {
-          openRangeModalWithCurrent(activeRange.startLine, activeRange.endLine);
+          openRangeModalWithCurrent(activeRange);
         }
       });
 
-      // 5. COPY RANGE
-      btnActionCopy?.addEventListener('click', () => {
-        const from = parseInt(inputFrom.value, 10) || 1;
-        const to = parseInt(inputTo.value, 10) || from;
-        const data = getLinesData(from, to);
-        if (!data) return;
-
-        const snippet = textarea.value.substring(data.startPos, data.endPos);
-        executeClipboardCopy(snippet);
-        modal?.classList.add('hidden');
-      });
-
-      // 6. DELETE RANGE
-      btnActionDelete?.addEventListener('click', () => {
-        const from = parseInt(inputFrom.value, 10) || 1;
-        const to = parseInt(inputTo.value, 10) || from;
-        const data = getLinesData(from, to);
-        if (!data) return;
-
-        recordHistory();
-        textarea.setRangeText('', data.startPos, data.endPos, 'end');
-        updateLineNumbers();
-        updateSyntaxHighlightingOptimized();
-        markActiveModified();
-        modal?.classList.add('hidden');
-        capsule?.classList.add('hidden');
-        triggerToast(`Lines ${data.startLineIdx} to ${data.endLineIdx} Deleted!`);
-      });
-
-      // 7. CLEAN & REPLACE RANGE (INSIDE MODAL)
-      btnActionCleanReplace?.addEventListener('click', () => {
+      btnCleanReplace?.addEventListener('click', async () => {
         const from = parseInt(inputFrom.value, 10) || 1;
         const to = parseInt(inputTo.value, 10) || from;
         const data = getLinesData(from, to);
@@ -4473,29 +5259,51 @@ CRITICAL OPERATIONAL RULES:
           return;
         }
 
-        const cleanCode = sanitizeCodeArmor(rawNewCode, textarea.value, data.startPos);
+        modal?.classList.add('hidden');
+        await executeCleanReplacement(rawNewCode, data.startPos, data.endPos, data.startLineIdx, data.endLineIdx);
+      });
+
+      btnCopy?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        if (!data) return;
+        const snippet = textarea.value.substring(data.startPos, data.endPos);
+        executeClipboardCopy(snippet);
+        modal?.classList.add('hidden');
+      });
+
+      const executeDeleteRange = async (startPos, endPos, startLine, endLine) => {
+        const confirmed = await showStudioModalConfirm({
+          title: "Delete Selected Lines?",
+          message: `Are you sure you want to delete Lines ${startLine} to ${endLine}?\n\nThis action can be undone using Undo.`,
+          confirmText: "Delete Lines",
+          cancelText: "Cancel",
+          iconType: "danger"
+        });
+        if (!confirmed) return;
 
         recordHistory();
-        textarea.setRangeText(cleanCode, data.startPos, data.endPos, 'end');
-
-        textarea.focus();
-        textarea.setSelectionRange(data.startPos, data.startPos + cleanCode.length);
-        const lineHeight = 20.15;
-        textarea.scrollTop = Math.max(0, (data.startLineIdx - 4) * lineHeight);
-        if (gutter) gutter.scrollTop = textarea.scrollTop;
-
+        textarea.setRangeText('', startPos, endPos, 'end');
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
         markActiveModified();
         modal?.classList.add('hidden');
         capsule?.classList.add('hidden');
-        triggerToast("Code Armor Cleaned & Replaced Successfully! 🛡️");
+        triggerToast(`Lines ${startLine}-${endLine} Deleted 🗑️`);
+      };
+
+      btnDelete?.addEventListener('click', () => {
+        const from = parseInt(inputFrom.value, 10) || 1;
+        const to = parseInt(inputTo.value, 10) || from;
+        const data = getLinesData(from, to);
+        if (data) executeDeleteRange(data.startPos, data.endPos, data.startLineIdx, data.endLineIdx);
       });
 
-      // CAPSULE STANDARD BUTTONS
-      btnCapDismiss?.addEventListener('click', () => {
-        capsule?.classList.add('hidden');
-        if (textarea) textarea.setSelectionRange(textarea.selectionEnd, textarea.selectionEnd);
+      btnCapDelete?.addEventListener('click', () => {
+        if (textarea && textarea.selectionStart !== textarea.selectionEnd) {
+          executeDeleteRange(activeRange.startPos, activeRange.endPos, activeRange.startLine, activeRange.endLine);
+        }
       });
 
       btnCapCopy?.addEventListener('click', () => {
@@ -4506,7 +5314,8 @@ CRITICAL OPERATIONAL RULES:
 
       btnCapCut?.addEventListener('click', () => {
         if (!textarea) return;
-        const s = textarea.selectionStart, e = textarea.selectionEnd;
+        const s = textarea.selectionStart;
+        const e = textarea.selectionEnd;
         const txt = textarea.value.substring(s, e);
         if (txt) {
           executeClipboardCopy(txt);
@@ -4516,27 +5325,13 @@ CRITICAL OPERATIONAL RULES:
           updateSyntaxHighlightingOptimized();
           markActiveModified();
           capsule?.classList.add('hidden');
-          triggerToast("Cut to Clipboard");
         }
       });
 
-      btnCapDelete?.addEventListener('click', () => {
+      btnToggleComment?.addEventListener('click', () => {
         if (!textarea) return;
-        const s = textarea.selectionStart, e = textarea.selectionEnd;
-        if (s !== e) {
-          recordHistory();
-          textarea.setRangeText('', s, e, 'end');
-          updateLineNumbers();
-          updateSyntaxHighlightingOptimized();
-          markActiveModified();
-          capsule?.classList.add('hidden');
-          triggerToast("Selection Deleted");
-        }
-      });
-
-      btnCapComment?.addEventListener('click', () => {
-        if (!textarea) return;
-        const s = textarea.selectionStart, e = textarea.selectionEnd;
+        const s = textarea.selectionStart;
+        const e = textarea.selectionEnd;
         const selected = textarea.value.substring(s, e);
         if (!selected) return;
 
@@ -4550,7 +5345,7 @@ CRITICAL OPERATIONAL RULES:
             ? selected.slice(4, -3)
             : `<!-- ${selected} -->`;
         } else {
-          toggled = selected.split('\n').map(l => l.startsWith('// ') ? l.slice(3) : `// ${l}`).join('\n');
+          toggled = selected.split('\n').map(l => l.startsWith('//') ? l.slice(2) : `//${l}`).join('\n');
         }
 
         textarea.setRangeText(toggled, s, e, 'select');
@@ -4560,17 +5355,21 @@ CRITICAL OPERATIONAL RULES:
         triggerToast("Comment Toggled //");
       });
     }
+    setupSmartRangeEngine();
+
     // =========================================================================
-    // SMART CODE INJECTOR & PATCH STUDIO (UPGRADED: BOUNDARY-AWARE & FUZZY MATCH)
+    // SMART CODE INJECTOR & PATCH STUDIO (100% HTML ID MATCHED)
     // =========================================================================
     function setupSmartPatchStudio() {
+      // Modals & Triggers matched exactly with index_2.html
       const modal = document.getElementById('modalPatchStudio');
-      const btnOpenHeader = document.getElementById('btnHeaderQuickPatch');
+      const btnHeaderQuick = document.getElementById('btnHeaderQuickPatch');
       const optOpenMore = document.getElementById('optOpenPatchStudio');
       const dNavOpen = document.getElementById('dNavTriggerPatchStudio');
       const btnClose = document.getElementById('btnClosePatchStudio');
       const btnCancel = document.getElementById('btnCancelPatchStudio');
 
+      // Exact Tab Buttons & Panels
       const tabBatch = document.getElementById('tabModeBatch');
       const tabTarget = document.getElementById('tabModeTarget');
       const tabLine = document.getElementById('tabModeLine');
@@ -4585,85 +5384,89 @@ CRITICAL OPERATIONAL RULES:
       const btnUndoSwap = document.getElementById('btnPatchModalUndo');
       const btnRedoSwap = document.getElementById('btnPatchModalRedo');
 
-      const openStudio = () => {
-        modal?.classList.remove('hidden');
-        updateBatchStackUI();
+            const safelyCloseStudio = (returnToMenu = false) => {
+        modal?.classList.add('hidden');
+        if (returnToMenu && window.StudioNavRouter) {
+          window.StudioNavRouter.returnToOrigin();
+        }
       };
 
-      const closeStudio = () => modal?.classList.add('hidden');
+      const switchPatchTab = (tabType) => {
+        const tabs = [tabBatch, tabTarget, tabLine];
+        const panels = [panelBatch, panelTarget, panelLine];
 
-      btnOpenHeader?.addEventListener('click', openStudio);
+        tabs.forEach(t => {
+          t?.classList.remove('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+          t?.classList.add('text-[var(--text-muted)]', 'font-medium');
+        });
+        panels.forEach(p => p?.classList.add('hidden'));
+
+        if (tabType === 'batch') {
+          tabBatch?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+          tabBatch?.classList.remove('text-[var(--text-muted)]', 'font-medium');
+          panelBatch?.classList.remove('hidden');
+        } else if (tabType === 'target') {
+          tabTarget?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+          tabTarget?.classList.remove('text-[var(--text-muted)]', 'font-medium');
+          panelTarget?.classList.remove('hidden');
+        } else if (tabType === 'line') {
+          tabLine?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+          tabLine?.classList.remove('text-[var(--text-muted)]', 'font-medium');
+          panelLine?.classList.remove('hidden');
+        }
+      };
+
+      tabBatch?.addEventListener('click', () => switchPatchTab('batch'));
+      tabTarget?.addEventListener('click', () => switchPatchTab('target'));
+      tabLine?.addEventListener('click', () => switchPatchTab('line'));
+
+      const updateBatchStackUI = () => {
+        if (!textarea) return;
+        const code = textarea.value;
+
+        if (!code.trim()) {
+          if (badgeStatus) badgeStatus.textContent = 'Empty Project';
+          if (labelAdvice) labelAdvice.textContent = 'Editor is empty. Paste starting HTML structure.';
+        } else if (!code.includes('</main>') && !code.includes('</header>')) {
+          if (badgeStatus) badgeStatus.textContent = 'Batch 1 Detected';
+          if (labelAdvice) labelAdvice.textContent = 'Batch 1 present. Ready to inject content batches.';
+        } else if (!code.includes('</html>')) {
+          if (badgeStatus) badgeStatus.textContent = 'Batch 2 Detected';
+          if (labelAdvice) labelAdvice.textContent = 'HTML body detected. Ready for script/engine batches.';
+        } else {
+          if (badgeStatus) badgeStatus.textContent = 'File Complete';
+          if (labelAdvice) labelAdvice.textContent = 'File structure is complete with full closing tags.';
+        }
+      };
+
+      const openStudio = () => {
+        updateBatchStackUI();
+        modal?.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      };
+
+            btnHeaderQuick?.addEventListener('click', () => {
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'editor';
+        openStudio();
+      });
+
       optOpenMore?.addEventListener('click', () => {
         document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
         openStudio();
       });
+
       dNavOpen?.addEventListener('click', () => {
-        closeDrawerPanel();
+        if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'drawer';
         openStudio();
       });
 
-      btnClose?.addEventListener('click', closeStudio);
-      btnCancel?.addEventListener('click', closeStudio);
+      btnClose?.addEventListener('click', () => safelyCloseStudio(true));
+      btnCancel?.addEventListener('click', () => safelyCloseStudio(true));
 
-      btnUndoSwap?.addEventListener('click', () => {
-        performUndo();
-        triggerToast("Swapped Code Undone ↶");
-      });
-
-      btnRedoSwap?.addEventListener('click', () => {
-        performRedo();
-        triggerToast("Swapped Code Redone ↷");
-      });
-
-      const setMode = (mode) => {
-        [tabBatch, tabTarget, tabLine].forEach(t => {
-          t.className = 'flex-1 py-1.5 text-center font-medium text-[11px] rounded-lg text-[var(--text-muted)] hover:text-white transition';
-        });
-        [panelBatch, panelTarget, panelLine].forEach(p => p.classList.add('hidden'));
-
-        if (mode === 'batch') {
-          tabBatch.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition';
-          panelBatch.classList.remove('hidden');
-          updateBatchStackUI();
-        } else if (mode === 'target') {
-          tabTarget.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition';
-          panelTarget.classList.remove('hidden');
-        } else if (mode === 'line') {
-          tabLine.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition';
-          panelLine.classList.remove('hidden');
-        }
-      };
-
-      tabBatch?.addEventListener('click', () => setMode('batch'));
-      tabTarget?.addEventListener('click', () => setMode('target'));
-      tabLine?.addEventListener('click', () => setMode('line'));
-
-      function updateBatchStackUI() {
-        if (!textarea) return;
-        const code = textarea.value.trim();
-        const lines = textarea.value.split('\n').length;
-
-        if (!code) {
-          badgeStatus.textContent = 'Ready for Batch 1';
-          badgeStatus.className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = 'Editor is empty. Paste Batch 1 below to start fresh.';
-        } else if (!code.includes('</main>') && !code.includes('</body>')) {
-          badgeStatus.textContent = `Batch 1 Detected (${lines} Lines)`;
-          badgeStatus.className = 'px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `Batch 1 is present. Paste Batch 2 below — engine will inject cleanly.`;
-        } else if (!code.includes('</html>')) {
-          badgeStatus.textContent = `Batch 2 Detected (${lines} Lines)`;
-          badgeStatus.className = 'px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `Batch 1 & 2 are present. Paste Batch 3 below to seal the app.`;
-        } else {
-          badgeStatus.textContent = `File Complete (${lines} Lines)`;
-          badgeStatus.className = 'px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-[10px]';
-          labelAdvice.textContent = `File is completely assembled. Batch inject will place code safely before closing tags.`;
-        }
-      }
-
-      // SMART BOUNDARY-AWARE INJECTOR
-      document.getElementById('btnExecuteBatchStack')?.addEventListener('click', () => {
+      // 1. Batch Injector
+      document.getElementById('btnExecuteBatchStack')?.addEventListener('click', async () => {
         const input = document.getElementById('inputBatchCode');
         const batchText = input ? input.value.trim() : '';
         if (!batchText || !textarea) return;
@@ -4674,29 +5477,30 @@ CRITICAL OPERATIONAL RULES:
         if (!cur.trim()) {
           textarea.value = batchText;
         } else {
-          // Agar file me pehle se </body> ya </html> maujood hai toh uske theek pehle inject karega
           const bodyCloseIndex = cur.lastIndexOf('</body>');
           const htmlCloseIndex = cur.lastIndexOf('</html>');
-          const insertPoint = bodyCloseIndex !== -1 ? bodyCloseIndex : (htmlCloseIndex !== -1 ? htmlCloseIndex : -1);
+          const insertPoint = bodyCloseIndex !== -1 ? bodyCloseIndex : htmlCloseIndex;
 
           if (insertPoint !== -1) {
-            textarea.value = cur.slice(0, insertPoint) + '\n' + batchText + '\n' + cur.slice(insertPoint);
+            textarea.value = cur.slice(0, insertPoint) + '\n\n' + batchText + '\n\n' + cur.slice(insertPoint);
           } else {
-            textarea.value = cur.trimEnd() + '\n' + batchText;
+            textarea.value = cur + '\n\n' + batchText;
           }
         }
 
-        input.value = '';
+        if (input) input.value = '';
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
         markActiveModified();
-        closeStudio();
-        triggerToast("Batch Safely Injected Before Closing Tags!");
+
+        window.StudioBrain?.analyze(textarea.value);
+        safelyCloseStudio();
+        triggerToast("Batch Safely Injected Before Closing Tag! ✨");
       });
 
-      // 1-TAP SWAP WITH WHITESPACE & INDENTATION TOLERANCE
-      document.getElementById('btnExecuteTargetReplace')?.addEventListener('click', () => {
+      // 2. 1-Tap Target Swap
+      document.getElementById('btnExecuteTargetReplace')?.addEventListener('click', async () => {
         const oldInput = document.getElementById('inputTargetOld');
         const newInput = document.getElementById('inputTargetNew');
         let oldText = oldInput ? oldInput.value.trim() : '';
@@ -4705,35 +5509,37 @@ CRITICAL OPERATIONAL RULES:
         if (!newText || !textarea) return;
         const currentContent = textarea.value;
 
-        if (!oldText) {
+        if (!oldText && typeof autoDetectOldCodeMatch === 'function') {
           oldText = autoDetectOldCodeMatch(newText);
         }
 
-        // Exact Match Pehle Check Karega
-                if (oldText && currentContent.includes(oldText)) {
+        if (oldText && currentContent.includes(oldText)) {
           recordHistory();
           const matchIndex = currentContent.indexOf(oldText);
           textarea.value = currentContent.replace(oldText, newText);
+
           if (oldInput) oldInput.value = '';
           if (newInput) newInput.value = '';
 
-          // Smart Cursor Anchor: Replaced line par cursor aur screen lock
           textarea.focus();
           textarea.setSelectionRange(matchIndex, matchIndex + newText.length);
           const lineNum = textarea.value.substring(0, matchIndex).split('\n').length;
-          textarea.scrollTop = Math.max(0, (lineNum - 4) * 20.15);
+          const lineHeight = 20.15;
+          textarea.scrollTop = Math.max(0, (lineNum - 4) * lineHeight);
           if (gutter) gutter.scrollTop = textarea.scrollTop;
 
           updateLineNumbers();
           updateSyntaxHighlightingOptimized();
           updateCursorIndicator();
           markActiveModified();
-          closeStudio();
-          triggerToast("Code Block Swapped Successfully! ✓");
+
+          window.StudioBrain?.analyze(textarea.value);
+          safelyCloseStudio();
+          triggerToast("Code Block Swapped Successfully! ✨");
           return;
         }
 
-        // Fuzzy Whitespace Match (Line-by-line whitespace trim karke check karega)
+        // Fuzzy Whitespace Fallback
         if (oldText) {
           const oldLines = oldText.split('\n').map(l => l.trim()).filter(Boolean);
           const docLines = currentContent.split('\n');
@@ -4757,54 +5563,53 @@ CRITICAL OPERATIONAL RULES:
             recordHistory();
             docLines.splice(matchStartIndex, oldLines.length, newText);
             textarea.value = docLines.join('\n');
+
             if (oldInput) oldInput.value = '';
             if (newInput) newInput.value = '';
+
+            let charPos = 0;
+            for (let k = 0; k < matchStartIndex; k++) {
+              charPos += docLines[k].length + 1;
+            }
+
+            textarea.focus();
+            textarea.setSelectionRange(charPos, charPos + newText.length);
+            const lineHeight = 20.15;
+            textarea.scrollTop = Math.max(0, (matchStartIndex - 4) * lineHeight);
+            if (gutter) gutter.scrollTop = textarea.scrollTop;
+
             updateLineNumbers();
             updateSyntaxHighlightingOptimized();
             updateCursorIndicator();
             markActiveModified();
-            closeStudio();
-            triggerToast("Code Swapped with Flexible Indent Matching! ✓");
+
+            window.StudioBrain?.analyze(textarea.value);
+            safelyCloseStudio();
+            triggerToast("Code Block Swapped (Fuzzy Matched)! ✨");
             return;
           }
         }
 
-        showProfessionalPopup({
-          title: "Old Code Match Not Found",
-          message: "Specified old code editor mein nahi mila.\nKya aap is new code ko safe boundary par inject karna chahte hain?",
-          confirmText: "Inject Safely",
-          cancelText: "Cancel",
-          iconType: "warning",
-          onConfirm: () => {
-            recordHistory();
-            const bodyClose = currentContent.lastIndexOf('</body>');
-            if (bodyClose !== -1) {
-              textarea.value = currentContent.slice(0, bodyClose) + '\n' + newText + '\n' + currentContent.slice(bodyClose);
-            } else {
-              textarea.value = currentContent + '\n' + newText;
-            }
-            updateLineNumbers();
-            updateSyntaxHighlightingOptimized();
-            updateCursorIndicator();
-            markActiveModified();
-            closeStudio();
-            triggerToast("Code Injected Safely! ✓");
-          }
-        });
+        triggerToast("Target code not found. Check exact lines or spacing.");
       });
 
-      document.getElementById('btnExecuteRangeReplace')?.addEventListener('click', () => {
-        const startEl = document.getElementById('inputRangeStart');
-        const endEl = document.getElementById('inputRangeEnd');
+      // 3. Line Range Patch
+      document.getElementById('btnExecuteRangeReplace')?.addEventListener('click', async () => {
+        const startLine = parseInt(document.getElementById('inputRangeStart')?.value, 10);
+        const endLine = parseInt(document.getElementById('inputRangeEnd')?.value, 10);
         const newCodeEl = document.getElementById('inputRangeNewCode');
-
-        const startLine = parseInt(startEl.value, 10);
-        const endLine = parseInt(endEl.value, 10);
         const newSnippet = newCodeEl ? newCodeEl.value : '';
 
-        if (isNaN(startLine) || isNaN(endLine) || startLine > endLine || !textarea) return;
+        if (!startLine || !endLine || !textarea) {
+          triggerToast("Provide valid Start & End Line numbers!");
+          return;
+        }
+
         const lines = textarea.value.split('\n');
-        if (startLine < 1 || endLine > lines.length) return;
+        if (startLine < 1 || endLine > lines.length || startLine > endLine) {
+          triggerToast("Line range is out of bounds!");
+          return;
+        }
 
         recordHistory();
         const before = lines.slice(0, startLine - 1);
@@ -4818,10 +5623,24 @@ CRITICAL OPERATIONAL RULES:
         updateSyntaxHighlightingOptimized();
         updateCursorIndicator();
         markActiveModified();
-        closeStudio();
-        triggerToast(`Lines ${startLine} to ${endLine} Replaced!`);
+
+        window.StudioBrain?.analyze(textarea.value);
+        safelyCloseStudio();
+        triggerToast(`Lines ${startLine} to ${endLine} Patched! ✨`);
+      });
+
+      // 4. Undo / Redo
+      btnUndoSwap?.addEventListener('click', () => {
+        performUndo();
+        updateBatchStackUI();
+      });
+
+      btnRedoSwap?.addEventListener('click', () => {
+        performRedo();
+        updateBatchStackUI();
       });
     }
+    setupSmartPatchStudio();
 
                       // =========================================================================
     // SAFE BEAUTIFIER & RE-STRUCTURE ENGINE (WITH STYLISH SECTION BANNERS)
@@ -4914,7 +5733,7 @@ CRITICAL OPERATIONAL RULES:
       triggerToast("Code Indented Cleanly! ✓");
     }
 
-    // 2. DEEP CODE RE-STRUCTURE & STYLISH BANNER ENGINE (PARSER LEAK PROOF)
+        // 2. DEEP CODE RE-STRUCTURE & STYLISH BANNER ENGINE (STANDARDIZED app.js SYNC)
     function executeDeepCodeRestructure(rawCode) {
       if (!textarea || !rawCode.trim()) return;
 
@@ -4935,7 +5754,9 @@ CRITICAL OPERATIONAL RULES:
       const scriptRegex = new RegExp('<' + 'script\\b([^>]*)>([\\s\\S]*?)<' + '\\/script>', 'gi');
       cleanCode = cleanCode.replace(scriptRegex, (match, attrs, jsBody) => {
         if (attrs && /src=["']/i.test(attrs)) {
-          externalScriptPool.push(match.trim());
+          // Standardize link: agar index.js likha ho toh use app.js par align karein
+          const normalizedLink = match.trim().replace(/src=["']index\.js["']/i, 'src="app.js"');
+          externalScriptPool.push(normalizedLink);
         } else if (jsBody.trim()) {
           scriptPool.push(jsBody.trim());
         }
@@ -4990,6 +5811,157 @@ CRITICAL OPERATIONAL RULES:
       executeStandardIndentFormatting(assembled);
       triggerToast("Code Restructured with Stylish Banners! ⚡");
     }
+
+    // =========================================================================
+    // 1-TAP 3-WAY PROJECT MODULARIZER (SPLIT TO HTML + style.css + app.js)
+    // =========================================================================
+    window.splitProjectModular = function() {
+      document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      const code = (textarea ? textarea.value : (cur ? cur.content : '')) || '';
+
+      if (!code.trim()) {
+        triggerToast("Active document is empty!");
+        return;
+      }
+
+      const styleRegex = new RegExp('<style\\b[^>]*>([\\s\\S]*?)<\\/style>', 'gi');
+      const scriptRegex = new RegExp('<script\\b([^>]*)>([\\s\\S]*?)<\\/script>', 'gi');
+
+      const cssBlocks = [];
+      let sMatch;
+      while ((sMatch = styleRegex.exec(code)) !== null) {
+        if (sMatch[1].trim()) cssBlocks.push(sMatch[1].trim());
+      }
+
+      const jsBlocks = [];
+      let scMatch;
+      let jsBlockIdx = 1;
+      while ((scMatch = scriptRegex.exec(code)) !== null) {
+        if (!scMatch[1].includes('src=') && scMatch[2].trim()) {
+          jsBlocks.push(`// [Block #${jsBlockIdx}]\n` + scMatch[2].trim());
+          jsBlockIdx++;
+        }
+      }
+
+      if (cssBlocks.length === 0 && jsBlocks.length === 0) {
+        showProfessionalPopup({
+          title: "Modularizer Notice",
+          message: "Is document mein koi inline CSS (<style>) ya inline JS (<script>) nahi mila. Yeh pehle se hi modular hai!",
+          confirmText: "Understood",
+          iconType: "info"
+        });
+        return;
+      }
+
+      showProfessionalPopup({
+        title: "1-Tap Project Modularizer",
+        message: `Is file se:\n• ${cssBlocks.length} CSS block(s) -> 'style.css'\n• ${jsBlocks.length} JS block(s) -> 'app.js'\n\nAlag karke 3 clean tabs banayein aur original HTML mein standard links laga dein?`,
+        confirmText: "Split into 3 Files ⚡",
+        cancelText: "Cancel",
+        iconType: "info",
+        onConfirm: () => {
+          recordHistory();
+          const folderName = cur?.folderName || 'Internal Storage';
+          const folderPrefix = (folderName !== 'Internal Storage') ? `/storage/emulated/0/${folderName}/` : '/storage/emulated/0/';
+
+          // 1. Create style.css Tab (if CSS exists)
+          if (cssBlocks.length > 0) {
+            let finalCss = cssBlocks.join('\n\n');
+            if (typeof finalCss.normalize === 'function') finalCss = finalCss.normalize('NFC');
+            const cssTab = {
+              id: 'tab-' + Date.now() + '-css',
+              name: 'style.css',
+              content: finalCss,
+              isModified: true,
+              fileHandle: null,
+              dirHandle: cur?.dirHandle || null,
+              isNewFile: true,
+              filePath: folderPrefix + 'style.css',
+              folderName: folderName,
+              lastModified: Date.now(),
+              fileSize: new Blob([finalCss], { type: 'text/css' }).size,
+              cursorPos: 0,
+              scrollTop: 0
+            };
+            fileTabs.push(cssTab);
+          }
+
+          // 2. Create app.js Tab (if JS exists)
+          if (jsBlocks.length > 0) {
+            let finalJs = jsBlocks.join('\n\n');
+            if (typeof finalJs.normalize === 'function') finalJs = finalJs.normalize('NFC');
+            const jsTab = {
+              id: 'tab-' + Date.now() + '-js',
+              name: 'app.js',
+              content: finalJs,
+              isModified: true,
+              fileHandle: null,
+              dirHandle: cur?.dirHandle || null,
+              isNewFile: true,
+              filePath: folderPrefix + 'app.js',
+              folderName: folderName,
+              lastModified: Date.now(),
+              fileSize: new Blob([finalJs], { type: 'application/javascript' }).size,
+              cursorPos: 0,
+              scrollTop: 0
+            };
+            fileTabs.push(jsTab);
+          }
+
+          // 3. Clean Original HTML & Link style.css + app.js
+          let cleanHtml = code;
+          
+          if (cssBlocks.length > 0) {
+            let linkCssInjected = false;
+            cleanHtml = cleanHtml.replace(styleRegex, () => {
+              if (!linkCssInjected) {
+                linkCssInjected = true;
+                return '<link rel="stylesheet" href="style.css">';
+              }
+              return '';
+            });
+            if (!linkCssInjected) {
+              cleanHtml = cleanHtml.includes('<head>') 
+                ? cleanHtml.replace('<head>', '<head>\n  <link rel="stylesheet" href="style.css">')
+                : '<link rel="stylesheet" href="style.css">\n' + cleanHtml;
+            }
+          }
+
+          if (jsBlocks.length > 0) {
+            let linkJsInjected = false;
+            cleanHtml = cleanHtml.replace(scriptRegex, (fullMatch, attrs, innerJs) => {
+              if (!attrs.includes('src=') && innerJs.trim()) {
+                if (!linkJsInjected) {
+                  linkJsInjected = true;
+                  return '<script src="app.js"><' + '/script>';
+                }
+                return '';
+              }
+              return fullMatch;
+            });
+            if (!linkJsInjected) {
+              cleanHtml = cleanHtml.includes('</body>')
+                ? cleanHtml.replace('</body>', '  <script src="app.js"><' + '/script>\n</body>')
+                : cleanHtml + '\n<script src="app.js"><' + '/script>';
+            }
+          }
+
+          if (typeof cleanHtml.normalize === 'function') cleanHtml = cleanHtml.normalize('NFC');
+          cur.content = cleanHtml;
+          cur.isModified = true;
+          if (textarea) textarea.value = cleanHtml;
+
+          updateLineNumbers();
+          updateSyntaxHighlightingOptimized();
+          renderTabStrip();
+          window.StudioBrain?.analyze(cleanHtml);
+
+          triggerToast("Project Modularized into 3 Connected Files! 🚀");
+        }
+      });
+    };
 
     function initNativeEditor() {
       textarea = document.getElementById('codeTextarea');
@@ -5280,13 +6252,39 @@ CRITICAL OPERATIONAL RULES:
         executeClipboardCopy(textToCopy);
       });
 
-      btnPaste?.addEventListener('click', async () => {
+            btnPaste?.addEventListener('click', async () => {
         if (!textarea) return;
         textarea.focus();
         try {
+          let clipText = '';
           if (navigator.clipboard && navigator.clipboard.readText) {
-            const clipText = await navigator.clipboard.readText();
-            if (clipText) {
+            clipText = await navigator.clipboard.readText();
+          }
+
+          if (clipText) {
+            const s = textarea.selectionStart;
+            const e = textarea.selectionEnd;
+
+            // Agar range ya koi text selected hai toh direct Clean Armor se replace karein
+            if (s !== e) {
+              const cleanCode = await sanitizeCodeArmor(clipText, textarea.value, s, e);
+              if (cleanCode !== null) {
+                recordHistory();
+                let finalVal = cleanCode;
+                const fullDoc = textarea.value;
+                if (e < fullDoc.length && fullDoc[e] !== '\n' && !finalVal.endsWith('\n')) {
+                  finalVal += '\n';
+                }
+                textarea.setRangeText(finalVal, s, e, 'end');
+                textarea.setSelectionRange(s, s + finalVal.length);
+                updateLineNumbers();
+                updateSyntaxHighlightingOptimized();
+                markActiveModified();
+                document.getElementById('floatingSelectionCapsule')?.classList.add('hidden');
+                triggerToast("Safely Cleaned & Pasted! ✨");
+                return;
+              }
+            } else {
               insertTextAtCursor(clipText);
               triggerToast("Pasted");
               return;
@@ -5885,49 +6883,55 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
-        async function handleOpenFileNative() {
+            async function handleOpenFileNative() {
       if ('showOpenFilePicker' in window) {
         try {
-          const [handle] = await window.showOpenFilePicker({
-            multiple: false,
+          const handles = await window.showOpenFilePicker({
+            multiple: true,
             types: [{
               description: 'Code Files',
               accept: { 'text/plain': ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'] }
             }]
           });
-          const file = await handle.getFile();
-          const rawText = await file.text();
-          // 🛡️ UNICODE SHIELD: File load hote hi Hindi matraon ko normalize aur bind karna
-          const text = (typeof rawText === 'string' && typeof rawText.normalize === 'function') 
-            ? rawText.normalize('NFC') 
-            : (rawText || '');
 
-          let folderDetected = detectProjectFolder(file.name, text);
-          if (file.webkitRelativePath && file.webkitRelativePath.includes('/')) {
-            folderDetected = file.webkitRelativePath.split('/')[0];
+          if (!handles || handles.length === 0) return;
+
+          for (const handle of handles) {
+            const file = await handle.getFile();
+            const rawText = await file.text();
+            const text = (typeof rawText === 'string' && typeof rawText.normalize === 'function') 
+              ? rawText.normalize('NFC') 
+              : (rawText || '');
+
+            let folderDetected = detectProjectFolder(file.name, text);
+            if (file.webkitRelativePath && file.webkitRelativePath.includes('/')) {
+              folderDetected = file.webkitRelativePath.split('/')[0];
+            }
+
+            const fullPath = (folderDetected !== 'Internal Storage')
+              ? `/storage/emulated/0/${folderDetected}/${file.name}`
+              : `/storage/emulated/0/${file.name}`;
+
+            const newTab = {
+              id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+              name: file.name,
+              content: text,
+              isModified: false,
+              fileHandle: handle,
+              isNewFile: false,
+              filePath: fullPath,
+              folderName: folderDetected,
+              lastModified: file.lastModified || Date.now(),
+              fileSize: file.size || text.length,
+              cursorPos: 0,
+              scrollTop: 0
+            };
+            fileTabs.push(newTab);
+            handleSwitchTab(newTab.id);
           }
 
-          const fullPath = (folderDetected !== 'Internal Storage')
-            ? `/storage/emulated/0/${folderDetected}/${file.name}`
-            : `/storage/emulated/0/${file.name}`;
-
-          const newTab = {
-            id: 'tab-' + Date.now(),
-            name: file.name,
-            content: text,
-            isModified: false,
-            fileHandle: handle,
-            isNewFile: false,
-            filePath: fullPath,
-            folderName: folderDetected,
-            lastModified: file.lastModified || Date.now(),
-            fileSize: file.size || text.length,
-            cursorPos: 0,
-            scrollTop: 0
-          };
-          fileTabs.push(newTab);
-          handleSwitchTab(newTab.id);
-          triggerToast(`Opened: ${file.name}`);
+          renderTabStrip();
+          triggerToast(`Opened ${handles.length} file(s) 🎯`);
           return;
         } catch (err) {
           if (err.name === 'AbortError') return;
@@ -5980,8 +6984,8 @@ CRITICAL OPERATIONAL RULES:
       }, 120);
     }
 
-    // POINT 5: SMART POPSTATE HIERARCHY
-    function handlePopStateExit() {
+    // POINT 5: BULLETPROOF POPSTATE HIERARCHY (ZERO DASHBOARD EXIT)
+    function handlePopStateExit(e) {
       if (isExiting) return;
 
       const areYouSureModal = document.getElementById('modalExitAreYouSure');
@@ -5989,14 +6993,16 @@ CRITICAL OPERATIONAL RULES:
 
       if (areYouSureModal && !areYouSureModal.classList.contains('hidden')) {
         areYouSureModal.classList.add('hidden');
+        window.history.pushState({ page: 'editor' }, '');
         return;
       }
       if (exitModal && !exitModal.classList.contains('hidden')) {
         exitModal.classList.add('hidden');
+        window.history.pushState({ page: 'editor' }, '');
         return;
       }
 
-            const vaultModal = document.getElementById('modalMaintainerVault');
+      const vaultModal = document.getElementById('modalMaintainerVault');
       const aboutModal = document.getElementById('modalAboutStudio');
       if (vaultModal && !vaultModal.classList.contains('hidden')) {
         vaultModal.classList.add('hidden');
@@ -6030,7 +7036,7 @@ CRITICAL OPERATIONAL RULES:
         'modalPathDetails',
         'modalEditFolder',
         'modalDiagnosticReport',
-                'modalPatchStudio',
+        'modalPatchStudio',
         'modalConflictShield',
         'modalSmartRangeSelect',
         'modalAiCopilot',
@@ -6038,12 +7044,15 @@ CRITICAL OPERATIONAL RULES:
         'modalAppPopup'
       ];
 
-      let closedAny = false;
+                        let closedAny = false;
       for (let mId of openModals) {
         const el = document.getElementById(mId);
         if (el && !el.classList.contains('hidden')) {
           el.classList.add('hidden');
           closedAny = true;
+          if (window.StudioNavRouter) {
+            window.StudioNavRouter.returnToOrigin();
+          }
           break;
         }
       }
@@ -6054,8 +7063,14 @@ CRITICAL OPERATIONAL RULES:
         closedAny = true;
       }
 
-      if (!closedAny) triggerAppExitDialog();
-      else window.history.pushState({ page: 'editor' }, '');
+      // STRICT SHIELD: Agar modal band hua hai toh hamesha editor state restore karein
+      if (closedAny) {
+        window.history.pushState({ page: 'editor' }, '');
+      } else {
+        // Sirf tabhi confirmation dega jab sabhi modals band hon aur user ne back dabaya ho
+        triggerAppExitDialog();
+        window.history.pushState({ page: 'editor' }, '');
+      }
     }
 
     function setupExitSystem() {
@@ -6542,7 +7557,10 @@ CRITICAL OPERATIONAL RULES:
       updateSyntaxHighlightingOptimized();
     }
 
-                                            function setupPathInspectorModal() {
+                                                // =========================================================================
+    // APPLICATION TAB & FOLDER INSPECTOR (STRICT TRASH BAN • SELECTIVE LOADER)
+    // =========================================================================
+    function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
       const closeBtn = document.getElementById('btnClosePathModal');
       const copyBtn = document.getElementById('btnModalCopyFullPath');
@@ -6555,7 +7573,6 @@ CRITICAL OPERATIONAL RULES:
       const filesContainer = document.getElementById('boxInspectorFolderFiles');
       const badgeCount = document.getElementById('badgeFolderFileCount');
 
-      // Badges & Metrics
       const langBadge = document.getElementById('inspectorLangBadge');
       const dirtyBadge = document.getElementById('inspectorDirtyBadge');
       const statSize = document.getElementById('inspectorStatSize');
@@ -6567,7 +7584,6 @@ CRITICAL OPERATIONAL RULES:
       const btnViewPath = document.getElementById('btnViewPathModal');
       const addressWrapper = document.getElementById('addressBreadcrumbWrapper');
 
-      // Helper: Format File Size (Bytes to KB / MB)
       const formatFileSize = (bytes) => {
         if (!bytes || bytes === 0) return '0 KB';
         const k = 1024;
@@ -6575,7 +7591,6 @@ CRITICAL OPERATIONAL RULES:
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + ['B', 'KB', 'MB', 'GB'][i];
       };
 
-      // Helper: Relative Time Ago (Just now, 15s ago, 2m ago)
       const getRelativeTimeAgo = (timestamp) => {
         if (!timestamp) return 'just now';
         const diffMs = Date.now() - Number(timestamp);
@@ -6590,7 +7605,6 @@ CRITICAL OPERATIONAL RULES:
         return `${diffDays}d ago`;
       };
 
-      // Helper: Detect Language & Encoding
       const detectLanguage = (filename) => {
         const lower = (filename || '').toLowerCase();
         if (lower.endsWith('.html') || lower.endsWith('.htm')) return 'HTML5 • UTF-8';
@@ -6599,12 +7613,12 @@ CRITICAL OPERATIONAL RULES:
         if (lower.endsWith('.json')) return 'JSON • UTF-8';
         if (lower.endsWith('.py')) return 'Python • UTF-8';
         if (lower.endsWith('.md')) return 'Markdown • UTF-8';
-        if (lower.endsWith('.php')) return 'PHP • UTF-8';
-        if (lower.endsWith('.sql')) return 'SQL • UTF-8';
         return 'Plain Text • UTF-8';
       };
 
-      // Helper: Render Folder Files with exact Year & Size badges
+                  // 🛡️ STRICT TRASH-FREE FOLDER SCANNER & SAFE WORKSPACE MANAGER (DEVICE PROTECTED)
+      window.workspaceExcludedFiles = window.workspaceExcludedFiles || new Set();
+
       const renderFolderFilesList = async (cur) => {
         if (!filesContainer) return;
         filesContainer.innerHTML = '';
@@ -6612,20 +7626,29 @@ CRITICAL OPERATIONAL RULES:
         if (cur && cur.dirHandle) {
           try {
             const files = [];
-            const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py', '.php', '.sql'];
+            const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'];
+            
             for await (const entry of cur.dirHandle.values()) {
               if (entry.kind === 'file') {
                 const lower = entry.name.toLowerCase();
+                // HARD BLOCK: Android trashed files, dot files, caches, aur user-removed workspace files
+                if (entry.name.startsWith('.') || lower.includes('trashed') || lower.includes('cache')) {
+                  continue;
+                }
+                const fileKey = `${cur.folderName || 'root'}:${entry.name}`;
+                if (window.workspaceExcludedFiles.has(fileKey)) {
+                  continue; // Sirf workspace view se hide rahegi, phone storage se nahi
+                }
                 if (validExts.some(ext => lower.endsWith(ext))) {
                   files.push(entry);
                 }
               }
             }
 
-            if (badgeCount) badgeCount.textContent = `${files.length} files`;
+            if (badgeCount) badgeCount.textContent = `${files.length} clean file(s)`;
 
             if (files.length === 0) {
-              filesContainer.innerHTML = `<div class="text-slate-500 text-[10px] text-center py-2.5 font-mono">No matching code files</div>`;
+              filesContainer.innerHTML = `<div class="text-slate-500 text-[10px] text-center py-2.5 font-mono">No matching code files in this folder</div>`;
               return;
             }
 
@@ -6633,78 +7656,123 @@ CRITICAL OPERATIONAL RULES:
               const isCurrent = entry.name === cur.name;
               const isAlreadyOpen = fileTabs.some(t => t.name === entry.name && t.folderName === cur.folderName);
               
-              let fileMetaSize = '';
-              let fileMetaYear = '';
+              let fileMetaSize = '0 KB';
+              let fileMetaFullDate = '2026';
               try {
                 const fData = await entry.getFile();
                 fileMetaSize = formatFileSize(fData.size);
                 if (fData.lastModified) {
-                  fileMetaYear = new Date(fData.lastModified).getFullYear();
+                  const mDate = new Date(fData.lastModified);
+                  const dd = String(mDate.getDate()).padStart(2, '0');
+                  const mmm = mDate.toLocaleString('en-US', { month: 'short' });
+                  const yyyy = mDate.getFullYear();
+                  fileMetaFullDate = `${dd}-${mmm}-${yyyy}`;
                 }
               } catch (e) {}
 
               const row = document.createElement('div');
-              row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer text-[11px] transition ${
+              row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] transition ${
                 isCurrent 
                   ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' 
-                  : 'text-slate-300 hover:bg-slate-800/80 active:scale-98'
+                  : 'text-slate-300 hover:bg-slate-800/80'
               }`;
 
               row.innerHTML = `
-                <div class="flex items-center space-x-1.5 truncate">
+                <div class="flex items-center space-x-1.5 truncate max-w-[38%]">
                   <i data-lucide="${entry.name.endsWith('.html') ? 'file-code-2' : entry.name.endsWith('.js') ? 'file-json' : 'file-text'}" class="w-3.5 h-3.5 shrink-0 ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}"></i>
-                  <span class="truncate">${entry.name}</span>
+                  <span class="truncate font-mono">${entry.name}</span>
                 </div>
                 <div class="flex items-center space-x-1.5 shrink-0">
-                  ${fileMetaSize ? `<span class="text-[9px] text-slate-400 font-mono">${fileMetaSize}</span>` : ''}
-                  ${fileMetaYear ? `<span class="text-[9px] text-amber-300 font-mono px-1 py-0.2 rounded bg-amber-500/10 border border-amber-500/20">${fileMetaYear}</span>` : ''}
+                  <span class="text-[9px] text-slate-400 font-mono">${fileMetaSize}</span>
+                  <span class="text-[9px] text-amber-300 font-mono px-1 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">${fileMetaFullDate}</span>
+                  <button type="button" class="btn-remove-file p-1 text-rose-400 hover:bg-rose-500/20 rounded transition" title="Remove from Workspace">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                  </button>
                   ${isCurrent 
                     ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-400 text-black font-bold uppercase font-sans">Active</span>' 
                     : isAlreadyOpen 
-                      ? '<span class="text-[9px] text-slate-400 font-mono">Open</span>' 
-                      : '<span class="text-[9px] text-cyan-400 font-mono">+ Load</span>'
+                      ? '<button type="button" class="btn-load-file text-[9px] text-slate-300 font-mono px-1.5 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700">Open</button>' 
+                      : '<button type="button" class="btn-load-file text-[9px] text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40">+ Load Tab</button>'
                   }
                 </div>
               `;
 
-              // Single File On Tap (Unicode Normalized)
-              row.onclick = async () => {
-                closeInspector();
-                const existing = fileTabs.find(t => t.name === entry.name && t.folderName === cur.folderName);
-                if (existing) {
-                  handleSwitchTab(existing.id);
-                  triggerToast(`Switched to ${entry.name}`);
-                } else {
-                  try {
-                    const f = await entry.getFile();
-                    const rawText = await f.text();
-                    // Unicode NFC Normalization: Protects Hindi matras & conjuncts
-                    const text = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
-                    const fullPath = `/storage/emulated/0/${cur.folderName}/${entry.name}`;
-                    const newTab = {
-                      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-                      name: entry.name,
-                      content: text,
-                      isModified: false,
-                      fileHandle: entry,
-                      dirHandle: cur.dirHandle,
-                      isNewFile: false,
-                      filePath: fullPath,
-                      folderName: cur.folderName,
-                      lastModified: f.lastModified || Date.now(),
-                      fileSize: f.size || text.length,
-                      cursorPos: 0,
-                      scrollTop: 0
-                    };
-                    fileTabs.push(newTab);
-                    renderTabStrip();
-                    handleSwitchTab(newTab.id);
-                    triggerToast(`Opened: ${entry.name} ⚡`);
-                  } catch (e) {
-                    triggerToast("Could not load file");
+              // 🛡️ 100% SAFE WORKSPACE REMOVE HANDLER (Phone Storage Is Untouched)
+              const removeBtn = row.querySelector('.btn-remove-file');
+              if (removeBtn) {
+                removeBtn.onclick = (e) => {
+                  e.stopPropagation();
+                  showProfessionalPopup({
+                    title: "Remove from Workspace",
+                    message: `'${entry.name}' ko workspace se remove karna chahte hain?\n\n• Agar Tab open hai toh close ho jayegi.\n• Aapke phone storage se file bilkul delete nahi hogi (100% Safe).`,
+                    confirmText: "Yes, Remove",
+                    cancelText: "Cancel",
+                    iconType: "info",
+                    onConfirm: () => {
+                      // 1. Mark file as excluded from inspector view
+                      const fileKey = `${cur.folderName || 'root'}:${entry.name}`;
+                      window.workspaceExcludedFiles.add(fileKey);
+
+                      // 2. Agar tab khuli hai toh sirf tab close karein
+                      const openedIdx = fileTabs.findIndex(t => t.name === entry.name && t.folderName === cur.folderName);
+                      if (openedIdx !== -1) {
+                        const tabToClose = fileTabs[openedIdx];
+                        fileTabs.splice(openedIdx, 1);
+                        if (activeFileId === tabToClose.id && fileTabs.length > 0) {
+                          handleSwitchTab(fileTabs[0].id);
+                        }
+                        renderTabStrip();
+                      }
+
+                      triggerToast(`'${entry.name}' removed from workspace (Storage Safe) 🛡️`);
+                      renderFolderFilesList(cur);
+                    }
+                  });
+                };
+              }
+
+              // ⚡ LOAD TAB HANDLER
+              const loadBtn = row.querySelector('.btn-load-file');
+              if (loadBtn) {
+                loadBtn.onclick = async (e) => {
+                  e.stopPropagation();
+                  closeInspector();
+                  const existing = fileTabs.find(t => t.name === entry.name && t.folderName === cur.folderName);
+                  if (existing) {
+                    handleSwitchTab(existing.id);
+                    triggerToast(`Switched to ${entry.name}`);
+                  } else {
+                    try {
+                      const f = await entry.getFile();
+                      const rawText = await f.text();
+                      const text = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
+                      const fullPath = `/storage/emulated/0/${cur.folderName}/${entry.name}`;
+                      const newTab = {
+                        id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                        name: entry.name,
+                        content: text,
+                        isModified: false,
+                        fileHandle: entry,
+                        dirHandle: cur.dirHandle,
+                        isNewFile: false,
+                        filePath: fullPath,
+                        folderName: cur.folderName,
+                        lastModified: f.lastModified || Date.now(),
+                        fileSize: f.size || text.length,
+                        cursorPos: 0,
+                        scrollTop: 0
+                      };
+                      fileTabs.push(newTab);
+                      renderTabStrip();
+                      handleSwitchTab(newTab.id);
+                      triggerToast(`Loaded: ${entry.name} ⚡`);
+                    } catch (e) {
+                      triggerToast("Could not load selected file");
+                    }
                   }
-                }
-              };
+                };
+              }
+
               filesContainer.appendChild(row);
             }
 
@@ -6713,9 +7781,8 @@ CRITICAL OPERATIONAL RULES:
           } catch (e) {}
         }
 
-        // Agar dirHandle nahi hai
         const sameFolderTabs = fileTabs.filter(t => t.folderName === (cur?.folderName || 'Internal Storage'));
-        if (badgeCount) badgeCount.textContent = `${sameFolderTabs.length} files`;
+        if (badgeCount) badgeCount.textContent = `${sameFolderTabs.length} file(s)`;
 
         filesContainer.innerHTML = `
           <div class="text-slate-400 text-[10px] text-center py-2.5 space-y-1">
@@ -6738,43 +7805,28 @@ CRITICAL OPERATIONAL RULES:
         if (folderDisplay) folderDisplay.textContent = currentFolder;
         if (fullPathDisplay) fullPathDisplay.textContent = currentPath;
 
-        // 1. Language & Encoding Chip
-        if (langBadge) {
-          langBadge.textContent = detectLanguage(currentName);
-        }
+        if (langBadge) langBadge.textContent = detectLanguage(currentName);
 
-        // 2. Live Unsaved Changes Pulse Badge
         const isModified = cur ? Boolean(cur.isModified) : false;
         if (dirtyBadge) {
           if (isModified) {
             dirtyBadge.className = 'flex items-center space-x-1.5 text-amber-400 font-semibold';
-            dirtyBadge.innerHTML = `
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-              <span>Unsaved</span>
-            `;
+            dirtyBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span><span>Unsaved</span>`;
           } else {
             dirtyBadge.className = 'flex items-center space-x-1.5 text-emerald-400';
-            dirtyBadge.innerHTML = `
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span>All Saved</span>
-            `;
+            dirtyBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>All Saved</span>`;
           }
         }
 
-        // 3. Exact Metrics Calculation (UTF-8 Bytes Safe)
         const ta = document.getElementById('codeTextarea');
         let contentStr = ta ? ta.value : (cur ? cur.content || '' : '');
-        if (typeof contentStr.normalize === 'function') {
-          contentStr = contentStr.normalize('NFC');
-        }
+        if (typeof contentStr.normalize === 'function') contentStr = contentStr.normalize('NFC');
         const totalLines = contentStr ? contentStr.split('\n').length : 1;
-        // Strict UTF-8 Blob to count real bytes accurately
         const totalBytes = new Blob([contentStr], { type: 'text/plain;charset=utf-8' }).size;
 
         if (statLines) statLines.textContent = `${totalLines.toLocaleString()}`;
         if (statSize) statSize.textContent = formatFileSize(totalBytes);
         
-        // 4. Exact 4-Digit Year & Time with Seconds
         const modTimestamp = cur && cur.lastModified ? Number(cur.lastModified) : Date.now();
         const modDate = new Date(modTimestamp);
         const d = String(modDate.getDate()).padStart(2, '0');
@@ -6793,49 +7845,36 @@ CRITICAL OPERATIONAL RULES:
         if (relativeTimeDisplay) relativeTimeDisplay.textContent = getRelativeTimeAgo(modTimestamp);
 
         renderFolderFilesList(cur);
-
         modal?.classList.remove('hidden');
         if (typeof lucide !== 'undefined') lucide.createIcons();
       };
 
-      const closeInspector = () => {
-        modal?.classList.add('hidden');
-      };
+      const closeInspector = () => modal?.classList.add('hidden');
 
       btnViewPath?.addEventListener('click', (e) => { e.preventDefault(); openInspector(); });
       addressWrapper?.addEventListener('click', (e) => { e.preventDefault(); openInspector(); });
-
       closeBtn?.addEventListener('click', closeInspector);
 
-      // 1. Rename Current File / Tab directly
       saveNameBtn?.addEventListener('click', () => {
         const newName = nameInput?.value.trim();
         if (!newName) return;
-
         const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
-        const curList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
-        const cur = curList.find(t => t.id === curTabId);
-
+        const cur = fileTabs.find(t => t.id === curTabId);
         if (cur) {
           cur.name = newName;
           cur.filename = newName;
           const folderPrefix = (cur.folderName && cur.folderName !== 'Internal Storage') ? `${cur.folderName}/` : '';
           cur.filePath = `/storage/emulated/0/${folderPrefix}${newName}`;
-          
-          if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
-          if (typeof renderTabStrip === 'function') renderTabStrip();
-          if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
-          if (typeof triggerToast === 'function') triggerToast(`File renamed to ${newName} ⚡`);
+          updateAddressHeader(cur);
+          renderTabStrip();
+          scheduleAutoSave();
+          triggerToast(`File renamed to ${newName} ⚡`);
         }
         closeInspector();
       });
 
-            // 2. Switch / Link Project Folder Handler (PRE-PERMISSION PROFESSIONAL BRIDGE)
-      btnLinkFolder?.addEventListener('click', () => {
-        closeInspector();
-        const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
-        const cur = fileTabs.find(t => t.id === curTabId);
-
+      // 2. UNIVERSAL LINK PROJECT FOLDER HANDLER
+      window.promptLinkProjectFolder = function(onFolderLinkedCallback = null) {
         showProfessionalPopup({
           title: "Link Project Folder",
           message: "Studio aapke project folder (HTML, CSS, JS) ko auto-detect karke live preview se link karega.\n\nAgle step mein Android aur Browser folder access ki permission maangenge, wahan 'Allow' chunein.",
@@ -6848,44 +7887,42 @@ CRITICAL OPERATIONAL RULES:
                 const dirHandle = await window.showDirectoryPicker();
                 if (!dirHandle) return;
 
+                const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
+                const cur = fileTabs.find(t => t.id === curTabId);
+
                 if (cur) {
                   cur.dirHandle = dirHandle;
                   cur.folderName = dirHandle.name;
                   cur.filePath = `/storage/emulated/0/${dirHandle.name}/${cur.name}`;
-                  if (typeof updateAddressHeader === 'function') updateAddressHeader(cur);
-                  if (typeof renderTabStrip === 'function') renderTabStrip();
-                  if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                  updateAddressHeader(cur);
+                  renderTabStrip();
+                  scheduleAutoSave();
                 }
 
                 triggerToast(`Folder '${dirHandle.name}' linked 📂`);
-                setTimeout(() => { openInspector(); }, 250);
+                if (onFolderLinkedCallback) onFolderLinkedCallback(dirHandle);
                 return;
               } catch (err) {
                 if (err.name === 'AbortError') return;
               }
             }
 
-            if (typeof handleOpenFileNative === 'function') {
-              handleOpenFileNative();
-            }
+            if (typeof handleOpenFileNative === 'function') handleOpenFileNative();
           }
+        });
+      };
+
+      btnLinkFolder?.addEventListener('click', () => {
+        closeInspector();
+        window.promptLinkProjectFolder(() => {
+          setTimeout(() => { openInspector(); }, 250);
         });
       });
 
-      // 3. Copy Full Path to Clipboard
       const copyPathHandler = () => {
         const path = fullPathDisplay?.textContent || '';
-        if (typeof executeClipboardCopy === 'function') {
-          executeClipboardCopy(path);
-        } else if (navigator.clipboard) {
-          navigator.clipboard.writeText(path).then(() => {
-            if (typeof triggerToast === 'function') triggerToast("Path copied! 📋");
-          });
-        } else {
-          if (typeof triggerToast === 'function') triggerToast("Path: " + path);
-        }
+        executeClipboardCopy(path);
       };
-
       copyBtn?.addEventListener('click', copyPathHandler);
       quickCopyBtn?.addEventListener('click', copyPathHandler);
     }
@@ -7111,47 +8148,61 @@ CRITICAL OPERATIONAL RULES:
       });
 
       const modalGoToLine = document.getElementById('modalGoToLine');
-      const inputGoTo = document.getElementById('inputGoToLineNumber');
-      document.getElementById('optGoToLine')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        const lines = textarea ? textarea.value.split('\n').length : 1;
-        document.getElementById('labelGoToHint').textContent = `Line (1 to ${lines}):`;
-        inputGoTo.value = 1;
-        modalGoToLine?.classList.remove('hidden');
-        inputGoTo?.focus();
-      });
-      document.getElementById('btnCancelGoTo')?.addEventListener('click', () => modalGoToLine?.classList.add('hidden'));
-      document.getElementById('btnConfirmGoTo')?.addEventListener('click', () => {
-        const line = parseInt(inputGoTo.value, 10);
-        modalGoToLine?.classList.add('hidden');
-        jumpToEditorPosition(line);
-      });
+              const inputGoTo = document.getElementById('inputGoToLineNumber');
+        document.getElementById('optGoToLine')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          const lines = textarea ? textarea.value.split('\n') : [];
+          document.getElementById('labelGoToHint').textContent = `Line (1 to ${lines.length}):`;
+          inputGoTo.value = 1;
+          modalGoToLine?.classList.remove('hidden');
+          inputGoTo?.focus();
+        });
+        document.getElementById('btnCancelGoTo')?.addEventListener('click', () => {
+          modalGoToLine?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
+        });
+        document.getElementById('btnConfirmGoTo')?.addEventListener('click', () => {
+          const line = parseInt(inputGoTo.value, 10);
+          modalGoToLine?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = null;
+          jumpToEditorPosition(line);
+        });
 
-      const modalStats = document.getElementById('modalStats');
-      document.getElementById('optStats')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        const text = textarea ? textarea.value : '';
-        const cur = fileTabs.find(t => t.id === activeFileId);
-        document.getElementById('statFileName').textContent = cur?.name || 'untitled.html';
-        document.getElementById('statLines').textContent = text.split('\n').length;
-        document.getElementById('statWords').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
-        document.getElementById('statChars').textContent = text.length;
-        document.getElementById('statSize').textContent = `${(new Blob([text]).size / 1024).toFixed(2)} KB`;
-        modalStats?.classList.remove('hidden');
-      });
-      document.getElementById('btnCloseStats')?.addEventListener('click', () => modalStats?.classList.add('hidden'));
+        const modalStats = document.getElementById('modalStats');
+        document.getElementById('optStats')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          const text = textarea ? textarea.value : '';
+          const cur = fileTabs.find(t => t.id === activeFileId);
+          document.getElementById('statFileName').textContent = cur ? cur.name : 'Untitled';
+          document.getElementById('statLines').textContent = text.split('\n').length;
+          document.getElementById('statWords').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+          document.getElementById('statChars').textContent = text.length;
+          document.getElementById('statSize').textContent = `${(new Blob([text]).size / 1024).toFixed(2)} KB`;
+          modalStats?.classList.remove('hidden');
+        });
+        document.getElementById('btnCloseStats')?.addEventListener('click', () => {
+          modalStats?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
+        });
 
-      const modalEncoding = document.getElementById('modalEncoding');
-      document.getElementById('optEncoding')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        modalEncoding?.classList.remove('hidden');
-      });
-      document.getElementById('btnCancelEncoding')?.addEventListener('click', () => modalEncoding?.classList.add('hidden'));
-      document.getElementById('btnConfirmEncoding')?.addEventListener('click', () => {
-        const choice = document.querySelector('input[name="encChoice"]:checked')?.value || 'UTF-8';
-        modalEncoding?.classList.add('hidden');
-        triggerToast(`Encoding: ${choice}`);
-      });
+        const modalEncoding = document.getElementById('modalEncoding');
+        document.getElementById('optEncoding')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          modalEncoding?.classList.remove('hidden');
+        });
+        document.getElementById('btnCancelEncoding')?.addEventListener('click', () => {
+          modalEncoding?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
+        });
+        document.getElementById('btnConfirmEncoding')?.addEventListener('click', () => {
+          const choice = document.querySelector('input[name="fileEncoding"]:checked')?.value || 'UTF-8';
+          modalEncoding?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = null;
+          triggerToast(`Encoding: ${choice}`);
+        });
 
       document.querySelectorAll('#colorPaletteGrid div').forEach(swatch => {
         swatch.addEventListener('click', () => {
@@ -7177,18 +8228,23 @@ CRITICAL OPERATIONAL RULES:
         modalSet?.classList.remove('hidden');
       };
 
-                  document.getElementById('dNavSettings')?.addEventListener('click', () => {
-        closeDrawerPanel();
-        openSettings();
-      });
+                          document.getElementById('dNavSettings')?.addEventListener('click', () => {
+          if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'drawer';
+          openSettings();
+        });
 
-      document.getElementById('optSettingsMenu')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        openSettings();
-      });
-            document.getElementById('btnCloseSettings')?.addEventListener('click', () => {
-        if (modalSet) modalSet.classList.add('hidden');
-      });
+        document.getElementById('optSettingsMenu')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          openSettings();
+        });
+
+        document.getElementById('btnCloseSettings')?.addEventListener('click', () => {
+          if (modalSet) modalSet.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
+        });
+        
             // SMART DYNAMIC PWA UPDATE CONTROLLER
       const btnCheckUpdate = document.getElementById('btnManualCheckUpdate');
       const badgeUpdate = document.getElementById('badgeSettingsUpdateStatus');
@@ -7349,10 +8405,26 @@ CRITICAL OPERATIONAL RULES:
   document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
   exportTabAsZip(true);
 });
+        document.getElementById('optExtractCss')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          if (typeof window.extractCssToNewTab === 'function') {
+            window.extractCssToNewTab();
+          }
+        });
 
-// ⚡ EXTRACT JS TO NEW TAB (UPGRADED: BULLETPROOF PARSER & AUTO-TRIM)
-document.getElementById('optExtractJs')?.addEventListener('click', () => {
-  document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        document.getElementById('optSplitModular')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+          if (typeof window.splitProjectModular === 'function') {
+            window.splitProjectModular();
+          }
+        });
+
+        // ⚡ EXTRACT JAVASCRIPT ENGINE (STRICT app.js HARD-LOCK & CLEAN LINK)
+        document.getElementById('optExtractJs')?.addEventListener('click', () => {
+          document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+          if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
 
   const cur = fileTabs.find(t => t.id === activeFileId);
   const code = (textarea ? textarea.value : (cur ? cur.content : '')) || '';
@@ -7363,7 +8435,9 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
   }
 
   try {
-    const scriptTagRegex = new RegExp('<script\\b([^>]*)>([\\s\\S]*?)<\\/script>', 'gi');
+    const sOpen = '<' + 'script';
+    const sClose = '<' + '/script>';
+    const scriptTagRegex = new RegExp(sOpen + '\\b([^>]*)>([\\s\\S]*?)' + sClose, 'gi');
     let match;
     const extractedBlocks = [];
     let blockIndex = 1;
@@ -7392,16 +8466,13 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
       finalJsCode = finalJsCode.normalize('NFC');
     }
 
-    let baseName = (cur?.name || 'document.html').replace(/\.(html|htm|js|json|css|txt)$/i, "");
-    baseName = baseName.replace(/\.app$/i, "").replace(/\.js$/i, "");
-    const newName = baseName + '.js';
+    const newName = 'app.js';
     const folderName = cur?.folderName || 'Internal Storage';
     const fullPath = (folderName !== 'Internal Storage') 
       ? '/storage/emulated/0/' + folderName + '/' + newName 
       : '/storage/emulated/0/' + newName;
 
     const executeExtraction = (stripFromHtml = false) => {
-      // 1. Create and Open New JS Tab
       const newTab = {
         id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
         name: newName,
@@ -7418,17 +8489,16 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         scrollTop: 0
       };
 
-      // 2. Safe String-Based Strip: Split script tag to avoid browser HTML parser break
       if (stripFromHtml && cur && textarea) {
         if (typeof recordHistory === 'function') recordHistory();
 
         let linkInjected = false;
-        const safeScriptPattern = new RegExp('<script\\b([^>]*)>([\\s\\S]*?)<\\/script>', 'gi');
+        const safeScriptPattern = new RegExp(sOpen + '\\b([^>]*)>([\\s\\S]*?)' + sClose, 'gi');
         let cleanedHtml = code.replace(safeScriptPattern, (fullMatch, attrs, innerJs) => {
           if (!attrs.includes('src=') && innerJs.trim()) {
             if (!linkInjected) {
               linkInjected = true;
-              return '<script src="' + newName + '"><' + '/script>';
+              return sOpen + ' src="app.js">' + sClose;
             }
             return '';
           }
@@ -7445,18 +8515,20 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
 
         if (typeof updateLineNumbers === 'function') updateLineNumbers();
         if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+        window.StudioBrain?.analyze(cleanedHtml);
       }
 
       fileTabs.push(newTab);
       if (typeof renderTabStrip === 'function') renderTabStrip();
       if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
-      triggerToast(stripFromHtml ? 'Extracted & Linked <script src="' + newName + '"> ⚡' : 'Extracted into ' + newName + ' (Safe) ⚡');
+      window.StudioBrain?.analyze(finalJsCode);
+
+      triggerToast(stripFromHtml ? 'Extracted & Linked <script src="app.js"> ⚡' : 'Extracted into app.js (Safe) ⚡');
     };
 
-    // Dialog: Clean & Link vs Copy Only
     showProfessionalPopup({
       title: "Extract JavaScript Engine",
-      message: 'Found ' + (blockIndex - 1) + ' inline script block(s).\n\nKya aap original HTML se inline script hata kar \'<script src="' + newName + '">\' link karna chahte hain?',
+      message: 'Found ' + (blockIndex - 1) + ' inline script block(s).\n\nKya aap original HTML se inline script hata kar \'<script src="app.js">\' link karna chahte hain?',
       confirmText: "Clean & Link HTML",
       cancelText: "Copy Only (Safe)",
       iconType: "info",
@@ -7467,6 +8539,142 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
   } catch (err) {
     triggerToast("Error extracting scripts: " + err.message);
   }
+});
+
+// 🎨 EXTRACT CSS ENGINE (STRICT style.css HARD-LOCK & STYLESHEET LINK)
+window.extractCssToNewTab = function() {
+  document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+
+  const cur = fileTabs.find(t => t.id === activeFileId);
+  const code = (textarea ? textarea.value : (cur ? cur.content : '')) || '';
+
+  if (!code.trim()) {
+    triggerToast("Active document is empty!");
+    return;
+  }
+
+  try {
+    const stOpen = '<' + 'style';
+    const stClose = '<' + '/style>';
+    const styleTagRegex = new RegExp(stOpen + '\\b[^>]*>([\\s\\S]*?)' + stClose, 'gi');
+    let match;
+    const extractedCss = [];
+
+    while ((match = styleTagRegex.exec(code)) !== null) {
+      if (match[1].trim()) {
+        extractedCss.push(match[1].trim());
+      }
+    }
+
+    if (extractedCss.length === 0) {
+      triggerToast("No inline CSS <style> found!");
+      return;
+    }
+
+    let finalCssCode = extractedCss.join('\n\n');
+    if (typeof finalCssCode.normalize === 'function') {
+      finalCssCode = finalCssCode.normalize('NFC');
+    }
+
+    const cssName = 'style.css';
+    const folderName = cur?.folderName || 'Internal Storage';
+    const fullPath = (folderName !== 'Internal Storage') 
+      ? '/storage/emulated/0/' + folderName + '/' + cssName 
+      : '/storage/emulated/0/' + cssName;
+
+    const executeCssExtraction = (stripFromHtml = false) => {
+      const newTab = {
+        id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        name: cssName,
+        content: finalCssCode,
+        isModified: true,
+        fileHandle: null,
+        dirHandle: cur?.dirHandle || null,
+        isNewFile: true,
+        filePath: fullPath,
+        folderName: folderName,
+        lastModified: Date.now(),
+        fileSize: new Blob([finalCssCode], { type: 'text/css;charset=utf-8' }).size,
+        cursorPos: 0,
+        scrollTop: 0
+      };
+
+      if (stripFromHtml && cur && textarea) {
+        if (typeof recordHistory === 'function') recordHistory();
+
+        let linkInjected = false;
+        const safeStylePattern = new RegExp(stOpen + '\\b[^>]*>([\\s\\S]*?)' + stClose, 'gi');
+        let cleanedHtml = code.replace(safeStylePattern, () => {
+          if (!linkInjected) {
+            linkInjected = true;
+            return '<link rel="stylesheet" href="style.css">';
+          }
+          return '';
+        });
+
+        if (!linkInjected) {
+          if (cleanedHtml.includes('<head>')) {
+            cleanedHtml = cleanedHtml.replace('<head>', '<head>\n  <link rel="stylesheet" href="style.css">');
+          } else {
+            cleanedHtml = '<link rel="stylesheet" href="style.css">\n' + cleanedHtml;
+          }
+        }
+
+        if (typeof cleanedHtml.normalize === 'function') {
+          cleanedHtml = cleanedHtml.normalize('NFC');
+        }
+
+        cur.content = cleanedHtml;
+        cur.isModified = true;
+        textarea.value = cleanedHtml;
+
+        if (typeof updateLineNumbers === 'function') updateLineNumbers();
+        if (typeof updateSyntaxHighlightingOptimized === 'function') updateSyntaxHighlightingOptimized();
+        window.StudioBrain?.analyze(cleanedHtml);
+      }
+
+      fileTabs.push(newTab);
+      if (typeof renderTabStrip === 'function') renderTabStrip();
+      if (typeof handleSwitchTab === 'function') handleSwitchTab(newTab.id);
+      window.StudioBrain?.analyze(finalCssCode);
+
+      triggerToast(stripFromHtml ? 'Extracted & Linked <link href="style.css"> 🎨' : 'Extracted into style.css (Safe) 🎨');
+    };
+
+    showProfessionalPopup({
+      title: "Extract CSS Engine",
+      message: 'Found inline <style> block(s).\n\nKya aap original HTML se CSS hata kar \'<link rel="stylesheet" href="style.css">\' link karna chahte hain?',
+      confirmText: "Clean & Link HTML",
+      cancelText: "Copy Only (Safe)",
+      iconType: "info",
+      onConfirm: () => executeCssExtraction(true),
+      onCancel: () => executeCssExtraction(false)
+    });
+
+  } catch (err) {
+    triggerToast("Error extracting styles: " + err.message);
+  }
+};
+
+// =========================================================================
+// GLOBAL MODAL BACKDROP CLICK GUARD (ZERO REDIRECT TO DASHBOARD)
+// =========================================================================
+// Bahar tap karne par sirf active modal band hoga, dashboard par kabhi nahi fekega.
+[
+  'modalAppPopup',
+  'modalConflictShield',
+  'modalSmartRange',
+  'modalSmartPatchStudio',
+  'modalDiagnosticReport'
+].forEach((modalId) => {
+  const modalEl = document.getElementById(modalId);
+  if (!modalEl) return;
+
+  modalEl.addEventListener('click', (e) => {
+    if (e.target === modalEl) {
+      modalEl.classList.add('hidden');
+    }
+  });
 });
 
       document.getElementById('optDiagnoseCode')?.addEventListener('click', () => {
@@ -7514,8 +8722,8 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
 
     let activePreviewBlobUrl = null;
 
-            // =========================================================================
-    // LIVE RUNNER ENGINE (SMART AUTO-DETECT: DIRECTORY + TAB HYBRID BUNDLER)
+                // =========================================================================
+    // LIVE RUNNER ENGINE (SMART FINGERPRINT BUNDLER • CROSS-PROJECT SCOPE GUARD)
     // =========================================================================
     function setupLiveRunner() {
       const modal = document.getElementById('modalLivePreview');
@@ -7546,7 +8754,7 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         }
       });
 
-      // Background Reader: Folder (dirHandle) se kisi bhi file ka text nikalne ke liye
+                        // 🛡️ ON-DEMAND SMART RESOURCE RESOLVER (ZERO BACKGROUND SCAN - PURE ON-CLICK)
       async function readLinkedFileFromDisk(dirHandle, fileName) {
         if (!dirHandle || !fileName) return null;
         try {
@@ -7558,59 +8766,92 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         }
       }
 
-      async function buildInjectedSource(rawHtml, activeTab) {
-        let processedSource = rawHtml;
+      // Helper: Smart Finder across Open Tabs and Linked Directory
+      async function resolveMatchingProjectAsset(rawPath, activeTab) {
+        if (!rawPath) return null;
+        const pureTarget = rawPath.split('/').pop().split('?')[0].trim().toLowerCase();
+        const curFolder = activeTab?.folderName || 'Internal Storage';
 
-        // 1. External Script Tags Auto-Bundle
-        const scriptRegexPattern = new RegExp('<' + 'script\\b[^>]*src=["\']([^"\']+)["\'][^>]*>\\s*<' + '\\/script>', 'gi');
-        const scriptMatches = Array.from(processedSource.matchAll(scriptRegexPattern));
-        for (const m of scriptMatches) {
-          const fullMatch = m[0];
-          const srcPath = m[1];
-          const pureName = srcPath.split('/').pop();
+        // 1. Exact Match in Open Tabs (Active textarea edit gets top priority)
+        const openTab = fileTabs.find(t => 
+          (t.name || '').toLowerCase() === pureTarget && 
+          (t.folderName === curFolder || curFolder === 'Internal Storage')
+        ) || fileTabs.find(t => (t.name || '').toLowerCase() === pureTarget);
 
-          let fileContent = null;
-
-          // Priority A: Tab strip mein open file
-          const openTab = fileTabs.find(t => t.name === pureName || t.name === srcPath);
-          if (openTab && openTab.content) {
-            fileContent = (openTab.id === activeFileId && textarea) ? textarea.value : openTab.content;
+        if (openTab) {
+          if (openTab.id === activeFileId && textarea) {
+            return textarea.value;
           }
+          return openTab.content !== undefined ? openTab.content : '';
+        }
 
-          // Priority B: Linked Folder se background auto-read
-          if (!fileContent && activeTab && activeTab.dirHandle) {
-            fileContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureName);
-          }
+        // 2. Exact Match in Linked Disk Folder (Silent read without popup)
+        if (activeTab && activeTab.dirHandle) {
+          const diskContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureTarget);
+          if (diskContent !== null) return diskContent;
+        }
 
-          if (fileContent) {
-            processedSource = processedSource.replace(fullMatch, '\n<' + 'script>\n/* [Auto-Bundled: ' + pureName + '] */\n' + fileContent + '\n<' + '/script>\n');
+        // 3. Fallback: Search dirHandle of any open tab
+        for (const t of fileTabs) {
+          if (t.dirHandle) {
+            const diskContent = await readLinkedFileFromDisk(t.dirHandle, pureTarget);
+            if (diskContent !== null) return diskContent;
           }
         }
 
-        // 2. External CSS Links Auto-Bundle
-        const cssRegexPattern = new RegExp('<' + 'link\\b[^>]*href=["\']([^"\']+\\.css)["\'][^>]*>', 'gi');
-        const cssMatches = Array.from(processedSource.matchAll(cssRegexPattern));
+        return null;
+      }
+
+      // Safe Dynamic Virtual Bundler: Inlines CSS and JS without triggering HTML parser crash
+      async function buildInjectedSource(rawHtml, activeTab) {
+        let processedSource = rawHtml || '';
+
+        const tagScriptOpen = '<' + 'script>';
+        const tagScriptClose = '<' + '/script>';
+        const tagStyleOpen = '<' + 'style>';
+        const tagStyleClose = '<' + '/style>';
+
+        // 1. Bundle External CSS Links
+        const cssRegex = new RegExp('<' + 'link\\b[^>]*?\\bhref=["\']([^"\']+)["\'][^>]*>', 'gi');
+        const cssMatches = Array.from(processedSource.matchAll(cssRegex));
+
         for (const cm of cssMatches) {
           const fullMatch = cm[0];
-          const hrefPath = cm[1];
-          const pureCssName = hrefPath.split('/').pop();
+          const hrefPath = (cm[1] || '').trim();
+          const isCss = fullMatch.toLowerCase().includes('stylesheet') || hrefPath.toLowerCase().endsWith('.css');
 
-          let cssContent = null;
-          const openCssTab = fileTabs.find(t => t.name === pureCssName);
-          if (openCssTab && openCssTab.content) {
-            cssContent = (openCssTab.id === activeFileId && textarea) ? textarea.value : openCssTab.content;
-          }
+          if (isCss && !hrefPath.startsWith('http://') && !hrefPath.startsWith('https://') && !hrefPath.startsWith('//')) {
+            const pureCssName = hrefPath.split('/').pop().split('?')[0].toLowerCase();
+            const cssContent = await resolveMatchingProjectAsset(pureCssName, activeTab);
 
-          if (!cssContent && activeTab && activeTab.dirHandle) {
-            cssContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureCssName);
-          }
-
-          if (cssContent) {
-            processedSource = processedSource.replace(fullMatch, '\n<style>\n/* [Auto-Bundled: ' + pureCssName + '] */\n' + cssContent + '\n<' + '/style>\n');
+            if (cssContent !== null) {
+              const inlinedStyle = '\n' + tagStyleOpen + '\n/* [Auto-Bundled: ' + pureCssName + '] */\n' + cssContent + '\n' + tagStyleClose + '\n';
+              processedSource = processedSource.replace(fullMatch, () => inlinedStyle);
+            }
           }
         }
 
-        const interceptor = '<' + 'script>\n' +
+        // 2. Bundle External JS Scripts
+        const jsRegex = new RegExp('<' + 'script\\b[^>]*?\\bsrc=["\']([^"\']+)["\'][^>]*>([\\s\\S]*?)<' + '\\/script>', 'gi');
+        const jsMatches = Array.from(processedSource.matchAll(jsRegex));
+
+        for (const jm of jsMatches) {
+          const fullMatch = jm[0];
+          const srcPath = (jm[1] || '').trim();
+
+          if (!srcPath.startsWith('http://') && !srcPath.startsWith('https://') && !srcPath.startsWith('//')) {
+            const pureJsName = srcPath.split('/').pop().split('?')[0].toLowerCase();
+            const jsContent = await resolveMatchingProjectAsset(pureJsName, activeTab);
+
+            if (jsContent !== null) {
+              const inlinedScript = '\n' + tagScriptOpen + '\n/* [Auto-Bundled: ' + pureJsName + '] */\n' + jsContent + '\n' + tagScriptClose + '\n';
+              processedSource = processedSource.replace(fullMatch, () => inlinedScript);
+            }
+          }
+        }
+
+        // 3. Interceptor for Console and Error reporting
+        const interceptor = '\n' + tagScriptOpen + '\n' +
           '(function(){\n' +
           '  function forward(type, args){\n' +
           '    try {\n' +
@@ -7628,11 +8869,15 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
           '    forward("error", msg + " (Line " + lineNo + ")"); \n' +
           '    window.parent.postMessage({ source: "anzarg-runtime-error", line: lineNo, error: msg }, "*");\n' +
           '  };\n' +
-          '})();\n<' + '/script>\n';
+          '})();\n' + tagScriptClose + '\n';
 
-        return processedSource.includes('<head>') ? processedSource.replace('<head>', '<head>' + interceptor) : interceptor + processedSource;
+        if (processedSource.includes('<head>')) {
+          return processedSource.replace('<head>', '<head>' + interceptor);
+        }
+        return interceptor + processedSource;
       }
 
+      // 🚀 PRE-FLIGHT EXECUTION GUARD & TWO-WAY REVERSE ROUTER (HTML, CSS, JS AUTO-DETECT)
       async function injectCodeToIframe() {
         if (activePreviewBlobUrl) {
           URL.revokeObjectURL(activePreviewBlobUrl);
@@ -7640,29 +8885,56 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         }
 
         const curTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];
-        const isJsFile = curTab && curTab.name && curTab.name.toLowerCase().endsWith('.js');
-        let htmlSource = textarea ? textarea.value : '';
+        const activeName = (curTab?.name || 'index.html').toLowerCase();
+        const activeContent = textarea ? textarea.value : (curTab?.content || '');
 
-        // SMART REVERSE ROUTER: Agar active tab .js file hai
-        if (isJsFile) {
-          let mainHtmlTab = fileTabs.find(t => t.name && (t.name.toLowerCase().endsWith('.html') || t.name.toLowerCase().endsWith('.htm')));
-          
-          if (!mainHtmlTab && curTab && curTab.dirHandle) {
-            const diskHtml = await readLinkedFileFromDisk(curTab.dirHandle, 'index.html');
-            if (diskHtml) {
-              mainHtmlTab = { name: 'index.html', content: diskHtml, dirHandle: curTab.dirHandle };
-            }
-          }
+        let finalHtml = '';
+        let targetContextTab = curTab;
+        let modeToast = '';
 
-          if (mainHtmlTab && mainHtmlTab.content) {
-            htmlSource = mainHtmlTab.content;
+        // GUARD 1: Active file is CSS
+        if (activeName.endsWith('.css')) {
+          const companionHtml = fileTabs.find(t => (t.name || '').toLowerCase().endsWith('.html') || (t.name || '').toLowerCase().endsWith('.htm'));
+          if (companionHtml) {
+            const rawHtml = companionHtml.id === activeFileId && textarea ? textarea.value : companionHtml.content;
+            targetContextTab = companionHtml;
+            finalHtml = await buildInjectedSource(rawHtml, companionHtml);
+            modeToast = 'Previewing style.css inside ' + companionHtml.name + ' 🎨';
           } else {
-            htmlSource = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>JS Preview</title></head><body><div id="app">Running ' + curTab.name + '...</div><' + '/body><' + '/html>';
+            finalHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + activeContent + '</style></head>' +
+            '<body style="padding:20px;font-family:sans-serif;background:#f8fafc;color:#0f172a;">' +
+            '<h3>🎨 CSS Live Preview</h3><p style="color:#64748b;font-size:13px;margin:8px 0 16px;">Applied styles on standard elements:</p>' +
+            '<button style="padding:10px 16px;cursor:pointer;">Button Element</button></body></html>';
+            modeToast = 'Previewing style.css 🎨';
           }
         }
+        // GUARD 2: Active file is JavaScript
+        else if (activeName.endsWith('.js')) {
+          const companionHtml = fileTabs.find(t => (t.name || '').toLowerCase().endsWith('.html') || (t.name || '').toLowerCase().endsWith('.htm'));
+          if (companionHtml) {
+            const rawHtml = companionHtml.id === activeFileId && textarea ? textarea.value : companionHtml.content;
+            targetContextTab = companionHtml;
+            finalHtml = await buildInjectedSource(rawHtml, companionHtml);
+            modeToast = 'Previewing app.js inside ' + companionHtml.name + ' ⚡';
+          } else {
+            finalHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>' +
+            '<body style="padding:16px;font-family:monospace;background:#0f172a;color:#38bdf8;">' +
+            '<div style="font-weight:bold;margin-bottom:8px;">⚡ JS Runner: ' + (curTab?.name || 'app.js') + '</div>' +
+            '<div id="output" style="color:#e2e8f0;font-size:12px;">Running script...</div>' +
+            tagScriptOpen + '\n' +
+            'try {\n' + activeContent + '\n document.getElementById("output").innerText = "✅ Script executed without errors.";\n} catch(e) {\n document.getElementById("output").innerText = "❌ Error: " + e.message;\n}\n' +
+            tagScriptClose + '\n</body></html>';
+            modeToast = 'Running JavaScript Sandbox ⚡';
+          }
+        }
+        // GUARD 3: Active file is HTML
+        else {
+          finalHtml = await buildInjectedSource(activeContent, curTab);
+        }
 
-        const source = await buildInjectedSource(htmlSource, curTab);
-        const blob = new Blob([source], { type: 'text/html' });
+        if (modeToast) triggerToast(modeToast);
+
+        const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
         activePreviewBlobUrl = URL.createObjectURL(blob);
         frame.src = activePreviewBlobUrl;
       }
@@ -7746,10 +9018,12 @@ document.getElementById('optExtractJs')?.addEventListener('click', () => {
         await executeSaveWorkflow(true);
       });
 
-      document.getElementById('dNavOpenFile')?.addEventListener('click', () => {
-        closeDrawerPanel();
-        handleOpenFileNative();
-      });
+            document.getElementById('dNavOpenFile')?.addEventListener('click', () => {
+  closeDrawerPanel();
+  if (typeof handleOpenFileNative === 'function') {
+    handleOpenFileNative();
+  }
+});
 
       const fallbackInput = document.getElementById('fallbackFileInput');
       if (fallbackInput) {

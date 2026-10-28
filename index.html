@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.9 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 9.0 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.9',
+      version: '9.0',
       edition: 'Developer Master Edition'
     };
 
@@ -5117,15 +5117,16 @@ CRITICAL OPERATIONAL RULES:
         }
       });
 
-            // 2. Interactive Deep Fix-All Engine (Syntax-Balance Guard & Safe Repair)
-      btnFixAll?.addEventListener('click', () => {
+                  // 2. Interactive Deep Fix-All Engine (Syntax-Balance Guard & Safe Repair)
+      const fixAllBtnElement = btnFixAll || document.getElementById('btnApplyAllFixes');
+      fixAllBtnElement?.addEventListener('click', () => {
         if (!textarea) return;
 
-        if (lastScannedIssues.total === 0) {
+        if (!lastScannedIssues || lastScannedIssues.total === 0) {
           if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch (e) {}
-          btnFixAll.classList.remove('btn-shake-active');
-          void btnFixAll.offsetWidth;
-          btnFixAll.classList.add('btn-shake-active');
+          fixAllBtnElement.classList.remove('btn-shake-active');
+          void fixAllBtnElement.offsetWidth;
+          fixAllBtnElement.classList.add('btn-shake-active');
           triggerToast("Already fully cleaned. No issues found.");
           return;
         }
@@ -5143,6 +5144,23 @@ CRITICAL OPERATIONAL RULES:
         let i = 0;
         let inAtRuleScope = false;
         let braceDepth = 0;
+
+        // Helper to check selector in cssMap (Supports both Map and plain Object)
+        const checkInCssMap = (sel) => {
+          if (!lastScannedIssues || !lastScannedIssues.cssMap) return false;
+          if (typeof lastScannedIssues.cssMap.has === 'function') {
+            return lastScannedIssues.cssMap.has(sel);
+          }
+          return Object.prototype.hasOwnProperty.call(lastScannedIssues.cssMap, sel);
+        };
+
+        const getFromCssMap = (sel) => {
+          if (!lastScannedIssues || !lastScannedIssues.cssMap) return null;
+          if (typeof lastScannedIssues.cssMap.get === 'function') {
+            return lastScannedIssues.cssMap.get(sel);
+          }
+          return lastScannedIssues.cssMap[sel];
+        };
 
         while (i < lines.length) {
           const line = lines[i];
@@ -5166,12 +5184,12 @@ CRITICAL OPERATIONAL RULES:
           if (headerMatch && !inAtRuleScope && braceDepth <= 1) {
             const rawSel = headerMatch[1].trim();
             // Agar nested na ho aur na hi at-rule ho
-            if (!rawSel.startsWith('@') && lastScannedIssues?.cssMap?.has(rawSel)) {
-              const registeredLine = lastScannedIssues.cssMap.get(rawSel);
+            if (!rawSel.startsWith('@') && checkInCssMap(rawSel)) {
+              const registeredLine = getFromCssMap(rawSel);
               const currentLineIdx = i + 1;
 
               // Agar yeh line registered duplicate line se aage ki exact match hai
-              if (currentLineIdx > registeredLine) {
+              if (registeredLine && currentLineIdx > registeredLine) {
                 // Find complete block to remove cleanly
                 let blockBraces = 0;
                 let foundEnd = false;
@@ -5206,55 +5224,64 @@ CRITICAL OPERATIONAL RULES:
 
         const candidateCode = outputLines.join('\n');
 
-        // 🛡️ PRE-FLIGHT SYNTAX BALANCE CHECK (ROLLBACK GUARD)
+        // 🛡️ PRE-FLIGHT RELATIVE BALANCE CHECK (SMART ROLLBACK GUARD)
         const countChar = (str, char) => (str.match(new RegExp('\\' + char, 'g')) || []).length;
         const origOpen = countChar(originalCode, '{');
         const origClose = countChar(originalCode, '}');
         const candOpen = countChar(candidateCode, '{');
         const candClose = countChar(candidateCode, '}');
 
-        // Agar bracket balance toota toh foran rollback karein
-        if (candOpen !== candClose || (origOpen === origClose && candOpen !== origOpen)) {
+        // Check karte hain ki safai se koi naya bracket imbalance toh nahi aaya
+        const origNet = origOpen - origClose;
+        const candNet = candOpen - candClose;
+
+        if (origNet !== candNet) {
           triggerToast("⚠️ Repair cancelled: Syntax safety balance preserved.");
           return;
         }
 
-        // Apply Verified Code
+        // Apply Verified Code to Editor
         textarea.value = candidateCode;
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
         markActiveModified();
 
-        // Re-analyze via StudioBrain to verify resolution
+        // Re-analyze via StudioBrain to verify resolution live in Dashboard
         const newReport = window.StudioBrain ? window.StudioBrain.analyze(candidateCode) : { total: 0, list: [] };
         lastScannedIssues = newReport;
 
-        if (statDupes) statDupes.textContent = newReport.dupes || 0;
-        if (statOverwrites) statOverwrites.textContent = newReport.overwrites || 0;
-        if (statDead) statDead.textContent = newReport.dead || 0;
+        if (typeof statDupes !== 'undefined' && statDupes) statDupes.textContent = newReport.dupes || 0;
+        if (typeof statOverwrites !== 'undefined' && statOverwrites) statOverwrites.textContent = newReport.overwrites || 0;
+        if (typeof statDead !== 'undefined' && statDead) statDead.textContent = newReport.dead || 0;
 
-        renderIssuesListUI(newReport.list);
+        if (typeof renderIssuesListUI === 'function') {
+          renderIssuesListUI(newReport.list);
+        }
 
         if (newReport.total === 0) {
-          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
-          if (bannerTitle) {
+          if (typeof statusBanner !== 'undefined' && statusBanner) {
+            statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
+          }
+          if (typeof bannerTitle !== 'undefined' && bannerTitle) {
             bannerTitle.className = 'text-emerald-300 font-bold text-xs';
             bannerTitle.textContent = 'All Cleaned Successfully! (0 Issues)';
           }
-          if (bannerSub) bannerSub.textContent = 'All duplicate rules and broken braces have been completely resolved.';
-          if (btnFixAll) {
-            btnFixAll.disabled = true;
-            btnFixAll.classList.add('opacity-40');
+          if (typeof bannerSub !== 'undefined' && bannerSub) {
+            bannerSub.textContent = 'All duplicate rules and broken braces have been completely resolved.';
+          }
+          if (fixAllBtnElement) {
+            fixAllBtnElement.disabled = true;
+            fixAllBtnElement.classList.add('opacity-40');
           }
           triggerToast("All Issues Fixed Safely! 🛡️");
         } else {
-          if (bannerTitle) {
+          if (typeof bannerTitle !== 'undefined' && bannerTitle) {
             bannerTitle.textContent = `Repaired: ${newReport.total} Issue(s) Remaining`;
           }
           triggerToast(`Repaired with ${newReport.total} safe items remaining`);
         }
       });
-      }
+    }
 
     // Auto-initialize Scanner Engine
     setupConflictShieldSystem();

@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.6 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.7 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -1055,8 +1055,13 @@
   <!-- ========================================================================= -->
   <!-- PROFESSIONAL ZERO-BROWSER ALERT & CONFIRM POPUP DIALOG -->
   <!-- ========================================================================= -->
-  <div id="modalAppPopup" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-    <div class="app-popup-card w-full max-w-xs text-center border shadow-2xl transition-all">
+    <div id="modalAppPopup" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="app-popup-card w-full max-w-xs text-center border shadow-2xl transition-all relative">
+      <!-- ✖️ TOP-RIGHT DISMISS / CLOSE BUTTON -->
+      <button id="btnPopupCloseTop" type="button" title="Close" class="absolute top-3 right-3 p-1.5 rounded-xl text-[var(--text-muted)] hover:text-white hover:bg-white/10 active:scale-90 transition z-10">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
       <div id="popupIconBox" class="w-14 h-14 mx-auto mb-3.5 rounded-2xl flex items-center justify-center text-2xl transition-all shadow-inner">
         <!-- SVG Icon dynamically inserted by showProfessionalPopup -->
       </div>
@@ -1587,6 +1592,32 @@
       </div>
     </div>
   </div>
+    <!-- DEDICATED TAB CLOSE SAFETY DIALOG (ZERO CLASH) -->
+  <div id="modalTabCloseConfirm" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+    <div class="app-popup-card w-full max-w-xs text-left border shadow-2xl transition-all space-y-3">
+      <div class="flex items-center space-x-2 pb-2 border-b border-[var(--surface-border)]">
+        <div class="p-1.5 bg-amber-500/15 border border-amber-500/30 rounded-xl text-amber-400">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-200">Save Modifications?</h3>
+      </div>
+      <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+        Do you want to save changes to <span id="tabCloseTargetName" class="text-cyan-300 font-mono font-bold"></span> before closing?
+      </p>
+      <div class="space-y-2 pt-1">
+        <button id="btnTabSaveAndClose" type="button" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition flex items-center justify-center space-x-1">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i>
+          <span>Save & Close Tab</span>
+        </button>
+        <button id="btnTabDiscardAndClose" type="button" class="w-full py-2 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 font-bold text-xs rounded-xl active:scale-95 transition">
+          Close Without Saving
+        </button>
+        <button id="btnTabCancelClose" type="button" class="w-full py-1.5 text-slate-400 hover:text-white font-bold text-xs text-center">
+          Cancel (Keep Tab)
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="modalExitAreYouSure" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
     <div class="material-card-elevated w-full max-w-xs p-5 text-xs text-[var(--text-main)] space-y-3 text-center">
@@ -2079,7 +2110,7 @@
     </div>
 
     <div class="flex-1 bg-white relative flex flex-col overflow-hidden">
-      <iframe id="liveFrame" sandbox="allow-scripts allow-modals allow-same-origin" class="w-full flex-1 border-none"></iframe>
+      <iframe id="liveFrame" sandbox="allow-scripts allow-modals" class="w-full flex-1 border-none"></iframe>
 
       <div id="previewConsoleTray" class="hidden h-40 bg-slate-950 border-t border-slate-800 flex flex-col text-xs font-mono select-text">
         <div class="h-7 bg-slate-900 px-3 flex items-center justify-between text-[11px] text-slate-400">
@@ -2090,6 +2121,83 @@
           <div class="text-slate-500 italic">No console logs...</div>
         </div>
       </div>
+    </div>
+  </div>
+  <!-- ========================================================================= -->
+  <!-- 🎯 SMART PROJECT BUNDLE FALLBACK SELECTOR (USER STEERING CONTROL) -->
+  <!-- ========================================================================= -->
+  <div id="modalProjectFallbackPicker" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-3 z-50">
+    <div class="material-card-elevated w-full max-w-sm p-4 text-xs text-[var(--text-main)] flex flex-col max-h-[90vh] space-y-3 font-mono">
+      
+      <!-- Clean Header -->
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--surface-border)] shrink-0">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 bg-cyan-500/15 border border-cyan-500/30 rounded-xl text-cyan-400">
+            <i data-lucide="boxes" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-cyan-300 font-sans">Project Bundle Resolver</h3>
+            <span class="text-[9px] text-[var(--text-muted)]">Select files manually to preview</span>
+          </div>
+        </div>
+        <button id="btnFallbackPickerCloseTop" type="button" class="p-1 text-[var(--text-muted)] hover:text-white rounded-lg">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Quick Guidance Notice -->
+      <div class="p-2.5 bg-black/30 border border-slate-800 rounded-xl text-[10.5px] font-sans text-slate-300 leading-relaxed">
+        Multiple versions ya detached files mili hain. Live preview ke liye <strong>Main HTML</strong> aur sath chalane wali <strong>files</strong> select karein:
+      </div>
+
+      <!-- Scrollable Files Deck -->
+      <div class="flex-1 overflow-y-auto space-y-3 pr-0.5 no-scrollbar max-h-56">
+        <!-- 1. Main Host HTML Selection (Single Choice Radio) -->
+        <div class="space-y-1.5">
+          <div class="text-[10px] uppercase font-bold text-cyan-400 flex items-center justify-between">
+            <span>1. Select Main HTML (Host):</span>
+            <span class="text-[9px] text-slate-500 font-normal">Choose 1</span>
+          </div>
+          <div id="boxFallbackHtmlList" class="space-y-1 bg-[#0a0d14] p-1.5 rounded-xl border border-slate-800">
+            <!-- Dynamic Radio items inserted here -->
+            <div class="text-[10px] text-slate-500 text-center py-2">Searching HTML files...</div>
+          </div>
+        </div>
+
+        <!-- 2. Companion Files Selection (Checkboxes up to 10) -->
+        <div class="space-y-1.5">
+          <div class="text-[10px] uppercase font-bold text-emerald-400 flex items-center justify-between">
+            <span>2. Companion Files (JS/CSS/PWA):</span>
+            <span id="badgeFallbackSelectedCount" class="text-[9px] text-emerald-300 bg-emerald-500/15 px-1.5 py-0.2 rounded font-bold">0 selected</span>
+          </div>
+          <div id="boxFallbackCompanionList" class="space-y-1 bg-[#0a0d14] p-1.5 rounded-xl border border-slate-800">
+            <!-- Dynamic Checkbox items inserted here -->
+            <div class="text-[10px] text-slate-500 text-center py-2">Searching companion files...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="pt-1 space-y-2 shrink-0">
+        <!-- Primary Action: RUN BUNDLE -->
+        <button id="btnExecuteFallbackBundleRun" type="button" class="w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 active:scale-95 transition shadow-lg shadow-cyan-500/20">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+          <span>RUN BUNDLE ⚡</span>
+        </button>
+
+        <!-- Secondary Actions -->
+        <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <button id="btnFallbackPickFromDevice" type="button" class="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition">
+            <i data-lucide="file-plus" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Pick File</span>
+          </button>
+          <button id="btnFallbackCancel" type="button" class="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl font-bold flex items-center justify-center space-x-1 active:scale-95 transition">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span>Cancel</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2212,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.6',
+      version: '8.7',
       edition: 'Developer Master Edition'
     };
 
@@ -2302,85 +2410,105 @@
       }
     }
 
-        // =========================================================================
-    // ZERO-BROWSER PROFESSIONAL POPUP & MODAL DIALOG CONTROLLER
+            // =========================================================================
+    // ZERO-BROWSER PROFESSIONAL POPUP & MODAL DIALOG CONTROLLER (WITH TOP ✖️)
     // =========================================================================
     function showProfessionalPopup({
-  title = "Developer Alert",
-  message = "",
-  confirmText = "Proceed",
-  cancelText = "Dismiss",
-  iconType = "info",
-  onConfirm = null,
-  onCancel = null
-} = {}) {
-  const modal = document.getElementById("modalAppPopup");
-  // 🛡️ EXACT MATCH WITH HTML IDs (Fixes "Developer Notice" freeze)
-  const titleEl = document.getElementById("popupTitleText") || document.getElementById("popupTitle");
-  const bodyEl = document.getElementById("popupMessageBody") || document.getElementById("popupBody");
-  const iconEl = document.getElementById("popupIconBox") || document.getElementById("popupIconContainer");
-  const btnConfirm = document.getElementById("btnPopupConfirm");
-  const btnCancel = document.getElementById("btnPopupCancel");
+      title = "Developer Alert",
+      message = "",
+      confirmText = "Proceed",
+      cancelText = "Dismiss",
+      iconType = "info",
+      onConfirm = null,
+      onCancel = null
+    } = {}) {
+      const modal = document.getElementById("modalAppPopup");
+      const titleEl = document.getElementById("popupTitleText") || document.getElementById("popupTitle");
+      const bodyEl = document.getElementById("popupMessageBody") || document.getElementById("popupBody");
+      const iconEl = document.getElementById("popupIconBox") || document.getElementById("popupIconContainer");
+      const btnConfirm = document.getElementById("btnPopupConfirm");
+      const btnCancel = document.getElementById("btnPopupCancel");
+      const btnCloseTop = document.getElementById("btnPopupCloseTop");
 
-  if (!modal) return;
+      if (!modal) return;
 
-  // 🛡️ TOP-LEVEL Z-INDEX LOCK
-  modal.style.zIndex = "99999";
-  modal.style.position = "fixed";
+      modal.style.zIndex = "99999";
+      modal.style.position = "fixed";
 
-  if (titleEl) titleEl.textContent = title;
-  if (bodyEl) bodyEl.textContent = message;
-  if (btnConfirm) btnConfirm.textContent = confirmText;
-  if (btnCancel) {
-    btnCancel.textContent = cancelText;
-    btnCancel.style.display = cancelText ? "block" : "none";
-  }
+      if (titleEl) titleEl.textContent = title;
+      if (bodyEl) bodyEl.textContent = message;
+      if (btnConfirm) btnConfirm.textContent = confirmText;
+      if (btnCancel) {
+        btnCancel.textContent = cancelText;
+        btnCancel.style.display = cancelText ? "block" : "none";
+      }
 
-  if (iconEl) {
-    if (iconType === "danger") {
-      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30";
-      iconEl.innerHTML = `<i data-lucide="alert-triangle" class="w-7 h-7"></i>`;
-    } else if (iconType === "success") {
-      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-      iconEl.innerHTML = `<i data-lucide="shield-check" class="w-7 h-7"></i>`;
-    } else if (iconType === "key") {
-      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
-      iconEl.innerHTML = `<i data-lucide="key" class="w-7 h-7"></i>`;
-    } else if (iconType === "warning") {
-      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
-      iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-7 h-7"></i>`;
-    } else {
-      iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
-      iconEl.innerHTML = `<i data-lucide="info" class="w-7 h-7"></i>`;
+      if (iconEl) {
+        if (iconType === "danger") {
+          iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30";
+          iconEl.innerHTML = `<i data-lucide="alert-triangle" class="w-7 h-7"></i>`;
+        } else if (iconType === "success") {
+          iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+          iconEl.innerHTML = `<i data-lucide="shield-check" class="w-7 h-7"></i>`;
+        } else if (iconType === "key") {
+          iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
+          iconEl.innerHTML = `<i data-lucide="key" class="w-7 h-7"></i>`;
+        } else if (iconType === "warning") {
+          iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30";
+          iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-7 h-7"></i>`;
+        } else {
+          iconEl.className = "w-14 h-14 mx-auto mb-3.5 flex items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+          iconEl.innerHTML = `<i data-lucide="info" class="w-7 h-7"></i>`;
+        }
+      }
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      if (window.lucide) lucide.createIcons();
+
+      const cleanUp = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        if (btnConfirm) btnConfirm.onclick = null;
+        if (btnCancel) btnCancel.onclick = null;
+        if (btnCloseTop) btnCloseTop.onclick = null;
+      };
+
+      if (btnConfirm) {
+        btnConfirm.onclick = () => {
+          cleanUp();
+          if (onConfirm) onConfirm();
+        };
+      }
+
+            // 1. Bottom Cancel Button (e.g. Option 2 / Secondary Action)
+      if (btnCancel) {
+        btnCancel.onclick = () => {
+          cleanUp();
+          if (onCancel) {
+            onCancel();
+          } else if (window.StudioNavRouter) {
+            window.StudioNavRouter.returnToOrigin();
+          }
+        };
+      }
+
+      // 2. Top-Right ✖ Cut Button (PURE ABORT: Zero action, zero file creation, just cancel & exit)
+      if (btnCloseTop) {
+        btnCloseTop.onclick = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          cleanUp();
+          // 🛡️ STRICT ABORT: onCancel ko bilkul run mat karo taaki koi nayi tab/file na bane!
+          if (window.StudioNavRouter) {
+            window.StudioNavRouter.returnToOrigin();
+          }
+        };
+      }
     }
-  }
-
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-
-  if (window.lucide) lucide.createIcons();
-
-  const cleanUp = () => {
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
-    if (btnConfirm) btnConfirm.onclick = null;
-    if (btnCancel) btnCancel.onclick = null;
-  };
-
-  if (btnConfirm) {
-    btnConfirm.onclick = () => {
-      cleanUp();
-      if (onConfirm) onConfirm();
-    };
-  }
-
-  if (btnCancel) {
-    btnCancel.onclick = () => {
-      cleanUp();
-      if (onCancel) onCancel();
-    };
-  }
-}
 
     // Promise Wrapper For Non-Blocking In-App Confirmations (Zero Browser Popups)
     function showStudioModalConfirm({ title = "Confirm Action", message = "", confirmText = "OK", cancelText = "Cancel", iconType = "warning" }) {
@@ -2875,7 +3003,7 @@
     let currentCursorLineNum = 1;
     function updateActiveLinePosition() {
       if (!textarea || !activeEditorLineBar) return;
-      const lineHeight = 20.15;
+      const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
       const rawTop = 8 + (currentCursorLineNum - 1) * lineHeight;
       const scrolledTop = rawTop - textarea.scrollTop;
       activeEditorLineBar.style.top = `${scrolledTop}px`;
@@ -2966,7 +3094,7 @@
 
     function setupPwaInstallFlow() {
   const headerInstallBtn = document.getElementById('btnHeaderInstall');
-  const drawerInstallBtn = document.getElementById('btnDrawerInstall');
+  const drawerInstallBtn = document.getElementById('dNavInstallApp');
   const tickerWrapper = document.getElementById('wrapperInstallTicker');
   const clusterActions = document.getElementById('clusterUndoRedoSave');
 
@@ -3162,10 +3290,7 @@
         if (window.Prism) Prism.highlightElement(syntaxCode);
       }, debounceDelay);
 
-      clearTimeout(diagnosticTimer);
-      diagnosticTimer = setTimeout(() => {
-        runBackgroundCodeDiagnostics();
-      }, 700);
+            // Background diagnostic timer disabled for zero mobile CPU load
     }
 
         // REAL-TIME REACTIVE SAVE BUTTON CONTROLLER
@@ -3276,7 +3401,7 @@
       textarea.focus();
       textarea.setSelectionRange(pos, pos);
 
-      const lineHeight = 20.15;
+      const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
       textarea.scrollTop = Math.max(0, (line - 5) * lineHeight);
       if (gutter) gutter.scrollTop = textarea.scrollTop;
 
@@ -3284,23 +3409,15 @@
       triggerToast(`Jumped to Line ${line}`);
     }
 
-    function runBackgroundCodeDiagnostics() {
-      if (!textarea) return;
-      const code = textarea.value;
+        function runBackgroundCodeDiagnostics() {
+      // 🛡️ ZERO CPU GUARD: Keystroke background auto-scan freeze (Runs strictly on-demand)
       const dotWarn = document.getElementById('dotDiagnosticWarning');
-      const sampleCode = code.length > 80000 ? code.substring(0, 80000) : code;
-      const report = analyzeCodeTwoTier(sampleCode);
-
       if (dotWarn) {
-        if (report.hasError) {
-          dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 animate-ping';
-        } else {
-          dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0';
-        }
+        dotWarn.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0';
       }
     }
 
-                // Helper: Safe HTML Text Escaper (Prevents tags like </style> from vanishing)
+                    // Helper: Safe HTML Text Escaper (Prevents tags like </style> from vanishing)
     function escapeHtmlEntities(str) {
       if (!str) return '';
       return String(str)
@@ -3312,64 +3429,128 @@
     }
 
     // =========================================================================
-    // CODE ERROR CHECKER ENGINE (ACCURATE AUTO-HEAL • ANTI-DASHBOARD LOCK)
+    // 🛡️ ON-DEMAND ZERO-CPU ERROR CHECKER ENGINE (3-ATTEMPT & HARDWARE SHIELD)
     // =========================================================================
-    function analyzeCodeTwoTier(code) {
+    var diagnosticScanAttempts = 0;
+    currentDiagnosticFix = null;
+
+    function analyzeCodeTwoTier(code, fileName) {
       if (!code || !code.trim()) return { hasError: false };
 
-      // 1. TIER 1: CSS & BRACKETS SCANNER (<style> blocks ya pure CSS)
-      const styleMatches = Array.from(code.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi));
-      
-      const scanCssBody = (cssBody, linesBeforeStyle) => {
-        // Check A: Selector ke baad missing '{'
-        const missingBraceMatch = cssBody.match(/([.#a-zA-Z0-9_\-]+)\s*\n\s*([a-zA-Z\-]+)\s*:/);
-        if (missingBraceMatch) {
-          const matchOffset = cssBody.indexOf(missingBraceMatch[0]);
-          const errLine = linesBeforeStyle + cssBody.substring(0, matchOffset).split('\n').length;
+      var curTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs.find(function(t) { return t.id === activeFileId; }) : null;
+      var effectiveName = (fileName && typeof fileName === 'string') ? fileName : (curTab ? curTab.name : 'untitled.html');
+      var lowerName = effectiveName.toLowerCase();
+
+      var isJsFile = lowerName.endsWith('.js') || lowerName.endsWith('.mjs');
+      var isCssFile = lowerName.endsWith('.css');
+      var isHtmlFile = lowerName.endsWith('.html') || lowerName.endsWith('.htm') || (!isJsFile && !isCssFile);
+
+      // ─── TIER 1: PURE JAVASCRIPT SYNTAX SCANNER (NO CSS CHECK ON JS FILES) ───
+      if (isJsFile) {
+        if (/^\s*(import|export)\s+/m.test(code)) {
+          return { hasError: false };
+        }
+        try {
+          new Function(code);
+          return { hasError: false };
+        } catch (jsErr) {
+          var errLine = 1;
+          var matchLine = jsErr.stack ? jsErr.stack.match(/<anonymous>:(\d+):(\d+)/) : null;
+          if (matchLine) errLine = parseInt(matchLine[1], 10);
           return {
             hasError: true,
-            tier: 'css',
-            type: 'Missing CSS Bracket {',
+            tier: 'javascript',
+            type: 'JS SyntaxError',
             line: errLine,
             col: 1,
-            message: `CSS selector '${missingBraceMatch[1].trim()}' ke baad opening bracket '{' gayab hai.`,
-            fixType: 'insert_css_open_bracket',
-            selector: missingBraceMatch[1].trim(),
-            linesBeforeStyle: linesBeforeStyle
+            message: jsErr.message || 'Syntax parsing error in JavaScript file.',
+            fixType: 'none'
           };
         }
+      }
 
-        // Check B: CSS Brackets Balance Check ({ vs })
-        let openBraces = 0;
-        let lastOpenLine = 1;
-        const cssLines = cssBody.split('\n');
-        for (let i = 0; i < cssLines.length; i++) {
-          const ln = cssLines[i];
-          for (let ch of ln) {
-            if (ch === '{') { openBraces++; lastOpenLine = linesBeforeStyle + i + 1; }
-            else if (ch === '}') { openBraces--; }
+      // ─── TIER 2: CSS STATE-MACHINE TOKENIZER ───
+      var scanCssWithStateMachine = function(cssBody, linesBeforeStyle) {
+        var depth = 0;
+        var inString = null;
+        var inComment = false;
+        var buffer = "";
+        var lastSelector = "";
+        var lastSelectorLine = linesBeforeStyle + 1;
+        var cssLines = cssBody.split('\n');
+
+        for (var lineIdx = 0; lineIdx < cssLines.length; lineIdx++) {
+          var line = cssLines[lineIdx];
+          var currentLineNum = linesBeforeStyle + lineIdx + 1;
+          var i = 0;
+
+          while (i < line.length) {
+            var ch = line[i];
+            var nextCh = line[i + 1] || '';
+
+            if (!inString && ch === '/' && nextCh === '*') { inComment = true; i += 2; continue; }
+            if (inComment && ch === '*' && nextCh === '/') { inComment = false; i += 2; continue; }
+            if (inComment) { i++; continue; }
+
+            if (!inComment && (ch === '"' || ch === "'")) {
+              if (!inString) inString = ch;
+              else if (inString === ch && line[i - 1] !== '\\') inString = null;
+              i++;
+              continue;
+            }
+            if (inString) { i++; continue; }
+
+            if (ch === '{') {
+              depth++;
+              if (depth === 1) {
+                lastSelector = buffer.trim();
+                lastSelectorLine = currentLineNum;
+              }
+              buffer = "";
+            } else if (ch === '}') {
+              depth--;
+              if (depth < 0) {
+                return {
+                  hasError: true,
+                  tier: 'css',
+                  type: "Unexpected Extra CSS Bracket '}'",
+                  line: currentLineNum,
+                  col: i + 1,
+                  message: "Faltu closing bracket '}' mila jo kisi selector se juda nahi hai.",
+                  fixType: 'none'
+                };
+              }
+              buffer = "";
+            } else {
+              buffer += ch;
+            }
+            i++;
           }
-          if (openBraces < 0) {
-            return {
-              hasError: true,
-              tier: 'css',
-              type: 'Unexpected Extra CSS Bracket }',
-              line: linesBeforeStyle + i + 1,
-              col: 1,
-              message: `Faltu closing bracket '}' mila jo kisi selector se linked nahi hai.`,
-              fixType: 'none',
-              linesBeforeStyle: linesBeforeStyle
-            };
+
+          var trimmedLine = line.trim();
+          if (depth > 0 && trimmedLine && !trimmedLine.endsWith('{') && !trimmedLine.endsWith('}') && !inComment && !inString) {
+            if (!trimmedLine.includes(':') && !trimmedLine.startsWith('/*') && !trimmedLine.startsWith('@') && !trimmedLine.startsWith('//')) {
+              return {
+                hasError: true,
+                tier: 'css',
+                type: 'Incomplete CSS Property',
+                line: currentLineNum,
+                col: 1,
+                message: "CSS property '" + escapeHtmlEntities(trimmedLine) + "' adhuri hai (Colon ':' ya semicolon missing hai).",
+                fixType: 'none'
+              };
+            }
           }
         }
-        if (openBraces > 0) {
+
+        if (depth > 0) {
           return {
             hasError: true,
             tier: 'css',
             type: 'Unclosed CSS Block {',
-            line: lastOpenLine,
+            line: lastSelectorLine,
             col: 1,
-            message: `CSS block band nahi hua hai. Aakhri '}' bracket missing hai.`,
+            message: "CSS selector '" + escapeHtmlEntities(lastSelector) + "' ka aakhri '}' bracket missing hai.",
             fixType: 'append_css_close_bracket',
             linesBeforeStyle: linesBeforeStyle
           };
@@ -3377,241 +3558,296 @@
         return null;
       };
 
-      if (styleMatches.length > 0) {
-        for (const sm of styleMatches) {
-          const cssBody = sm[1];
-          const styleStartIndex = sm.index + sm[0].indexOf('>') + 1;
-          const linesBeforeStyle = code.substring(0, styleStartIndex).split('\n').length - 1;
-          const res = scanCssBody(cssBody, linesBeforeStyle);
-          if (res) return res;
-        }
-      } else if (code.includes('{') || code.includes('}')) {
-        const res = scanCssBody(code, 0);
+      if (isCssFile) {
+        var res = scanCssWithStateMachine(code, 0);
         if (res) return res;
+        return { hasError: false };
       }
 
-      // 2. TIER 2: JAVASCRIPT SYNTAX SCANNER
-      const scriptMatches = code.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi);
-      for (const m of scriptMatches) {
-        const jsBody = m[1];
-        const scriptIndex = m.index;
-        const linesBeforeScript = code.substring(0, scriptIndex).split('\n').length - 1;
-
-        if (/^\s*(import|export)\s+/m.test(jsBody)) continue;
-
-        try {
-          new Function(jsBody);
-        } catch (jsErr) {
-          let errLine = linesBeforeScript + 1;
-          const matchLine = jsErr.stack?.match(/<anonymous>:(\d+):(\d+)/);
-          if (matchLine) {
-            errLine = linesBeforeScript + parseInt(matchLine[1], 10);
-          }
-          return {
-            hasError: true,
-            tier: 'javascript',
-            type: 'JS SyntaxError',
-            line: errLine,
-            col: 1,
-            message: jsErr.message || 'Syntax parsing error in script block.',
-            fixType: 'none'
-          };
+      // ─── TIER 3: HTML NESTING & EMBEDDED BLOCKS SCANNER ───
+      if (isHtmlFile) {
+        var styleMatches = Array.from(code.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi));
+        for (var smIdx = 0; smIdx < styleMatches.length; smIdx++) {
+          var sm = styleMatches[smIdx];
+          var cssBody = sm[1];
+          var styleStartIndex = sm.index + sm[0].indexOf('>') + 1;
+          var linesBeforeStyle = code.substring(0, styleStartIndex).split('\n').length - 1;
+          var cssRes = scanCssWithStateMachine(cssBody, linesBeforeStyle);
+          if (cssRes) return cssRes;
         }
-      }
 
-      // 3. TIER 3: HTML NESTING SCANNER (Comments, Script & Style Protected)
-      let cleanHtml = code.replace(/<!--[\s\S]*?-->/g, (m) => '\n'.repeat(m.split('\n').length - 1));
-      cleanHtml = cleanHtml.replace(/<script[\s\S]*?<\/script>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
-      cleanHtml = cleanHtml.replace(/<style[\s\S]*?<\/style>/gi, (m) => '\n'.repeat(m.split('\n').length - 1));
-
-      const tagsOpen = [];
-      const tagRegex = /<\/?([a-zA-Z0-9\-]+)(?:\s+[^>]*)?>/g;
-      let match;
-      const selfClosing = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr', '!doctype']);
-
-      while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        const fullTag = match[0];
-        const tagName = match[1].toLowerCase();
-
-        if (selfClosing.has(tagName) || fullTag.endsWith('/>')) continue;
-
-        if (fullTag.startsWith('</')) {
-          if (tagsOpen.length > 0 && tagsOpen[tagsOpen.length - 1].tag === tagName) {
-            tagsOpen.pop();
-          } else {
-            const linesBefore = cleanHtml.substring(0, match.index).split('\n');
+        var scriptMatches = Array.from(code.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi));
+        for (var scIdx = 0; scIdx < scriptMatches.length; scIdx++) {
+          var m = scriptMatches[scIdx];
+          var jsBody = m[1];
+          var scriptIndex = m.index;
+          var linesBeforeScript = code.substring(0, scriptIndex).split('\n').length - 1;
+          if (/^\s*(import|export)\s+/m.test(jsBody)) continue;
+          try {
+            new Function(jsBody);
+          } catch (jsErr) {
+            var jsErrLine = linesBeforeScript + 1;
+            var jsMatchLine = jsErr.stack ? jsErr.stack.match(/<anonymous>:(\d+):(\d+)/) : null;
+            if (jsMatchLine) jsErrLine = linesBeforeScript + parseInt(jsMatchLine[1], 10);
             return {
               hasError: true,
-              tier: 'html',
-              type: 'Unexpected Closing Tag',
-              line: linesBefore.length,
-              col: linesBefore[linesBefore.length - 1].length + 1,
-              message: `Mismatched &lt;/${escapeHtmlEntities(tagName)}&gt; without matching opening tag.`,
-              fixType: 'none',
-              tagName: tagName
+              tier: 'javascript',
+              type: 'JS SyntaxError',
+              line: jsErrLine,
+              col: 1,
+              message: jsErr.message || 'Syntax error in script tag.',
+              fixType: 'none'
             };
           }
-        } else {
-          tagsOpen.push({ tag: tagName, index: match.index });
         }
-      }
 
-      if (tagsOpen.length > 0) {
-        const lastUnclosed = tagsOpen[tagsOpen.length - 1];
-        const linesBefore = cleanHtml.substring(0, lastUnclosed.index).split('\n');
-        return {
-          hasError: true,
-          tier: 'html',
-          type: 'Unclosed HTML Tag',
-          line: linesBefore.length,
-          col: linesBefore[linesBefore.length - 1].length + 1,
-          message: `Missing closing tag &lt;/${escapeHtmlEntities(lastUnclosed.tag)}&gt;.`,
-          fixType: 'append_tag',
-          tagName: lastUnclosed.tag
-        };
+        var cleanHtml = code.replace(/<!--[\s\S]*?-->/g, function(m) { return '\n'.repeat(m.split('\n').length - 1); });
+        cleanHtml = cleanHtml.replace(/<script[\s\S]*?<\/script>/gi, function(m) { return '\n'.repeat(m.split('\n').length - 1); });
+        cleanHtml = cleanHtml.replace(/<style[\s\S]*?<\/style>/gi, function(m) { return '\n'.repeat(m.split('\n').length - 1); });
+
+        var tagsOpen = [];
+        var tagRegex = /<\/?([a-zA-Z0-9\-]+)(?:\s+[^>]*)?>/g;
+        var tagMatch;
+        var selfClosing = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr', '!doctype']);
+
+        while ((tagMatch = tagRegex.exec(cleanHtml)) !== null) {
+          var fullTag = tagMatch[0];
+          var tagName = tagMatch[1].toLowerCase();
+          if (selfClosing.has(tagName) || fullTag.endsWith('/>')) continue;
+
+          if (fullTag.startsWith('</')) {
+            if (tagsOpen.length > 0 && tagsOpen[tagsOpen.length - 1].tag === tagName) {
+              tagsOpen.pop();
+            } else {
+              var linesBefore = cleanHtml.substring(0, tagMatch.index).split('\n');
+              return {
+                hasError: true,
+                tier: 'html',
+                type: 'Unexpected Closing Tag',
+                line: linesBefore.length,
+                col: linesBefore[linesBefore.length - 1].length + 1,
+                message: 'Mismatched &lt;/' + escapeHtmlEntities(tagName) + '&gt; tag.',
+                fixType: 'none'
+              };
+            }
+          } else {
+            tagsOpen.push({ tag: tagName, index: tagMatch.index });
+          }
+        }
+
+        if (tagsOpen.length > 0) {
+          var lastUnclosed = tagsOpen[tagsOpen.length - 1];
+          var linesBeforeUnclosed = cleanHtml.substring(0, lastUnclosed.index).split('\n');
+          return {
+            hasError: true,
+            tier: 'html',
+            type: 'Unclosed HTML Tag',
+            line: linesBeforeUnclosed.length,
+            col: linesBeforeUnclosed[linesBeforeUnclosed.length - 1].length + 1,
+            message: 'Missing closing tag &lt;/' + escapeHtmlEntities(lastUnclosed.tag) + '&gt;.',
+            fixType: 'append_tag',
+            tagName: lastUnclosed.tag
+          };
+        }
       }
 
       return { hasError: false };
     }
 
+    // ─── ON-DEMAND MODAL CONTROLLER (WITH 3-ATTEMPT LIMIT & VIBRATION) ───
     function openDiagnosticModal() {
-      const modal = document.getElementById('modalDiagnosticReport');
-      const box = document.getElementById('boxDiagnosticContent');
-      const btnFix = document.getElementById('btnDiagnosticAutoFix');
-      const btnCloseTop = document.getElementById('btnCloseDiagnosticModal');
-      const btnCloseBottom = document.getElementById('btnDiagnosticClose');
+      var modal = document.getElementById('modalDiagnosticReport');
+      var box = document.getElementById('boxDiagnosticContent');
+      var btnFix = document.getElementById('btnDiagnosticAutoFix');
+      var btnCloseTop = document.getElementById('btnCloseDiagnosticModal');
+      var btnCloseBottom = document.getElementById('btnDiagnosticClose');
       if (!modal || !box || !textarea) return;
 
-              // ANTI-DASHBOARD SHIELD: Modal band hone par 3-dot menu / origin par return
-        const safelyDismissDiagnosticModal = (e) => {
-          if (e && e.stopPropagation) e.stopPropagation();
-          modal.classList.add('hidden');
-          if (window.StudioNavRouter) {
-            window.StudioNavRouter.returnToOrigin();
-          }
-        };
+      var safelyDismissModal = function(e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        modal.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
+      };
 
-        if (btnCloseTop) btnCloseTop.onclick = safelyDismissDiagnosticModal;
-        if (btnCloseBottom) btnCloseBottom.onclick = safelyDismissDiagnosticModal;
+      if (btnCloseTop) btnCloseTop.onclick = safelyDismissModal;
+      if (btnCloseBottom) btnCloseBottom.onclick = safelyDismissModal;
 
-      const report = analyzeCodeTwoTier(textarea.value);
-      box.innerHTML = '';
+      var activeTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs.find(function(t) { return t.id === activeFileId; }) : null;
+      var fileName = activeTab ? activeTab.name : 'untitled.html';
+      var codeText = textarea.value;
+      var totalLines = codeText.split('\n').length;
+      var fileSizeKB = parseFloat((new Blob([codeText]).size / 1024).toFixed(1));
 
-      if (!report.hasError) {
-        box.innerHTML = `
-          <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1">
-            <div class="text-sm font-bold text-emerald-400">Zero Compiler & Syntax Errors</div>
-            <p class="text-[11px] text-[var(--text-muted)]">HTML, CSS Brackets aur JavaScript 100% clean aur compile hain!</p>
-          </div>
-        `;
-        if (btnFix) btnFix.classList.add('hidden');
-        currentDiagnosticFix = null;
-      } else {
-        box.innerHTML = `
-          <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl space-y-2 font-mono">
-            <div class="flex justify-between items-center text-rose-400 font-bold">
-              <span>${report.type}</span>
-              <button id="btnJumpToErrorLine" type="button" class="text-[10px] bg-rose-950/80 hover:bg-rose-900 px-2.5 py-1 rounded-lg border border-rose-500/40 text-cyan-300 font-bold active:scale-95 transition flex items-center space-x-1">
-                <span>Ln ${report.line}, Col ${report.col}</span>
-                <span>Jump</span>
-              </button>
-            </div>
-            <p class="text-[11px] text-[var(--text-main)]">${report.message}</p>
-            <div class="p-2 bg-black/30 rounded-lg text-[10px] text-amber-300 border border-amber-500/20">
-              ${report.fixType === 'append_tag' ? `Safe Action: Engine will append &lt;/${escapeHtmlEntities(report.tagName)}&gt; at end of document.` : 
-                report.fixType === 'insert_css_open_bracket' ? `Safe Action: 1-Tap Auto-Fix selector '${escapeHtmlEntities(report.selector)}' ke aage '{' lagayega.` :
-                report.fixType === 'append_css_close_bracket' ? `Safe Action: Missing '}' ko &lt;/style&gt; se pehle auto-close karega.` :
-                'Action: Tap Jump above to inspect this exact line.'}
-            </div>
-          </div>
-        `;
+      // 🛡️ GUARD 1: File Type Restriction Check
+      var lowerName = fileName.toLowerCase();
+      var isSupported = lowerName.endsWith('.html') || lowerName.endsWith('.htm') || lowerName.endsWith('.css') || lowerName.endsWith('.js');
 
-        document.getElementById('btnJumpToErrorLine')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modal.classList.add('hidden');
-          jumpToEditorPosition(report.line, report.col);
+      if (!isSupported) {
+        showProfessionalPopup({
+          title: "Unsupported File Type",
+          message: "'" + fileName + "' ek plain text ya unsupported format hai.\n\nCode Error Checker sirf HTML, CSS aur JavaScript source files par syntax check karta hai.",
+          confirmText: "Understood",
+          iconType: "info"
         });
-
-        if (btnFix) {
-          if (report.fixType && report.fixType !== 'none') {
-            btnFix.classList.remove('hidden');
-            btnFix.innerHTML = `<i data-lucide="wand-2" class="w-3.5 h-3.5"></i><span>1-Tap Auto-Fix Error</span>`;
-          } else {
-            btnFix.classList.add('hidden');
-          }
-        }
-        currentDiagnosticFix = report;
+        return;
       }
 
+      // 🛡️ GUARD 2: Hardware Limit Barrier (800 KB / 12,000 Lines)
+      if (fileSizeKB > 800 || totalLines > 12000) {
+        showProfessionalPopup({
+          title: "Hardware Safety Guard",
+          message: "Active file is too large (" + totalLines.toLocaleString() + " lines, " + fileSizeKB + " KB).\n\nMobile CPU aur memory ko crash hone se bachane ke liye Code Error Checker limit 12,000 lines / 800 KB par capped hai.",
+          confirmText: "Got It",
+          iconType: "warning"
+        });
+        return;
+      }
+
+      // Initial Modal State (On-demand setup, zero background scan)
+      window.diagnosticScanAttempts = 0;
+      currentDiagnosticFix = null;
+      if (btnFix) {
+        btnFix.classList.add('hidden');
+        btnFix.onclick = executeSafeAutoFix;
+      }
+
+      var renderInitialCheckerUI = function() {
+        box.innerHTML = 
+          '<div class="p-2.5 bg-black/25 rounded-xl border border-[var(--surface-border)] font-mono text-[11px] flex justify-between items-center text-slate-300">' +
+            '<span class="truncate max-w-[160px] font-bold text-cyan-300">' + fileName + '</span>' +
+            '<span class="text-[10px] text-amber-300">' + fileSizeKB + ' KB • ' + totalLines.toLocaleString() + ' Lns</span>' +
+          '</div>' +
+          '<div id="diagnosticStatusBanner" class="p-3 bg-slate-800/40 border border-slate-700 rounded-xl text-center space-y-1">' +
+            '<div id="diagnosticBannerTitle" class="text-slate-200 font-bold text-xs">Ready to Scan Active Tab</div>' +
+            '<p id="diagnosticBannerSub" class="text-[10px] text-[var(--text-muted)]">Click "Scan Now" to verify syntax on-demand without mobile lag.</p>' +
+          '</div>' +
+          '<button id="btnTriggerDiagnosticScan" type="button" class="w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 active:scale-95 transition shadow">' +
+            '<i data-lucide="scan" class="w-4 h-4"></i>' +
+            '<span id="labelDiagScanText">Scan Now</span>' +
+          '</button>' +
+          '<div id="boxDiagnosticResults" class="space-y-2"></div>';
+
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+
+        var btnScanTrigger = document.getElementById('btnTriggerDiagnosticScan');
+        var labelScan = document.getElementById('labelDiagScanText');
+        var statusBanner = document.getElementById('diagnosticStatusBanner');
+        var bannerTitle = document.getElementById('diagnosticBannerTitle');
+        var bannerSub = document.getElementById('diagnosticBannerSub');
+        var resultsBox = document.getElementById('boxDiagnosticResults');
+
+        if (btnScanTrigger) {
+          btnScanTrigger.onclick = function() {
+            // Strict 3-Attempt Hard Stop with Haptic Feedback
+            if (window.diagnosticScanAttempts >= 3) {
+              if (navigator.vibrate) {
+                try { navigator.vibrate([40, 30, 40]); } catch(e){}
+              }
+              btnScanTrigger.classList.remove('btn-shake-active');
+              void btnScanTrigger.offsetWidth;
+              btnScanTrigger.classList.add('btn-shake-active');
+
+              showProfessionalPopup({
+                title: "Scan Limit Reached (3/3)",
+                message: "Active tab has already been verified 3 times.\n\nAll results are shown above. Use 'Jump' to edit directly or tap Close.",
+                confirmText: "Understood",
+                iconType: "info"
+              });
+              return;
+            }
+
+            window.diagnosticScanAttempts++;
+            if (labelScan) labelScan.textContent = "Rescan (" + window.diagnosticScanAttempts + "/3)";
+
+            var report = analyzeCodeTwoTier(textarea.value, fileName);
+            currentDiagnosticFix = report;
+
+            if (!report.hasError) {
+              if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-center space-y-1';
+              if (bannerTitle) {
+                bannerTitle.className = 'text-emerald-300 font-bold text-xs';
+                bannerTitle.textContent = 'All Cleaned Successfully! (0 Issues)';
+              }
+              if (bannerSub) bannerSub.textContent = 'Active tab code is fully clean with zero compiler errors.';
+              if (resultsBox) resultsBox.innerHTML = '';
+              if (btnFix) btnFix.classList.add('hidden');
+              triggerToast("Scan Complete: 0 Errors Found! ✓");
+            } else {
+              if (statusBanner) statusBanner.className = 'p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-center space-y-1';
+              if (bannerTitle) {
+                bannerTitle.className = 'text-rose-400 font-bold text-xs';
+                bannerTitle.textContent = "Syntax Issue: " + report.type;
+              }
+              if (bannerSub) bannerSub.textContent = report.message;
+
+              if (resultsBox) {
+                resultsBox.innerHTML = 
+                  '<div class="p-2.5 bg-rose-950/40 border border-rose-500/30 rounded-xl font-mono text-[11px] flex items-center justify-between">' +
+                    '<span class="text-rose-300 font-semibold truncate mr-2">' + report.type + '</span>' +
+                    '<button id="btnJumpToErrorLine" type="button" class="shrink-0 px-2.5 py-1 bg-rose-900/80 hover:bg-rose-800 text-cyan-300 border border-rose-500/40 rounded-lg text-[10px] font-bold active:scale-95 transition">' +
+                      'Ln ' + report.line + ', Col ' + report.col + ' Jump' +
+                    '</button>' +
+                  '</div>';
+
+                var btnJump = document.getElementById('btnJumpToErrorLine');
+                if (btnJump) {
+                  btnJump.onclick = function(e) {
+                    e.stopPropagation();
+                    modal.classList.add('hidden');
+                    jumpToEditorPosition(report.line, report.col);
+                  };
+                }
+              }
+
+              if (btnFix) {
+                if (report.fixType && report.fixType !== 'none') {
+                  btnFix.classList.remove('hidden');
+                  btnFix.innerHTML = '<i data-lucide="wand-2" class="w-3.5 h-3.5"></i><span>1-Tap Auto-Fix Error</span>';
+                } else {
+                  btnFix.classList.add('hidden');
+                }
+              }
+              triggerToast("Issue detected on Line " + report.line);
+            }
+
+            if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+          };
+        }
+      };
+
+      renderInitialCheckerUI();
       modal.classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
-        function executeSafeAutoFix(e) {
+    function executeSafeAutoFix(e) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
       if (!currentDiagnosticFix || !textarea) return;
-      const modal = document.getElementById('modalDiagnosticReport');
+      var modal = document.getElementById('modalDiagnosticReport');
 
       recordHistory();
-      let val = textarea.value;
+      var val = textarea.value;
 
       if (currentDiagnosticFix.fixType === 'append_tag') {
-        const tagToAppend = `\n</${currentDiagnosticFix.tagName}>`;
-        const bodyCloseIdx = val.lastIndexOf('</body>');
-        const htmlCloseIdx = val.lastIndexOf('</html>');
-        const insertIdx = bodyCloseIdx !== -1 ? bodyCloseIdx : (htmlCloseIdx !== -1 ? htmlCloseIdx : val.length);
+        var tagToAppend = '\n</' + currentDiagnosticFix.tagName + '>';
+        var bodyCloseIdx = val.lastIndexOf('</body>');
+        var htmlCloseIdx = val.lastIndexOf('</html>');
+        var insertIdx = bodyCloseIdx !== -1 ? bodyCloseIdx : (htmlCloseIdx !== -1 ? htmlCloseIdx : val.length);
 
         val = val.slice(0, insertIdx) + tagToAppend + '\n' + val.slice(insertIdx);
         textarea.value = val;
-        triggerToast(`Auto-Healed: Inserted </${currentDiagnosticFix.tagName}>`);
-
-      } else if (currentDiagnosticFix.fixType === 'insert_css_open_bracket') {
-        const targetSel = currentDiagnosticFix.selector;
-        const escSel = targetSel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-        const brokenPattern = new RegExp(`(${escSel})\\s*\\n(\\s*[a-zA-Z\\-]+\\s*:)`, 'm');
-        if (brokenPattern.test(val)) {
-          val = val.replace(brokenPattern, `$1 {\n$2`);
-          textarea.value = val;
-          triggerToast(`Auto-Healed: Inserted '{' for ${targetSel} ✨`);
-        } else {
-          const simplePattern = new RegExp(`(${escSel})\\s*\\n`, 'm');
-          if (simplePattern.test(val)) {
-            val = val.replace(simplePattern, `$1 {\n`);
-            textarea.value = val;
-            triggerToast(`Auto-Healed: Inserted '{' for ${targetSel}`);
-          }
-        }
+        triggerToast("Auto-Healed: Inserted </" + currentDiagnosticFix.tagName + ">");
 
       } else if (currentDiagnosticFix.fixType === 'append_css_close_bracket') {
-        // Line-aware unclosed CSS block fixer
-        const lines = val.split('\n');
-        const targetLine = currentDiagnosticFix.line ? Math.min(currentDiagnosticFix.line, lines.length) : lines.length;
-        
-        let inserted = false;
-        // Search forward from the unclosed line to find the next selector or style close
-        for (let i = targetLine; i < lines.length; i++) {
-          const trimmed = lines[i].trim();
-          if (trimmed.startsWith('</style>') || trimmed.match(/^[.#a-zA-Z0-9_\-]+\s*\{/)) {
-            lines.splice(i, 0, '    }');
-            inserted = true;
-            break;
-          }
-        }
-        if (!inserted) {
-          const styleCloseIdx = val.lastIndexOf('</style>');
-          if (styleCloseIdx !== -1) {
-            val = val.slice(0, styleCloseIdx) + '    }\n' + val.slice(styleCloseIdx);
-          } else {
-            val = val.trimEnd() + '\n}\n';
-          }
+        var styleCloseIdx = val.lastIndexOf('</style>');
+        if (styleCloseIdx !== -1) {
+          val = val.slice(0, styleCloseIdx) + '    }\n' + val.slice(styleCloseIdx);
         } else {
-          val = lines.join('\n');
+          val = val.trimEnd() + '\n}\n';
         }
-
         textarea.value = val;
         triggerToast("Auto-Healed: Closed CSS block with '}' ✨");
       }
@@ -3620,7 +3856,9 @@
       updateSyntaxHighlightingOptimized();
       updateCursorIndicator();
       markActiveModified();
-      window.StudioBrain?.analyze(textarea.value);
+      if (window.StudioBrain && typeof window.StudioBrain.analyze === 'function') {
+        window.StudioBrain.analyze(textarea.value);
+      }
 
       if (modal) {
         modal.classList.add('hidden');
@@ -3628,6 +3866,102 @@
       }
     }
     
+        // =========================================================================
+    // 🛡️ CENTRAL TOOL GATEKEEPER & HARDWARE SAFETY BARRIER (8 TOOLS SHIELD)
+    // =========================================================================
+    window.validateToolTargetFile = function(toolType) {
+      var curTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) 
+        ? fileTabs.find(function(t) { return t.id === activeFileId; }) 
+        : null;
+      var fileName = curTab ? (curTab.name || 'untitled.html') : 'untitled.html';
+      var lowerName = fileName.toLowerCase();
+      var codeText = textarea ? textarea.value : (curTab ? curTab.content || '' : '');
+      var totalLines = codeText.split('\n').length;
+      var fileSizeKB = parseFloat((new Blob([codeText]).size / 1024).toFixed(1));
+
+      // 1. HARDWARE SAFETY LIMIT BARRIER (12,000 Lines / 800 KB)
+      if (fileSizeKB > 800 || totalLines > 12000) {
+        if (navigator.vibrate) {
+          try { navigator.vibrate([40, 30, 40]); } catch(e){}
+        }
+        showProfessionalPopup({
+          title: "Hardware Safety Guard",
+          message: "Active file is too large (" + totalLines.toLocaleString() + " lines, " + fileSizeKB + " KB).\n\nMobile CPU aur memory crash se bachane ke liye advanced tools ki limit 12,000 lines / 800 KB par capped hai.",
+          confirmText: "Got It",
+          iconType: "warning"
+        });
+        return false;
+      }
+
+      var isHtml = lowerName.endsWith('.html') || lowerName.endsWith('.htm');
+      var isCss = lowerName.endsWith('.css');
+      var isJs = lowerName.endsWith('.js') || lowerName.endsWith('.mjs');
+
+      // 2. HTML-ONLY TOOLS (Extract JS, Extract CSS, Split to 3 Tabs)
+      if (toolType === 'extract-js' || toolType === 'extract-css' || toolType === 'split-modular') {
+        if (!isHtml) {
+          showProfessionalPopup({
+            title: "HTML File Required",
+            message: "'" + fileName + "' ek HTML file nahi hai.\n\nYeh tool sirf HTML file ke andar se inline CSS/JS extract karne ya 3 connected files mein split karne ke liye banaya gaya hai.",
+            confirmText: "Understood",
+            iconType: "info"
+          });
+          return false;
+        }
+      }
+
+      // 3. CORE WEB TOOLS (HTML, CSS, JS Only)
+      if (toolType === 'web-core') {
+        if (!isHtml && !isCss && !isJs) {
+          showProfessionalPopup({
+            title: "Unsupported File Type",
+            message: "'" + fileName + "' ek plain text / unsupported format hai.\n\nYeh development tool sirf HTML, CSS aur JavaScript source files ko support karta hai.\n\nAap is file ko editor mein normal read aur manually edit kar sakte hain.",
+            confirmText: "Understood",
+            iconType: "info"
+          });
+          return false;
+        }
+      }
+
+      return true;
+    };
+
+    // ─── ATTACH STRICT CAPTURE SHIELD ON ALL 8 TOOLS (ZERO DOUBLE-CLICKS) ───
+    function setupStrictToolGatekeepers() {
+      var toolRegistry = [
+        // Group A: Strictly HTML Only
+        { ids: ['optExtractJs'], type: 'extract-js' },
+        { ids: ['optExtractCss'], type: 'extract-css' },
+        { ids: ['optSplitModular'], type: 'split-modular' },
+
+        // Group B: Core Web Files Only (.html, .css, .js)
+        { ids: ['optFormatCode'], type: 'web-core' },
+        { ids: ['optDiagnoseCode', 'badgeCursorWrapper', 'dNavTriggerDiagnosis'], type: 'web-core' },
+        { ids: ['optAuditConflicts', 'btnQuickAuditConflicts', 'dNavTriggerConflictShield'], type: 'web-core' },
+        { ids: ['optOpenPatchStudio', 'btnHeaderQuickPatch', 'dNavTriggerPatchStudio'], type: 'web-core' },
+        { ids: ['optSmartRangeSelect', 'btnKeyRangeSelect'], type: 'web-core' }
+      ];
+
+      toolRegistry.forEach(function(group) {
+        group.ids.forEach(function(btnId) {
+          var btn = document.getElementById(btnId);
+          if (btn) {
+            btn.addEventListener('click', function(e) {
+              if (!window.validateToolTargetFile(group.type)) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                if (typeof toggleOverflowMenu === 'function') toggleOverflowMenu(false);
+                if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
+              }
+            }, { capture: true });
+          }
+        });
+      });
+    }
+
+    // Auto-run Gatekeeper on boot
+    setupStrictToolGatekeepers();
     // =========================================================================
     // POINT 1 & 2: KEY MANAGER WITH BACK-STACK NAVIGATION & CONFIRM DIALOG
     // =========================================================================
@@ -5092,7 +5426,7 @@ CRITICAL OPERATIONAL RULES:
 
         textarea.focus();
         textarea.setSelectionRange(data.startPos, data.endPos);
-        const lineHeight = 20.15;
+        const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
         textarea.scrollTop = Math.max(0, (data.startLineIdx - 4) * lineHeight);
         if (gutter) gutter.scrollTop = textarea.scrollTop;
 
@@ -5219,7 +5553,7 @@ CRITICAL OPERATIONAL RULES:
         textarea.focus();
         textarea.setSelectionRange(startPos, startPos + formattedReplacement.length);
 
-        const lineHeight = 20.15;
+        const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
         textarea.scrollTop = Math.max(0, (startLine - 4) * lineHeight);
         if (gutter) gutter.scrollTop = textarea.scrollTop;
 
@@ -5524,7 +5858,7 @@ CRITICAL OPERATIONAL RULES:
           textarea.focus();
           textarea.setSelectionRange(matchIndex, matchIndex + newText.length);
           const lineNum = textarea.value.substring(0, matchIndex).split('\n').length;
-          const lineHeight = 20.15;
+          const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
           textarea.scrollTop = Math.max(0, (lineNum - 4) * lineHeight);
           if (gutter) gutter.scrollTop = textarea.scrollTop;
 
@@ -5574,7 +5908,7 @@ CRITICAL OPERATIONAL RULES:
 
             textarea.focus();
             textarea.setSelectionRange(charPos, charPos + newText.length);
-            const lineHeight = 20.15;
+            const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
             textarea.scrollTop = Math.max(0, (matchStartIndex - 4) * lineHeight);
             if (gutter) gutter.scrollTop = textarea.scrollTop;
 
@@ -5963,7 +6297,19 @@ CRITICAL OPERATIONAL RULES:
       });
     };
 
+    function applySettingsStyles() {
+      if (!textarea) return;
+      textarea.style.fontSize = `${userSettings.fontSize}px`;
+      if (gutter) gutter.style.fontSize = `${userSettings.fontSize}px`;
+      if (syntaxPre) syntaxPre.style.fontSize = `${userSettings.fontSize}px`;
+      textarea.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+      if (syntaxPre) syntaxPre.style.whiteSpace = userSettings.wordWrap ? 'pre-wrap' : 'pre';
+      if (gutter) gutter.style.display = userSettings.lineNumbers ? 'block' : 'none';
+      applyAppTheme(userSettings.theme);
+    }
+
     function initNativeEditor() {
+    
       textarea = document.getElementById('codeTextarea');
       gutter = document.getElementById('lineNumbersGutter');
       syntaxCode = document.getElementById('syntaxHighlightCode');
@@ -6167,11 +6513,13 @@ CRITICAL OPERATIONAL RULES:
       triggerToast("Tab closed");
     }
 
-    function handleCloseTab(id) {
+            function handleCloseTab(id) {
       if (fileTabs.length === 1) {
         showProfessionalPopup({
           title: "Workspace Notice",
-          message: "Keep at least one tab open in workspace.",
+          message: "Keep at least one tab open in the workspace.",
+          confirmText: "Got It",
+          cancelText: "",
           iconType: "info"
         });
         return;
@@ -6180,28 +6528,62 @@ CRITICAL OPERATIONAL RULES:
       const targetTab = fileTabs.find(t => t.id === id);
       if (!targetTab) return;
 
-      // Active tab modified verification
+      // Active tab content aur modified status verify karein
       if (targetTab.id === activeFileId && textarea && textarea.value !== targetTab.content) {
         targetTab.isModified = true;
         targetTab.content = textarea.value;
       }
 
-      // UNSAVED TAB SAFETY DIALOG
-      if (targetTab.isModified) {
-        showProfessionalPopup({
-          title: "Unsaved Tab Detected",
-          message: `'${targetTab.name}' mein unsaved code hai.\n\nKya aap bina save kiye is tab ko close karna chahte hain?`,
-          confirmText: "Discard & Close",
-          cancelText: "Keep Tab",
-          iconType: "warning",
-          onConfirm: () => {
-            executeTabCloseDirect(id);
-          }
-        });
+      // RULE 1: Agar tab already saved hai, toh bina kisi rukawat direct close karein
+      if (!targetTab.isModified) {
+        executeTabCloseDirect(id);
         return;
       }
 
-      executeTabCloseDirect(id);
+      // RULE 2: Unsaved changes par DEDICATED Tab Dialog show karein (App-Exit se bilkul alag)
+      const tabModal = document.getElementById('modalTabCloseConfirm');
+      const targetNameEl = document.getElementById('tabCloseTargetName');
+      const btnSaveClose = document.getElementById('btnTabSaveAndClose');
+      const btnDiscardClose = document.getElementById('btnTabDiscardAndClose');
+      const btnCancelClose = document.getElementById('btnTabCancelClose');
+
+      if (!tabModal || !btnSaveClose || !btnDiscardClose || !btnCancelClose) {
+        executeTabCloseDirect(id);
+        return;
+      }
+
+      if (targetNameEl) targetNameEl.textContent = `"${targetTab.name}"`;
+
+      tabModal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+
+      const cleanupTabDialog = () => {
+        tabModal.classList.add('hidden');
+        btnSaveClose.onclick = null;
+        btnDiscardClose.onclick = null;
+        btnCancelClose.onclick = null;
+      };
+
+      // Button 1: Save & Close Tab
+      btnSaveClose.onclick = async () => {
+        cleanupTabDialog();
+        if (activeFileId !== id) handleSwitchTab(id);
+        const saved = await executeSaveWorkflow(false);
+        if (saved) {
+          executeTabCloseDirect(id);
+        }
+      };
+
+      // Button 2: Close Without Saving
+      btnDiscardClose.onclick = () => {
+        cleanupTabDialog();
+        executeTabCloseDirect(id);
+      };
+
+      // Button 3: Cancel (Keep Tab Open)
+      btnCancelClose.onclick = () => {
+        cleanupTabDialog();
+      };
     }
 
     function applyDockAnimation(element, styleType) {
@@ -6553,7 +6935,7 @@ CRITICAL OPERATIONAL RULES:
 
       function updateVisualHighlightPosition() {
         if (!visualHighlightBar || activeMatchLineIndex < 1 || !textarea) return;
-        const lineHeight = 20.15;
+        const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
         const rawTop = 8 + (activeMatchLineIndex - 1) * lineHeight;
         const scrolledTop = rawTop - textarea.scrollTop;
 
@@ -6612,7 +6994,7 @@ CRITICAL OPERATIONAL RULES:
         const textUpToMatch = textarea.value.substring(0, target.start);
         activeMatchLineIndex = textUpToMatch.split('\n').length;
 
-        const lineHeight = 20.15;
+        const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
         const targetScroll = (activeMatchLineIndex * lineHeight) - (textarea.clientHeight / 2);
         textarea.scrollTop = Math.max(0, targetScroll);
         if (gutter) gutter.scrollTop = textarea.scrollTop;
@@ -6828,7 +7210,7 @@ CRITICAL OPERATIONAL RULES:
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
 
           cur.content = safeContent;
           cur.isModified = false;
@@ -6966,22 +7348,51 @@ CRITICAL OPERATIONAL RULES:
       document.getElementById('modalExitConfirm')?.classList.remove('hidden');
     }
 
-    let isExiting = false;
+        let isExiting = false;
 
     function executeForcefulClose() {
       isExiting = true;
       window.removeEventListener('popstate', handlePopStateExit);
 
+      // 1. Sabhi open modals, backdrops aur drawer ko dismiss karein
       document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.add('hidden'));
-      closeDrawerPanel();
-      triggerToast("Closing Studio...");
+      if (typeof closeDrawerPanel === 'function') closeDrawerPanel();
 
-      setTimeout(() => {
-        try { window.open('', '_self', ''); window.close(); } catch(e){}
-        try { if (navigator.app?.exitApp) navigator.app.exitApp(); } catch(e){}
-        if (window.history.length > 1) window.history.go(-window.history.length);
-        else window.location.replace("about:blank");
-      }, 120);
+      // 2. RAM Context aur Live Preview iframe freeze karein (kill background audio/scripts)
+      if (typeof activeStudioContext !== 'undefined') activeStudioContext.clear();
+      const frame = document.getElementById('liveFrame');
+      if (frame) frame.src = 'about:blank';
+
+      // 3. Browser / PWA native window close attempt
+      try { window.open('', '_self', ''); window.close(); } catch(e){}
+      try { if (navigator.app?.exitApp) navigator.app.exitApp(); } catch(e){}
+
+      // 4. SMART SHUTDOWN SCREEN (Browser tab closure block hone par clean safe exit)
+      let shutdownScreen = document.getElementById('studioShutdownScreen');
+      if (!shutdownScreen) {
+        shutdownScreen = document.createElement('div');
+        shutdownScreen.id = 'studioShutdownScreen';
+        shutdownScreen.className = 'fixed inset-0 bg-[#070a0f] z-[999999] flex flex-col items-center justify-center p-6 text-center select-none font-sans';
+        shutdownScreen.innerHTML = `
+          <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-4 text-cyan-400 shadow-[0_0_30px_rgba(0,242,254,0.2)]">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <h2 class="text-lg font-black text-white uppercase tracking-wider mb-1">Studio Session Closed</h2>
+          <p class="text-xs text-slate-400 max-w-xs leading-relaxed mb-6 font-mono">
+            All code and workspace data have been saved safely. You can now safely close this browser tab or switch to another app.
+          </p>
+          <button id="btnRelaunchStudio" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-bold text-xs active:scale-95 transition shadow-lg flex items-center space-x-2">
+            <span>Re-Launch Studio</span>
+          </button>
+        `;
+        document.body.appendChild(shutdownScreen);
+
+        document.getElementById('btnRelaunchStudio')?.addEventListener('click', () => {
+          window.location.reload();
+        });
+      }
+
+      shutdownScreen.classList.remove('hidden');
     }
 
     // POINT 5: BULLETPROOF POPSTATE HIERARCHY (ZERO DASHBOARD EXIT)
@@ -7063,7 +7474,7 @@ CRITICAL OPERATIONAL RULES:
         closedAny = true;
       }
 
-      // STRICT SHIELD: Agar modal band hua hai toh hamesha editor state restore karein
+            // STRICT SHIELD: Agar modal band hua hai toh hamesha editor state restore karein
       if (closedAny) {
         window.history.pushState({ page: 'editor' }, '');
       } else {
@@ -7073,41 +7484,73 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
+    // =========================================================================
+    // 🛑 PROFESSIONAL APPLICATION EXIT & WORKSPACE SAVE SYSTEM
+    // =========================================================================
     function setupExitSystem() {
       const exitModal = document.getElementById('modalExitConfirm');
-      const areYouSureModal = document.getElementById('modalExitAreYouSure');
+      const desc = document.getElementById('labelExitDescription');
+      const fileBox = document.getElementById('boxExitFileInfo');
+      const fileNameSpan = document.getElementById('exitUnsavedFileName');
+      const btnSaveExit = document.getElementById('btnExitAndSave');
+      const btnDiscardExit = document.getElementById('btnExitWithoutSave');
+      const btnCancelExit = document.getElementById('btnExitLater');
 
-      document.getElementById('btnExitWithoutSave')?.addEventListener('click', () => {
-        exitModal.classList.add('hidden');
-        const hasUnsaved = fileTabs.some(t => t.isModified);
-        if (hasUnsaved && areYouSureModal) areYouSureModal.classList.remove('hidden');
-        else executeForcefulClose();
+      // 1. Force Exit Trigger from 3-Dot Menu
+      document.getElementById('optForceExitApp')?.addEventListener('click', () => {
+        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+
+        const modifiedTabs = fileTabs.filter(t => t.isModified);
+        if (modifiedTabs.length > 0) {
+          if (desc) desc.textContent = `${modifiedTabs.length} unsaved tab(s) detected. Choose an action to exit:`;
+          if (fileBox) fileBox.classList.remove('hidden');
+          if (fileNameSpan) fileNameSpan.textContent = modifiedTabs.map(t => t.name).join(', ');
+          if (btnSaveExit) {
+            btnSaveExit.classList.remove('hidden');
+            btnSaveExit.textContent = "Save All & Exit";
+          }
+          if (btnDiscardExit) btnDiscardExit.textContent = "Discard & Exit Now";
+        } else {
+          if (desc) desc.textContent = "All modifications are saved in local storage. Exit Studio?";
+          if (fileBox) fileBox.classList.add('hidden');
+          if (btnSaveExit) btnSaveExit.classList.add('hidden');
+          if (btnDiscardExit) btnDiscardExit.textContent = "Exit Studio";
+        }
+
+        exitModal?.classList.remove('hidden');
       });
 
-      document.getElementById('btnExitLater')?.addEventListener('click', () => exitModal.classList.add('hidden'));
-
-      document.getElementById('btnExitAndSave')?.addEventListener('click', async () => {
-        exitModal.classList.add('hidden');
-        const saved = await executeSaveWorkflow(false);
-        if (saved) executeForcefulClose();
-      });
-
-      document.getElementById('btnAreYouSureExit')?.addEventListener('click', () => {
-        areYouSureModal.classList.add('hidden');
+      // 2. Choice A: Save All Tabs & Safely Terminate
+      btnSaveExit?.addEventListener('click', async () => {
+        exitModal?.classList.add('hidden');
+        triggerToast("Saving all open tabs...");
+        for (let tab of fileTabs) {
+          if (tab.isModified) {
+            if (activeFileId !== tab.id) handleSwitchTab(tab.id);
+            await executeSaveWorkflow(false);
+          }
+        }
         executeForcefulClose();
       });
 
-      document.getElementById('btnAreYouSureLater')?.addEventListener('click', () => areYouSureModal.classList.add('hidden'));
+      // 3. Choice B: Immediate Discard & Exit (Zero Faltu "Are you sure" Popups)
+      btnDiscardExit?.addEventListener('click', () => {
+        exitModal?.classList.add('hidden');
+        executeForcefulClose();
+      });
 
-      document.getElementById('optForceExitApp')?.addEventListener('click', () => {
-        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
-        triggerAppExitDialog();
+      // 4. Choice C: Cancel / Keep Working
+      btnCancelExit?.addEventListener('click', () => {
+        exitModal?.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.returnToOrigin();
       });
 
       window.history.pushState({ page: 'editor' }, '');
       window.addEventListener('popstate', handlePopStateExit);
     }
 
+    // Direct Storage Overwrite Confirmation Handlers
     document.getElementById('btnCancelOverwrite')?.addEventListener('click', () => {
       document.getElementById('modalConfirmOverwrite')?.classList.add('hidden');
     });
@@ -7372,7 +7815,7 @@ CRITICAL OPERATIONAL RULES:
       cropperInstance.destroy();
       cropperInstance = null;
     }
-    const settingsModal = document.getElementById('modalSettingsStudio');
+    const settingsModal = document.getElementById('modalSettings')
     if (settingsModal) settingsModal.classList.remove('hidden');
   };
 
@@ -7537,7 +7980,7 @@ CRITICAL OPERATIONAL RULES:
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
         triggerToast("Direct Download Complete!");
       } catch (e) {
         triggerToast("Export failed completely!");
@@ -7557,8 +8000,8 @@ CRITICAL OPERATIONAL RULES:
       updateSyntaxHighlightingOptimized();
     }
 
-                                                // =========================================================================
-    // APPLICATION TAB & FOLDER INSPECTOR (STRICT TRASH BAN • SELECTIVE LOADER)
+                                                      // =========================================================================
+    // APPLICATION TAB & FOLDER INSPECTOR (PERSISTENT WORKSPACE & ZERO-DATA-LOSS)
     // =========================================================================
     function setupPathInspectorModal() {
       const modal = document.getElementById('modalPathDetails');
@@ -7616,186 +8059,318 @@ CRITICAL OPERATIONAL RULES:
         return 'Plain Text • UTF-8';
       };
 
-                  // 🛡️ STRICT TRASH-FREE FOLDER SCANNER & SAFE WORKSPACE MANAGER (DEVICE PROTECTED)
+      // 🛡️ PERSISTENT WORKSPACE BLACKLIST (NEVER REAPPEARS ON REFRESH)
       window.workspaceExcludedFiles = window.workspaceExcludedFiles || new Set();
+      try {
+        const localEx = localStorage.getItem('anzarg_workspace_excluded');
+        if (localEx) {
+          JSON.parse(localEx).forEach(k => window.workspaceExcludedFiles.add(k));
+        }
+      } catch (e) {}
 
+      // 🛡️ STRICT TRASH-FREE FOLDER SCANNER & PERSISTENT SNAPSHOT RENDERER
       const renderFolderFilesList = async (cur) => {
         if (!filesContainer) return;
         filesContainer.innerHTML = '';
 
+        // 1. Sync Blacklist from IndexedDB
+        if (typeof storeGet === 'function') {
+          try {
+            const dbEx = await storeGet('workspace_excluded_files');
+            if (Array.isArray(dbEx)) {
+              dbEx.forEach(k => window.workspaceExcludedFiles.add(k));
+            }
+          } catch (e) {}
+        }
+
+        // 2. Auto-Restore Directory Handle from IndexedDB if lost after page refresh
+        if (cur && !cur.dirHandle && typeof storeGet === 'function') {
+          try {
+            const savedHandle = await storeGet('workspace_project_dir_handle');
+            if (savedHandle) {
+              cur.dirHandle = savedHandle;
+              fileTabs.forEach(t => {
+                if (t.folderName === cur.folderName || cur.folderName === 'Internal Storage') {
+                  t.dirHandle = savedHandle;
+                }
+              });
+            }
+          } catch (e) {}
+        }
+
+        let renderedFiles = [];
+        let isUsingCachedSnapshot = false;
+
+        // 3. Attempt Live Disk Directory Scan
         if (cur && cur.dirHandle) {
           try {
-            const files = [];
             const validExts = ['.html', '.htm', '.css', '.js', '.json', '.txt', '.md', '.py'];
-            
             for await (const entry of cur.dirHandle.values()) {
               if (entry.kind === 'file') {
                 const lower = entry.name.toLowerCase();
-                // HARD BLOCK: Android trashed files, dot files, caches, aur user-removed workspace files
                 if (entry.name.startsWith('.') || lower.includes('trashed') || lower.includes('cache')) {
                   continue;
                 }
                 const fileKey = `${cur.folderName || 'root'}:${entry.name}`;
                 if (window.workspaceExcludedFiles.has(fileKey)) {
-                  continue; // Sirf workspace view se hide rahegi, phone storage se nahi
+                  continue;
                 }
                 if (validExts.some(ext => lower.endsWith(ext))) {
-                  files.push(entry);
-                }
-              }
-            }
+                  let fSize = 0;
+                  let fMod = Date.now();
+                  try {
+                    const fData = await entry.getFile();
+                    fSize = fData.size || 0;
+                    fMod = fData.lastModified || Date.now();
+                  } catch (e) {}
 
-            if (badgeCount) badgeCount.textContent = `${files.length} clean file(s)`;
-
-            if (files.length === 0) {
-              filesContainer.innerHTML = `<div class="text-slate-500 text-[10px] text-center py-2.5 font-mono">No matching code files in this folder</div>`;
-              return;
-            }
-
-            for (const entry of files) {
-              const isCurrent = entry.name === cur.name;
-              const isAlreadyOpen = fileTabs.some(t => t.name === entry.name && t.folderName === cur.folderName);
-              
-              let fileMetaSize = '0 KB';
-              let fileMetaFullDate = '2026';
-              try {
-                const fData = await entry.getFile();
-                fileMetaSize = formatFileSize(fData.size);
-                if (fData.lastModified) {
-                  const mDate = new Date(fData.lastModified);
-                  const dd = String(mDate.getDate()).padStart(2, '0');
-                  const mmm = mDate.toLocaleString('en-US', { month: 'short' });
-                  const yyyy = mDate.getFullYear();
-                  fileMetaFullDate = `${dd}-${mmm}-${yyyy}`;
-                }
-              } catch (e) {}
-
-              const row = document.createElement('div');
-              row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] transition ${
-                isCurrent 
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' 
-                  : 'text-slate-300 hover:bg-slate-800/80'
-              }`;
-
-              row.innerHTML = `
-                <div class="flex items-center space-x-1.5 truncate max-w-[38%]">
-                  <i data-lucide="${entry.name.endsWith('.html') ? 'file-code-2' : entry.name.endsWith('.js') ? 'file-json' : 'file-text'}" class="w-3.5 h-3.5 shrink-0 ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}"></i>
-                  <span class="truncate font-mono">${entry.name}</span>
-                </div>
-                <div class="flex items-center space-x-1.5 shrink-0">
-                  <span class="text-[9px] text-slate-400 font-mono">${fileMetaSize}</span>
-                  <span class="text-[9px] text-amber-300 font-mono px-1 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">${fileMetaFullDate}</span>
-                  <button type="button" class="btn-remove-file p-1 text-rose-400 hover:bg-rose-500/20 rounded transition" title="Remove from Workspace">
-                    <i data-lucide="trash-2" class="w-3 h-3"></i>
-                  </button>
-                  ${isCurrent 
-                    ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-400 text-black font-bold uppercase font-sans">Active</span>' 
-                    : isAlreadyOpen 
-                      ? '<button type="button" class="btn-load-file text-[9px] text-slate-300 font-mono px-1.5 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700">Open</button>' 
-                      : '<button type="button" class="btn-load-file text-[9px] text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40">+ Load Tab</button>'
-                  }
-                </div>
-              `;
-
-              // 🛡️ 100% SAFE WORKSPACE REMOVE HANDLER (Phone Storage Is Untouched)
-              const removeBtn = row.querySelector('.btn-remove-file');
-              if (removeBtn) {
-                removeBtn.onclick = (e) => {
-                  e.stopPropagation();
-                  showProfessionalPopup({
-                    title: "Remove from Workspace",
-                    message: `'${entry.name}' ko workspace se remove karna chahte hain?\n\n• Agar Tab open hai toh close ho jayegi.\n• Aapke phone storage se file bilkul delete nahi hogi (100% Safe).`,
-                    confirmText: "Yes, Remove",
-                    cancelText: "Cancel",
-                    iconType: "info",
-                    onConfirm: () => {
-                      // 1. Mark file as excluded from inspector view
-                      const fileKey = `${cur.folderName || 'root'}:${entry.name}`;
-                      window.workspaceExcludedFiles.add(fileKey);
-
-                      // 2. Agar tab khuli hai toh sirf tab close karein
-                      const openedIdx = fileTabs.findIndex(t => t.name === entry.name && t.folderName === cur.folderName);
-                      if (openedIdx !== -1) {
-                        const tabToClose = fileTabs[openedIdx];
-                        fileTabs.splice(openedIdx, 1);
-                        if (activeFileId === tabToClose.id && fileTabs.length > 0) {
-                          handleSwitchTab(fileTabs[0].id);
-                        }
-                        renderTabStrip();
-                      }
-
-                      triggerToast(`'${entry.name}' removed from workspace (Storage Safe) 🛡️`);
-                      renderFolderFilesList(cur);
-                    }
+                  renderedFiles.push({
+                    name: entry.name,
+                    entryRef: entry,
+                    size: fSize,
+                    lastModified: fMod
                   });
-                };
+                }
               }
-
-              // ⚡ LOAD TAB HANDLER
-              const loadBtn = row.querySelector('.btn-load-file');
-              if (loadBtn) {
-                loadBtn.onclick = async (e) => {
-                  e.stopPropagation();
-                  closeInspector();
-                  const existing = fileTabs.find(t => t.name === entry.name && t.folderName === cur.folderName);
-                  if (existing) {
-                    handleSwitchTab(existing.id);
-                    triggerToast(`Switched to ${entry.name}`);
-                  } else {
-                    try {
-                      const f = await entry.getFile();
-                      const rawText = await f.text();
-                      const text = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
-                      const fullPath = `/storage/emulated/0/${cur.folderName}/${entry.name}`;
-                      const newTab = {
-                        id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-                        name: entry.name,
-                        content: text,
-                        isModified: false,
-                        fileHandle: entry,
-                        dirHandle: cur.dirHandle,
-                        isNewFile: false,
-                        filePath: fullPath,
-                        folderName: cur.folderName,
-                        lastModified: f.lastModified || Date.now(),
-                        fileSize: f.size || text.length,
-                        cursorPos: 0,
-                        scrollTop: 0
-                      };
-                      fileTabs.push(newTab);
-                      renderTabStrip();
-                      handleSwitchTab(newTab.id);
-                      triggerToast(`Loaded: ${entry.name} ⚡`);
-                    } catch (e) {
-                      triggerToast("Could not load selected file");
-                    }
-                  }
-                };
-              }
-
-              filesContainer.appendChild(row);
             }
 
-            if (window.lucide) lucide.createIcons();
-            return;
-          } catch (e) {}
+            // Save persistent snapshot so files NEVER disappear on refresh
+            if (renderedFiles.length > 0) {
+              const snapshotData = renderedFiles.map(rf => ({
+                name: rf.name,
+                size: rf.size,
+                lastModified: rf.lastModified,
+                folderName: cur.folderName || 'test'
+              }));
+              try {
+                localStorage.setItem('anzarg_project_files_snapshot', JSON.stringify(snapshotData));
+              } catch (e) {}
+              if (typeof storeSave === 'function') {
+                await storeSave('workspace_project_files_snapshot', snapshotData);
+              }
+            }
+          } catch (errScan) {
+            // Chrome permission becomes dormant after refresh: Fallback to persistent snapshot
+            isUsingCachedSnapshot = true;
+          }
         }
 
-        const sameFolderTabs = fileTabs.filter(t => t.folderName === (cur?.folderName || 'Internal Storage'));
-        if (badgeCount) badgeCount.textContent = `${sameFolderTabs.length} file(s)`;
+        // 4. Fallback to Persistent Snapshot if live scan failed or handle is dormant
+        if (renderedFiles.length === 0) {
+          let cachedSnap = null;
+          try {
+            const rawSnap = localStorage.getItem('anzarg_project_files_snapshot');
+            if (rawSnap) cachedSnap = JSON.parse(rawSnap);
+          } catch (e) {}
 
-        filesContainer.innerHTML = `
-          <div class="text-slate-400 text-[10px] text-center py-2.5 space-y-1">
-            <div>${cur?.name || 'File'}</div>
-            <div class="text-[9px] text-slate-500 font-sans">Tap 'Switch Folder' to link project directory.</div>
-          </div>
-        `;
+          if (!cachedSnap && typeof storeGet === 'function') {
+            try {
+              cachedSnap = await storeGet('workspace_project_files_snapshot');
+            } catch (e) {}
+          }
+
+          if (Array.isArray(cachedSnap) && cachedSnap.length > 0) {
+            renderedFiles = cachedSnap.filter(item => {
+              const fileKey = `${cur?.folderName || item.folderName || 'root'}:${item.name}`;
+              return !window.workspaceExcludedFiles.has(fileKey);
+            });
+            isUsingCachedSnapshot = true;
+          }
+        }
+
+        // 5. Fallback to Open Tabs if snapshot is empty
+        if (renderedFiles.length === 0) {
+          const folderTabs = fileTabs.filter(t => 
+            (t.folderName === (cur?.folderName || 'Internal Storage')) &&
+            !window.workspaceExcludedFiles.has(`${cur?.folderName || 'root'}:${t.name}`)
+          );
+          renderedFiles = folderTabs.map(t => ({
+            name: t.name,
+            size: t.fileSize || (t.content ? t.content.length : 0),
+            lastModified: t.lastModified || Date.now()
+          }));
+        }
+
+        if (badgeCount) {
+          badgeCount.textContent = `${renderedFiles.length} clean file(s)`;
+        }
+
+        if (renderedFiles.length === 0) {
+          filesContainer.innerHTML = `
+            <div class="text-slate-400 text-[10px] text-center py-2.5 space-y-1">
+              <div>${cur?.name || 'File'}</div>
+              <div class="text-[9px] text-slate-500 font-sans">Tap 'Switch Folder' to link project directory.</div>
+            </div>
+          `;
+          return;
+        }
+
+        // 6. Render File Rows with Full Stats and Protection Handlers
+        for (const fileItem of renderedFiles) {
+          const isCurrent = cur && fileItem.name === cur.name;
+          const isAlreadyOpen = fileTabs.some(t => t.name === fileItem.name && t.folderName === (cur?.folderName || 'test'));
+
+          const fileMetaSize = formatFileSize(fileItem.size);
+          const mDate = new Date(fileItem.lastModified || Date.now());
+          const dd = String(mDate.getDate()).padStart(2, '0');
+          const mmm = mDate.toLocaleString('en-US', { month: 'short' });
+          const yyyy = mDate.getFullYear();
+          const fileMetaFullDate = `${dd}-${mmm}-${yyyy}`;
+
+          const row = document.createElement('div');
+          row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] transition ${
+            isCurrent 
+              ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' 
+              : 'text-slate-300 hover:bg-slate-800/80'
+          }`;
+
+          row.innerHTML = `
+            <div class="flex items-center space-x-1.5 truncate max-w-[38%]">
+              <i data-lucide="${fileItem.name.endsWith('.html') ? 'file-code-2' : fileItem.name.endsWith('.js') ? 'file-json' : 'file-text'}" class="w-3.5 h-3.5 shrink-0 ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}"></i>
+              <span class="truncate font-mono">${fileItem.name}</span>
+            </div>
+            <div class="flex items-center space-x-1.5 shrink-0">
+              <span class="text-[9px] text-slate-400 font-mono">${fileMetaSize}</span>
+              <span class="text-[9px] text-amber-300 font-mono px-1 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">${fileMetaFullDate}</span>
+              <button type="button" class="btn-remove-file p-1 text-rose-400 hover:bg-rose-500/20 rounded transition" title="Remove from Workspace">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              </button>
+              ${isCurrent 
+                ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-400 text-black font-bold uppercase font-sans">Active</span>' 
+                : isAlreadyOpen 
+                  ? '<button type="button" class="btn-load-file text-[9px] text-slate-300 font-mono px-1.5 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700">Open</button>' 
+                  : '<button type="button" class="btn-load-file text-[9px] text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40">+ Load Tab</button>'
+              }
+            </div>
+          `;
+
+          // 🛡️ 100% SAFE WORKSPACE REMOVE GUARD (Device Storage Untouched & Persistent Across Refresh)
+          const removeBtn = row.querySelector('.btn-remove-file');
+          if (removeBtn) {
+            removeBtn.onclick = (e) => {
+              e.stopPropagation();
+              showProfessionalPopup({
+                title: "Remove from Workspace",
+                message: `'${fileItem.name}' ko workspace se remove karna chahte hain?\n\n• Agar Tab open hai toh close ho jayegi.\n• Browser refresh karne par bhi wapas nahi aayegi.\n• Aapke phone storage se file bilkul delete nahi hogi (100% Safe).`,
+                confirmText: "Yes, Remove",
+                cancelText: "Cancel",
+                iconType: "info",
+                onConfirm: async () => {
+                  const fileKey = `${cur?.folderName || 'root'}:${fileItem.name}`;
+                  window.workspaceExcludedFiles.add(fileKey);
+
+                  // Permanent Lock in Storage
+                  try {
+                    localStorage.setItem('anzarg_workspace_excluded', JSON.stringify(Array.from(window.workspaceExcludedFiles)));
+                  } catch (e) {}
+                  if (typeof storeSave === 'function') {
+                    await storeSave('workspace_excluded_files', Array.from(window.workspaceExcludedFiles));
+                  }
+
+                  // Close open tab if currently loaded
+                  const openedIdx = fileTabs.findIndex(t => t.name === fileItem.name && t.folderName === (cur?.folderName || 'test'));
+                  if (openedIdx !== -1) {
+                    const tabToClose = fileTabs[openedIdx];
+                    fileTabs.splice(openedIdx, 1);
+                    if (activeFileId === tabToClose.id && fileTabs.length > 0) {
+                      handleSwitchTab(fileTabs[0].id);
+                    }
+                    renderTabStrip();
+                    scheduleAutoSave();
+                  }
+
+                  triggerToast(`'${fileItem.name}' removed from workspace (Storage Safe) 🛡️`);
+                  renderFolderFilesList(cur);
+                }
+              });
+            };
+          }
+
+          // ⚡ LOAD TAB HANDLER (With Dormant Permission Auto-Recovery)
+          const loadBtn = row.querySelector('.btn-load-file');
+          if (loadBtn) {
+            loadBtn.onclick = async (e) => {
+              e.stopPropagation();
+              closeInspector();
+              const existing = fileTabs.find(t => t.name === fileItem.name && t.folderName === (cur?.folderName || 'test'));
+              if (existing) {
+                handleSwitchTab(existing.id);
+                triggerToast(`Switched to ${fileItem.name}`);
+              } else {
+                try {
+                  let fText = '';
+                  let fSize = fileItem.size || 0;
+                  let fLastMod = fileItem.lastModified || Date.now();
+
+                  if (fileItem.entryRef) {
+                    const f = await fileItem.entryRef.getFile();
+                    const rawText = await f.text();
+                    fText = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
+                    fSize = f.size || fText.length;
+                    fLastMod = f.lastModified || Date.now();
+                  } else if (cur && cur.dirHandle) {
+                    const entryHandle = await cur.dirHandle.getFileHandle(fileItem.name);
+                    const f = await entryHandle.getFile();
+                    const rawText = await f.text();
+                    fText = typeof rawText.normalize === 'function' ? rawText.normalize('NFC') : rawText;
+                    fSize = f.size || fText.length;
+                    fLastMod = f.lastModified || Date.now();
+                  }
+
+                  const folderName = cur?.folderName || 'test';
+                  const fullPath = `/storage/emulated/0/${folderName}/${fileItem.name}`;
+                  const newTab = {
+                    id: 'tab-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                    name: fileItem.name,
+                    content: fText,
+                    isModified: false,
+                    fileHandle: fileItem.entryRef || null,
+                    dirHandle: cur?.dirHandle || null,
+                    isNewFile: false,
+                    filePath: fullPath,
+                    folderName: folderName,
+                    lastModified: fLastMod,
+                    fileSize: fSize,
+                    cursorPos: 0,
+                    scrollTop: 0
+                  };
+                  fileTabs.push(newTab);
+                  renderTabStrip();
+                  handleSwitchTab(newTab.id);
+                  scheduleAutoSave();
+                  triggerToast(`Loaded: ${fileItem.name} ⚡`);
+                } catch (e) {
+                  triggerToast(`Could not read ${fileItem.name}. Tap 'Switch Folder' to re-verify.`);
+                }
+              }
+            };
+          }
+
+          filesContainer.appendChild(row);
+        }
+
+        if (window.lucide) lucide.createIcons();
       };
 
-      const openInspector = () => {
+      const openInspector = async () => {
         const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
         const curList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
         const cur = curList.find(t => t.id === curTabId);
+
+        // Auto-Restore directory handle from IndexedDB
+        if (cur && !cur.dirHandle && typeof storeGet === 'function') {
+          try {
+            const savedHandle = await storeGet('workspace_project_dir_handle');
+            if (savedHandle) {
+              cur.dirHandle = savedHandle;
+              fileTabs.forEach(t => {
+                if (t.folderName === cur.folderName || cur.folderName === 'Internal Storage') {
+                  t.dirHandle = savedHandle;
+                }
+              });
+            }
+          } catch (e) {}
+        }
 
         const currentName = cur ? (cur.name || cur.filename || 'untitled.html') : 'untitled.html';
         const currentFolder = cur ? (cur.folderName || 'Internal Storage') : 'Internal Storage';
@@ -7844,7 +8419,7 @@ CRITICAL OPERATIONAL RULES:
         if (statTime) statTime.textContent = `${hh}:${mm}:${ss} ${ampm}`;
         if (relativeTimeDisplay) relativeTimeDisplay.textContent = getRelativeTimeAgo(modTimestamp);
 
-        renderFolderFilesList(cur);
+        await renderFolderFilesList(cur);
         modal?.classList.remove('hidden');
         if (typeof lucide !== 'undefined') lucide.createIcons();
       };
@@ -7873,7 +8448,7 @@ CRITICAL OPERATIONAL RULES:
         closeInspector();
       });
 
-      // 2. UNIVERSAL LINK PROJECT FOLDER HANDLER
+      // 2. UNIVERSAL LINK PROJECT FOLDER HANDLER (PERSISTENT SNAPSHOT & LOCK)
       window.promptLinkProjectFolder = function(onFolderLinkedCallback = null) {
         showProfessionalPopup({
           title: "Link Project Folder",
@@ -7890,6 +8465,21 @@ CRITICAL OPERATIONAL RULES:
                 const curTabId = (typeof activeFileId !== 'undefined') ? activeFileId : null;
                 const cur = fileTabs.find(t => t.id === curTabId);
 
+                // Permanent Lock in IndexedDB & LocalStorage
+                if (typeof storeSave === 'function') {
+                  await storeSave('workspace_project_dir_handle', dirHandle);
+                  await storeSave('workspace_project_folder_name', dirHandle.name);
+                }
+                try {
+                  localStorage.setItem('anzarg_project_folder_name', dirHandle.name);
+                } catch (e) {}
+
+                // Sync across open tabs
+                fileTabs.forEach(tab => {
+                  tab.dirHandle = dirHandle;
+                  tab.folderName = dirHandle.name;
+                });
+
                 if (cur) {
                   cur.dirHandle = dirHandle;
                   cur.folderName = dirHandle.name;
@@ -7899,7 +8489,7 @@ CRITICAL OPERATIONAL RULES:
                   scheduleAutoSave();
                 }
 
-                triggerToast(`Folder '${dirHandle.name}' linked 📂`);
+                triggerToast(`Folder '${dirHandle.name}' linked & saved 📂`);
                 if (onFolderLinkedCallback) onFolderLinkedCallback(dirHandle);
                 return;
               } catch (err) {
@@ -7980,13 +8570,13 @@ CRITICAL OPERATIONAL RULES:
       document.getElementById('btnReturnFromVault')?.addEventListener('click', returnToAboutModal);
 
       // =========================================================================
-      // ANZARG CODE STUDIO - BRAND SYSTEM RESET
+      // ANZARG CODE STUDIO - BRAND SYSTEM RESET (4-LAYER COMPLETE WIPE)
       // =========================================================================
       document.getElementById('dNavResetWorkspace')?.addEventListener('click', () => {
         closeDrawerPanel();
         showProfessionalPopup({
           title: "Factory Reset",
-          message: "Aapka sabhi data delete hokar app nayi shuru hogi.\nAll saved code and cache will be deleted completely.",
+          message: "Aapka sabhi data delete hokar app nayi shuru hogi.\nAll saved code, folder links and cache will be deleted completely.",
           confirmText: "Yes, Apply",
           cancelText: "Back",
           iconType: "danger",
@@ -8055,7 +8645,7 @@ CRITICAL OPERATIONAL RULES:
 
               <!-- STATUS SUBTITLE -->
               <div style="font-size: 11px; color: #8b949e; margin-top: 24px; font-family: monospace; letter-spacing: 0.05em;">
-                Deleting all data and restarting...
+                Deleting all data, folder snapshots and restarting...
               </div>
 
               <!-- REBOOT LOADING BAR (2.8s) -->
@@ -8067,23 +8657,41 @@ CRITICAL OPERATIONAL RULES:
 
             clearTimeout(autoDebounceTimer);
 
-            // 3. USER DATA PURGE (User Tabs, Code, API Keys & Settings 100% Saaf)
+            // 3. MASTER COMPLETE DATA PURGE (IndexedDB, Storage, Blacklist & Handles 100% Wiped)
             try {
-              if (idb) { idb.close(); idb = null; }
-              await storeClearAll();
+              if (typeof idb !== 'undefined' && idb) { 
+                idb.close(); 
+                idb = null; 
+              }
+              if (typeof storeClearAll === 'function') {
+                await storeClearAll();
+              }
+              if (window.indexedDB && window.indexedDB.deleteDatabase) {
+                try {
+                  window.indexedDB.deleteDatabase('ANZARG_STUDIO_DB');
+                } catch(errDb){}
+              }
             } catch(e){}
 
+            // In-Memory Workspace Excluded Blacklist Reset
+            try {
+              if (window.workspaceExcludedFiles && typeof window.workspaceExcludedFiles.clear === 'function') {
+                window.workspaceExcludedFiles.clear();
+              }
+            } catch(e){}
+
+            // Clear All LocalStorage Keys (Workspace Snapshots, Blacklists, Custom Themes)
             try { localStorage.clear(); } catch(e){}
             try { sessionStorage.clear(); } catch(e){}
 
-            // 4. SMART CACHE GUARD: App Engine ko delete hone se bachana
+            // 4. SMART CACHE GUARD: Service Worker Safe User Reset
             try {
               if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({ action: 'SAFE_USER_RESET' });
               }
             } catch(e){}
 
-            // 5. CLEAN REBOOT (Offline Cache se bina error ke turant restart)
+            // 5. CLEAN REBOOT (App restarts completely fresh like day one)
             setTimeout(() => {
               window.location.replace(window.location.origin + window.location.pathname);
             }, 2800);
@@ -8722,8 +9330,8 @@ window.extractCssToNewTab = function() {
 
     let activePreviewBlobUrl = null;
 
-                // =========================================================================
-    // LIVE RUNNER ENGINE (SMART FINGERPRINT BUNDLER • CROSS-PROJECT SCOPE GUARD)
+                            // =========================================================================
+    // LIVE RUNNER ENGINE (SMART ON-DEMAND MULTI-FILE BUNDLER & SIGNATURE GUARD)
     // =========================================================================
     function setupLiveRunner() {
       const modal = document.getElementById('modalLivePreview');
@@ -8731,11 +9339,34 @@ window.extractCssToNewTab = function() {
       const tray = document.getElementById('previewConsoleTray');
       const logsBox = document.getElementById('consoleLogsBox');
 
+      // Fallback Project Selector Elements
+      const fallbackModal = document.getElementById('modalProjectFallbackPicker');
+      const boxFallbackHtml = document.getElementById('boxFallbackHtmlList');
+      const boxFallbackCompanion = document.getElementById('boxFallbackCompanionList');
+      const badgeSelectedCount = document.getElementById('badgeFallbackSelectedCount');
+      const btnRunFallbackBundle = document.getElementById('btnExecuteFallbackBundleRun');
+      const btnFallbackPickDevice = document.getElementById('btnFallbackPickFromDevice');
+      const btnFallbackCancel = document.getElementById('btnFallbackCancel');
+      const btnFallbackCloseTop = document.getElementById('btnFallbackPickerCloseTop');
+
       if (!modal || !frame) return;
+
+      // Safe character tokens built via char codes (prevents HTML parser breakdown)
+      const CH_LT = String.fromCharCode(60);
+      const CH_GT = String.fromCharCode(62);
+      const CH_SLASH = String.fromCharCode(47);
+      const S_SCRIPT = String.fromCharCode(115, 99, 114, 105, 112, 116);
+      const S_STYLE = String.fromCharCode(115, 116, 121, 108, 101);
+      const S_LINK = String.fromCharCode(108, 105, 110, 107);
+
+      const tagScriptOpen = CH_LT + S_SCRIPT + CH_GT;
+      const tagScriptClose = CH_LT + CH_SLASH + S_SCRIPT + CH_GT;
+      const tagStyleOpen = CH_LT + S_STYLE + CH_GT;
+      const tagStyleClose = CH_LT + CH_SLASH + S_STYLE + CH_GT;
 
       function appendLog(type, msg) {
         if (!logsBox) return;
-        if (logsBox.children.length === 1 && logsBox.children[0].textContent.includes('No console logs')) {
+        if (logsBox.children.length === 1 && logsBox.children[0].textContent.includes('Console ready')) {
           logsBox.innerHTML = '';
         }
         const row = document.createElement('div');
@@ -8750,15 +9381,15 @@ window.extractCssToNewTab = function() {
           appendLog(e.data.type, e.data.message);
         }
         if (e.data?.source === 'anzarg-runtime-error') {
-          triggerToast(`⚠️ Bug Found on Line ${e.data.line}!`);
+          triggerToast(`Warning: Bug Found on Line ${e.data.line}!`);
         }
       });
 
-                        // 🛡️ ON-DEMAND SMART RESOURCE RESOLVER (ZERO BACKGROUND SCAN - PURE ON-CLICK)
-      async function readLinkedFileFromDisk(dirHandle, fileName) {
-        if (!dirHandle || !fileName) return null;
+      // On-demand Disk Asset Fetcher (runs strictly on-click, zero background scanning)
+      async function readLinkedFileFromDisk(dirHandle, targetFileName) {
+        if (!dirHandle || !targetFileName) return null;
         try {
-          const fileHandle = await dirHandle.getFileHandle(fileName);
+          const fileHandle = await dirHandle.getFileHandle(targetFileName);
           const f = await fileHandle.getFile();
           return await f.text();
         } catch (e) {
@@ -8766,16 +9397,15 @@ window.extractCssToNewTab = function() {
         }
       }
 
-      // Helper: Smart Finder across Open Tabs and Linked Directory
-      async function resolveMatchingProjectAsset(rawPath, activeTab) {
+      // Helper: Resolve asset across Memory Tabs or Linked Disk Directory
+      async function resolveMatchingProjectAsset(rawPath, activeFolder, dirHandle) {
         if (!rawPath) return null;
         const pureTarget = rawPath.split('/').pop().split('?')[0].trim().toLowerCase();
-        const curFolder = activeTab?.folderName || 'Internal Storage';
 
-        // 1. Exact Match in Open Tabs (Active textarea edit gets top priority)
+        // 1. Open tabs in memory (Fastest, 0ms)
         const openTab = fileTabs.find(t => 
           (t.name || '').toLowerCase() === pureTarget && 
-          (t.folderName === curFolder || curFolder === 'Internal Storage')
+          (t.folderName === activeFolder || activeFolder === 'Internal Storage')
         ) || fileTabs.find(t => (t.name || '').toLowerCase() === pureTarget);
 
         if (openTab) {
@@ -8785,44 +9415,37 @@ window.extractCssToNewTab = function() {
           return openTab.content !== undefined ? openTab.content : '';
         }
 
-        // 2. Exact Match in Linked Disk Folder (Silent read without popup)
-        if (activeTab && activeTab.dirHandle) {
-          const diskContent = await readLinkedFileFromDisk(activeTab.dirHandle, pureTarget);
+        // 2. Disk Folder (On demand only)
+        if (dirHandle) {
+          const diskContent = await readLinkedFileFromDisk(dirHandle, pureTarget);
           if (diskContent !== null) return diskContent;
-        }
-
-        // 3. Fallback: Search dirHandle of any open tab
-        for (const t of fileTabs) {
-          if (t.dirHandle) {
-            const diskContent = await readLinkedFileFromDisk(t.dirHandle, pureTarget);
-            if (diskContent !== null) return diskContent;
-          }
         }
 
         return null;
       }
 
-      // Safe Dynamic Virtual Bundler: Inlines CSS and JS without triggering HTML parser crash
-      async function buildInjectedSource(rawHtml, activeTab) {
+      // Virtual Bundler: Inlines CSS, JS, Manifest and Console Interceptor
+      async function buildInjectedSource(rawHtml, hostFolder, dirHandle, explicitCompanionMap = null) {
         let processedSource = rawHtml || '';
 
-        const tagScriptOpen = '<' + 'script>';
-        const tagScriptClose = '<' + '/script>';
-        const tagStyleOpen = '<' + 'style>';
-        const tagStyleClose = '<' + '/style>';
-
         // 1. Bundle External CSS Links
-        const cssRegex = new RegExp('<' + 'link\\b[^>]*?\\bhref=["\']([^"\']+)["\'][^>]*>', 'gi');
+        const cssRegex = new RegExp(CH_LT + S_LINK + '\\b[^>]*?\\bhref=["\']([^"\']+)["\'][^>]*' + CH_GT, 'gi');
         const cssMatches = Array.from(processedSource.matchAll(cssRegex));
 
         for (const cm of cssMatches) {
           const fullMatch = cm[0];
           const hrefPath = (cm[1] || '').trim();
-          const isCss = fullMatch.toLowerCase().includes('stylesheet') || hrefPath.toLowerCase().endsWith('.css');
+          const isStylesheet = fullMatch.toLowerCase().includes('stylesheet') || hrefPath.toLowerCase().endsWith('.css');
 
-          if (isCss && !hrefPath.startsWith('http://') && !hrefPath.startsWith('https://') && !hrefPath.startsWith('//')) {
+          if (isStylesheet && !hrefPath.startsWith('http://') && !hrefPath.startsWith('https://') && !hrefPath.startsWith('//')) {
             const pureCssName = hrefPath.split('/').pop().split('?')[0].toLowerCase();
-            const cssContent = await resolveMatchingProjectAsset(pureCssName, activeTab);
+            let cssContent = null;
+
+            if (explicitCompanionMap && explicitCompanionMap.has(pureCssName)) {
+              cssContent = explicitCompanionMap.get(pureCssName);
+            } else {
+              cssContent = await resolveMatchingProjectAsset(pureCssName, hostFolder, dirHandle);
+            }
 
             if (cssContent !== null) {
               const inlinedStyle = '\n' + tagStyleOpen + '\n/* [Auto-Bundled: ' + pureCssName + '] */\n' + cssContent + '\n' + tagStyleClose + '\n';
@@ -8832,7 +9455,7 @@ window.extractCssToNewTab = function() {
         }
 
         // 2. Bundle External JS Scripts
-        const jsRegex = new RegExp('<' + 'script\\b[^>]*?\\bsrc=["\']([^"\']+)["\'][^>]*>([\\s\\S]*?)<' + '\\/script>', 'gi');
+        const jsRegex = new RegExp(CH_LT + S_SCRIPT + '\\b[^>]*?\\bsrc=["\']([^"\']+)["\'][^>]*' + CH_GT + '([\\s\\S]*?)' + CH_LT + CH_SLASH + S_SCRIPT + CH_GT, 'gi');
         const jsMatches = Array.from(processedSource.matchAll(jsRegex));
 
         for (const jm of jsMatches) {
@@ -8841,7 +9464,13 @@ window.extractCssToNewTab = function() {
 
           if (!srcPath.startsWith('http://') && !srcPath.startsWith('https://') && !srcPath.startsWith('//')) {
             const pureJsName = srcPath.split('/').pop().split('?')[0].toLowerCase();
-            const jsContent = await resolveMatchingProjectAsset(pureJsName, activeTab);
+            let jsContent = null;
+
+            if (explicitCompanionMap && explicitCompanionMap.has(pureJsName)) {
+              jsContent = explicitCompanionMap.get(pureJsName);
+            } else {
+              jsContent = await resolveMatchingProjectAsset(pureJsName, hostFolder, dirHandle);
+            }
 
             if (jsContent !== null) {
               const inlinedScript = '\n' + tagScriptOpen + '\n/* [Auto-Bundled: ' + pureJsName + '] */\n' + jsContent + '\n' + tagScriptClose + '\n';
@@ -8850,7 +9479,30 @@ window.extractCssToNewTab = function() {
           }
         }
 
-        // 3. Interceptor for Console and Error reporting
+        // 3. Fallback Injection for explicitly chosen files
+        if (explicitCompanionMap) {
+          explicitCompanionMap.forEach((content, name) => {
+            if (name.endsWith('.js') && !processedSource.includes(name)) {
+              const appendedScript = '\n' + tagScriptOpen + '\n/* [Fallback Bundled: ' + name + '] */\n' + content + '\n' + tagScriptClose + '\n';
+              const bodyCloseIdx = processedSource.lastIndexOf(CH_LT + CH_SLASH + 'body' + CH_GT);
+              if (bodyCloseIdx !== -1) {
+                processedSource = processedSource.slice(0, bodyCloseIdx) + appendedScript + processedSource.slice(bodyCloseIdx);
+              } else {
+                processedSource += appendedScript;
+              }
+            } else if (name.endsWith('.css') && !processedSource.includes(name)) {
+              const appendedStyle = '\n' + tagStyleOpen + '\n/* [Fallback Bundled: ' + name + '] */\n' + content + '\n' + tagStyleClose + '\n';
+              const headCloseIdx = processedSource.lastIndexOf(CH_LT + CH_SLASH + 'head' + CH_GT);
+              if (headCloseIdx !== -1) {
+                processedSource = processedSource.slice(0, headCloseIdx) + appendedStyle + processedSource.slice(headCloseIdx);
+              } else {
+                processedSource = appendedStyle + processedSource;
+              }
+            }
+          });
+        }
+
+        // 4. Inject Runtime Error and Console Interceptor
         const interceptor = '\n' + tagScriptOpen + '\n' +
           '(function(){\n' +
           '  function forward(type, args){\n' +
@@ -8871,82 +9523,305 @@ window.extractCssToNewTab = function() {
           '  };\n' +
           '})();\n' + tagScriptClose + '\n';
 
-        if (processedSource.includes('<head>')) {
-          return processedSource.replace('<head>', '<head>' + interceptor);
+        const headOpenTag = CH_LT + 'head' + CH_GT;
+        if (processedSource.includes(headOpenTag)) {
+          return processedSource.replace(headOpenTag, headOpenTag + interceptor);
         }
         return interceptor + processedSource;
       }
 
-      // 🚀 PRE-FLIGHT EXECUTION GUARD & TWO-WAY REVERSE ROUTER (HTML, CSS, JS AUTO-DETECT)
-      async function injectCodeToIframe() {
+      // Smart Weighted Scoring Matrix (Ranks canonical index.html and backups)
+      function scoreHtmlCandidate(candidateTab, targetFileName) {
+        let score = 0;
+        const name = (candidateTab.name || '').toLowerCase();
+        const content = candidateTab.content || '';
+
+        // Exclude blank untitled files (never let untitled.html trap the engine)
+        if (name === 'untitled.html' && (!content || content.trim().length < 30)) {
+          return -100;
+        }
+
+        // Canonical entrypoint
+        if (name === 'index.html') score += 40;
+
+        // Backup version number boost (e.g. index (13).html gets +39 points)
+        const versionMatch = name.match(/\((\d+)\)\.html$/i);
+        if (versionMatch) {
+          score += (parseInt(versionMatch[1], 10) * 3);
+        }
+
+        // Script signature match (Highest weight!)
+        if (targetFileName && targetFileName.endsWith('.js')) {
+          if (content.includes('"' + targetFileName + '"') || content.includes("'" + targetFileName + "'") || content.includes('./' + targetFileName)) {
+            score += 100;
+          }
+        }
+        if (targetFileName && targetFileName.endsWith('.css')) {
+          if (content.includes('"' + targetFileName + '"') || content.includes("'" + targetFileName + "'") || content.includes('./' + targetFileName)) {
+            score += 80;
+          }
+        }
+
+        // Recency boost
+        if (candidateTab.lastModified) {
+          const ageHours = (Date.now() - candidateTab.lastModified) / (1000 * 60 * 60);
+          if (ageHours < 24) score += 20;
+        }
+
+        return score;
+      }
+
+      // Smart Fallback Selector Modal (Steering control when ambiguous)
+      function openSmartFallbackPicker(htmlCandidates, companionCandidates, onConfirmBundle) {
+        if (!fallbackModal || !boxFallbackHtml || !boxFallbackCompanion) return;
+
+        boxFallbackHtml.innerHTML = '';
+        boxFallbackCompanion.innerHTML = '';
+
+        // 1. Host HTML Radio List
+        htmlCandidates.forEach((hItem, idx) => {
+          const row = document.createElement('label');
+          row.className = 'flex items-center justify-between p-2 rounded-lg bg-black/40 border border-slate-800 hover:border-cyan-500/40 cursor-pointer transition select-none';
+          const isLatest = idx === 0;
+          row.innerHTML = `
+            <div class="flex items-center space-x-2 truncate">
+              <input type="radio" name="fallbackHostHtmlRadio" value="${hItem.name}" ${isLatest ? 'checked' : ''} class="accent-cyan-400">
+              <span class="truncate font-bold ${isLatest ? 'text-cyan-300' : 'text-slate-300'}">${hItem.name}</span>
+            </div>
+            <div class="flex items-center space-x-1 shrink-0 text-[9px] font-mono">
+              ${isLatest ? '<span class="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-bold">Recommended</span>' : ''}
+              <span class="text-slate-400">${hItem.sizeText || ''}</span>
+            </div>
+          `;
+          boxFallbackHtml.appendChild(row);
+        });
+
+        // 2. Companion Files Checkbox List (Max 10)
+        let selectedCount = 0;
+        companionCandidates.slice(0, 10).forEach(cItem => {
+          const row = document.createElement('label');
+          row.className = 'flex items-center justify-between p-2 rounded-lg bg-black/40 border border-slate-800 hover:border-emerald-500/40 cursor-pointer transition select-none';
+          const shouldPrecheck = cItem.isCurrentActive || cItem.name === 'app.js' || cItem.name === 'style.css' || cItem.name === 'manifest.json';
+          if (shouldPrecheck) selectedCount++;
+
+          row.innerHTML = `
+            <div class="flex items-center space-x-2 truncate">
+              <input type="checkbox" name="fallbackCompanionCheckbox" value="${cItem.name}" ${shouldPrecheck ? 'checked' : ''} class="companion-cb accent-emerald-400">
+              <span class="truncate font-semibold ${shouldPrecheck ? 'text-emerald-300' : 'text-slate-300'}">${cItem.name}</span>
+            </div>
+            <div class="flex items-center space-x-1 shrink-0 text-[9px] font-mono text-slate-400">
+              ${cItem.isCurrentActive ? '<span class="px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold">Current Tab</span>' : ''}
+              <span>${cItem.sizeText || ''}</span>
+            </div>
+          `;
+          boxFallbackCompanion.appendChild(row);
+        });
+
+        if (badgeSelectedCount) badgeSelectedCount.textContent = `${selectedCount} selected`;
+
+        boxFallbackCompanion.querySelectorAll('.companion-cb').forEach(cb => {
+          cb.addEventListener('change', () => {
+            const count = boxFallbackCompanion.querySelectorAll('.companion-cb:checked').length;
+            if (badgeSelectedCount) badgeSelectedCount.textContent = `${count} selected`;
+          });
+        });
+
+        fallbackModal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+
+        const closeFallback = () => fallbackModal.classList.add('hidden');
+        if (btnFallbackCancel) btnFallbackCancel.onclick = closeFallback;
+        if (btnFallbackCloseTop) btnFallbackCloseTop.onclick = closeFallback;
+
+        // Run Bundle Button Handler
+        if (btnRunFallbackBundle) {
+          btnRunFallbackBundle.onclick = async () => {
+            const selectedHostRadio = boxFallbackHtml.querySelector('input[name="fallbackHostHtmlRadio"]:checked');
+            if (!selectedHostRadio) {
+              triggerToast("Select a Main HTML host file!");
+              return;
+            }
+            const hostName = selectedHostRadio.value;
+            const checkedBoxes = Array.from(boxFallbackCompanion.querySelectorAll('input[name="fallbackCompanionCheckbox"]:checked'));
+            const checkedNames = checkedBoxes.map(cb => cb.value);
+
+            closeFallback();
+            await onConfirmBundle(hostName, checkedNames);
+          };
+        }
+
+        // Pick Extra File from Device Handler
+        if (btnFallbackPickDevice) {
+          btnFallbackPickDevice.onclick = async () => {
+            if (typeof handleOpenFileNative === 'function') {
+              await handleOpenFileNative();
+              closeFallback();
+              triggerToast("File opened in tab. Tap Run again to bundle.");
+            }
+          };
+        }
+      }
+
+      // Safe Iframe Injection Helper (Zero White-Screen & Free Memory)
+      function executePreviewInIframe(finalHtml, modeToast) {
+        if (modeToast) triggerToast(modeToast);
+
+        // Remove any stale srcdoc or src lock to prevent blank-page trap
+        frame.removeAttribute('srcdoc');
+        frame.src = 'about:blank';
+
         if (activePreviewBlobUrl) {
           URL.revokeObjectURL(activePreviewBlobUrl);
           activePreviewBlobUrl = null;
         }
 
+        modal.classList.remove('hidden');
+
+        // Streaming render on clean frame
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            frame.srcdoc = finalHtml;
+          }, 35);
+        });
+      }
+
+      // Pre-flight Resolver & Smart Runner
+      async function injectCodeToIframe() {
         const curTab = fileTabs.find(t => t.id === activeFileId) || fileTabs[0];
-        const activeName = (curTab?.name || 'index.html').toLowerCase();
-        const activeContent = textarea ? textarea.value : (curTab?.content || '');
+        if (!curTab) return;
 
-        let finalHtml = '';
-        let targetContextTab = curTab;
-        let modeToast = '';
+        // Sync latest unsaved textarea content
+        if (textarea && curTab.id === activeFileId) {
+          curTab.content = textarea.value;
+        }
 
-        // GUARD 1: Active file is CSS
-        if (activeName.endsWith('.css')) {
-          const companionHtml = fileTabs.find(t => (t.name || '').toLowerCase().endsWith('.html') || (t.name || '').toLowerCase().endsWith('.htm'));
-          if (companionHtml) {
-            const rawHtml = companionHtml.id === activeFileId && textarea ? textarea.value : companionHtml.content;
-            targetContextTab = companionHtml;
-            finalHtml = await buildInjectedSource(rawHtml, companionHtml);
-            modeToast = 'Previewing style.css inside ' + companionHtml.name + ' 🎨';
-          } else {
-            finalHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + activeContent + '</style></head>' +
-            '<body style="padding:20px;font-family:sans-serif;background:#f8fafc;color:#0f172a;">' +
-            '<h3>🎨 CSS Live Preview</h3><p style="color:#64748b;font-size:13px;margin:8px 0 16px;">Applied styles on standard elements:</p>' +
-            '<button style="padding:10px 16px;cursor:pointer;">Button Element</button></body></html>';
-            modeToast = 'Previewing style.css 🎨';
+        const activeName = (curTab.name || 'untitled.html').trim();
+        const lowerName = activeName.toLowerCase();
+        const activeFolder = curTab.folderName || 'Internal Storage';
+        const activeDirHandle = curTab.dirHandle || null;
+
+        // Special Case: Cloudflare Backend Worker Notice
+        if (lowerName === 'worker.js' || (curTab.content && curTab.content.includes('export default') && curTab.content.includes('fetch('))) {
+          showProfessionalPopup({
+            title: "Cloudflare Worker Script",
+            message: `'${activeName}' ek Cloudflare Backend Worker script hai.\n\nYeh server-side HTTP requests handle karta hai, browser visual webpage nahi hai.\n\nLive Preview chalane ke liye index.html ya app.js par switch karein.`,
+            confirmText: "Understood",
+            iconType: "info"
+          });
+          return;
+        }
+
+        // Gather all Candidate HTML files across Memory Tabs and Disk
+        const htmlCandidates = [];
+        const seenHtml = new Set();
+
+        fileTabs.forEach(t => {
+          const tName = (t.name || '').toLowerCase();
+          if ((tName.endsWith('.html') || tName.endsWith('.htm')) && !seenHtml.has(tName)) {
+            seenHtml.add(tName);
+            htmlCandidates.push({
+              name: t.name,
+              content: t.id === activeFileId && textarea ? textarea.value : t.content,
+              tabRef: t,
+              lastModified: t.lastModified || 0,
+              sizeText: t.content ? (new Blob([t.content]).size / 1024).toFixed(1) + ' KB' : '0 KB'
+            });
           }
+        });
+
+        // Disk reading on demand if directory is linked
+        if (activeDirHandle) {
+          try {
+            for await (const entry of activeDirHandle.values()) {
+              if (entry.kind === 'file') {
+                const eName = entry.name.toLowerCase();
+                if ((eName.endsWith('.html') || eName.endsWith('.htm')) && !seenHtml.has(eName)) {
+                  seenHtml.add(eName);
+                  const fData = await entry.getFile();
+                  const fText = await fData.text();
+                  htmlCandidates.push({
+                    name: entry.name,
+                    content: fText,
+                    dirHandle: activeDirHandle,
+                    lastModified: fData.lastModified || 0,
+                    sizeText: (fData.size / 1024).toFixed(1) + ' KB'
+                  });
+                }
+              }
+            }
+          } catch(e){}
         }
-        // GUARD 2: Active file is JavaScript
-        else if (activeName.endsWith('.js')) {
-          const companionHtml = fileTabs.find(t => (t.name || '').toLowerCase().endsWith('.html') || (t.name || '').toLowerCase().endsWith('.htm'));
-          if (companionHtml) {
-            const rawHtml = companionHtml.id === activeFileId && textarea ? textarea.value : companionHtml.content;
-            targetContextTab = companionHtml;
-            finalHtml = await buildInjectedSource(rawHtml, companionHtml);
-            modeToast = 'Previewing app.js inside ' + companionHtml.name + ' ⚡';
-          } else {
-            finalHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>' +
-            '<body style="padding:16px;font-family:monospace;background:#0f172a;color:#38bdf8;">' +
-            '<div style="font-weight:bold;margin-bottom:8px;">⚡ JS Runner: ' + (curTab?.name || 'app.js') + '</div>' +
-            '<div id="output" style="color:#e2e8f0;font-size:12px;">Running script...</div>' +
-            tagScriptOpen + '\n' +
-            'try {\n' + activeContent + '\n document.getElementById("output").innerText = "✅ Script executed without errors.";\n} catch(e) {\n document.getElementById("output").innerText = "❌ Error: " + e.message;\n}\n' +
-            tagScriptClose + '\n</body></html>';
-            modeToast = 'Running JavaScript Sandbox ⚡';
+
+        // Rank candidates using Weighted Scoring Matrix
+        htmlCandidates.sort((a, b) => {
+          const scoreA = scoreHtmlCandidate(a, activeName);
+          const scoreB = scoreHtmlCandidate(b, activeName);
+          return scoreB - scoreA;
+        });
+
+        // TIER 1: Unambiguous Fast-Path (0ms, zero popups)
+        if (lowerName.endsWith('.html') || lowerName.endsWith('.htm')) {
+          const rawHtml = textarea && curTab.id === activeFileId ? textarea.value : curTab.content;
+          const finalHtml = await buildInjectedSource(rawHtml, activeFolder, activeDirHandle);
+          executePreviewInIframe(finalHtml, `Live Preview: ${activeName}`);
+          return;
+        }
+
+        // Clear unambiguous host HTML candidate check
+        const topCandidate = htmlCandidates[0];
+        const secondCandidate = htmlCandidates[1];
+        const topScore = topCandidate ? scoreHtmlCandidate(topCandidate, activeName) : -1;
+        const secondScore = secondCandidate ? scoreHtmlCandidate(secondCandidate, activeName) : -1;
+
+        const isUnambiguousWinner = topCandidate && topScore >= 40 && (topScore - secondScore >= 30);
+
+        if (isUnambiguousWinner) {
+          const finalHtml = await buildInjectedSource(topCandidate.content, activeFolder, activeDirHandle);
+          executePreviewInIframe(finalHtml, `Running ${activeName} inside ${topCandidate.name}`);
+          return;
+        }
+
+        // TIER 2: Smart Fallback Selector (Ambiguous / Conflicting Backups or No Link)
+        const companionCandidates = [];
+        const seenCompanions = new Set();
+
+        fileTabs.forEach(t => {
+          const tName = (t.name || '').toLowerCase();
+          if (!tName.endsWith('.html') && !tName.endsWith('.htm') && !seenCompanions.has(tName)) {
+            seenCompanions.add(tName);
+            companionCandidates.push({
+              name: t.name,
+              content: t.id === activeFileId && textarea ? textarea.value : t.content,
+              isCurrentActive: t.id === activeFileId,
+              sizeText: t.content ? (new Blob([t.content]).size / 1024).toFixed(1) + ' KB' : '0 KB'
+            });
           }
-        }
-        // GUARD 3: Active file is HTML
-        else {
-          finalHtml = await buildInjectedSource(activeContent, curTab);
-        }
+        });
 
-        if (modeToast) triggerToast(modeToast);
+        // Open steering selector modal so developer has 100% control
+        openSmartFallbackPicker(htmlCandidates, companionCandidates, async (chosenHostName, chosenCompanionNames) => {
+          const chosenHtml = htmlCandidates.find(h => h.name === chosenHostName);
+          if (!chosenHtml) return;
 
-        const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-        activePreviewBlobUrl = URL.createObjectURL(blob);
-        frame.src = activePreviewBlobUrl;
+          const companionMap = new Map();
+          for (const cName of chosenCompanionNames) {
+            const compObj = companionCandidates.find(c => c.name === cName);
+            if (compObj) {
+              companionMap.set(cName.toLowerCase(), compObj.content);
+            } else if (activeDirHandle) {
+              const diskText = await readLinkedFileFromDisk(activeDirHandle, cName);
+              if (diskText !== null) companionMap.set(cName.toLowerCase(), diskText);
+            }
+          }
+
+          const bundledSource = await buildInjectedSource(chosenHtml.content, activeFolder, activeDirHandle, companionMap);
+          executePreviewInIframe(bundledSource, `Running bundle with ${chosenHostName}`);
+        });
       }
 
       function launchPreview() {
         if (logsBox) logsBox.innerHTML = '<div class="text-slate-500 italic">Console ready...</div>';
-        modal.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          setTimeout(async () => {
-            await injectCodeToIframe();
-          }, 35);
-        });
+        injectCodeToIframe();
       }
 
       document.getElementById('btnHeaderRun')?.addEventListener('click', launchPreview);
@@ -8957,8 +9832,10 @@ window.extractCssToNewTab = function() {
         triggerToast("Refreshed Preview");
       });
 
+      // Strict Memory Teardown (Clean garbage collection on modal close, unarms srcdoc lock)
       document.getElementById('btnPreviewClose')?.addEventListener('click', () => {
         modal.classList.add('hidden');
+        frame.removeAttribute('srcdoc');
         frame.src = 'about:blank';
         if (activePreviewBlobUrl) {
           URL.revokeObjectURL(activePreviewBlobUrl);

@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.7 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.8 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.7',
+      version: '8.8',
       edition: 'Developer Master Edition'
     };
 
@@ -4320,48 +4320,129 @@
       }
     }
 
-    // =========================================================================
-    // POINT 3: SMART AUTO-TARGET DETECTOR ENGINE
+            // =========================================================================
+    // 🧠 SMART DYNAMIC ANCHOR & TARGET DETECTOR (2-STAGE PARAM & BODY PARSER)
     // =========================================================================
     function autoDetectOldCodeMatch(newSnippet) {
       if (!textarea || !newSnippet) return "";
       const fullCode = textarea.value;
       const snippet = newSnippet.trim();
 
-      // CSS Selector Match
+      // 1. JavaScript Function & Method Extractor (Skips parameters like options = {})
+      const extractBalancedFunction = (codeStr, startIndex) => {
+        let i = startIndex;
+        let inStr = null;
+        let parenDepth = 0;
+        let bodyBraceIdx = -1;
+
+        // Stage A: Parameters (...) ko paar karein, andar ke { } ko ignore karein
+        while (i < codeStr.length) {
+          const ch = codeStr[i];
+          if (!inStr && (ch === '"' || ch === "'" || ch === '`')) {
+            inStr = ch;
+          } else if (inStr && ch === inStr && codeStr[i - 1] !== '\\') {
+            inStr = null;
+          } else if (!inStr) {
+            if (ch === '(') {
+              parenDepth++;
+            } else if (ch === ')') {
+              if (parenDepth > 0) parenDepth--;
+            } else if (ch === '{' && parenDepth === 0) {
+              bodyBraceIdx = i;
+              break;
+            }
+          }
+          i++;
+        }
+
+        if (bodyBraceIdx === -1) return "";
+
+        // Stage B: Asli body { se lekar aakhri } tak balance karein
+        let depth = 0;
+        inStr = null;
+        for (let j = bodyBraceIdx; j < codeStr.length; j++) {
+          const ch = codeStr[j];
+          if (!inStr && (ch === '"' || ch === "'" || ch === '`')) {
+            inStr = ch;
+          } else if (inStr && ch === inStr && codeStr[j - 1] !== '\\') {
+            inStr = null;
+          } else if (!inStr) {
+            if (ch === '{') depth++;
+            else if (ch === '}') {
+              depth--;
+              if (depth === 0) return codeStr.substring(startIndex, j + 1);
+            }
+          }
+        }
+        return "";
+      };
+
+      // 2. CSS Balanced Extractor
+      const extractBalancedCss = (codeStr, startIndex) => {
+        const openBrace = codeStr.indexOf('{', startIndex);
+        if (openBrace === -1) return "";
+        let depth = 0;
+        let inStr = null;
+        for (let j = openBrace; j < codeStr.length; j++) {
+          const ch = codeStr[j];
+          if (!inStr && (ch === '"' || ch === "'")) {
+            inStr = ch;
+          } else if (inStr && ch === inStr && codeStr[j - 1] !== '\\') {
+            inStr = null;
+          } else if (!inStr) {
+            if (ch === '{') depth++;
+            else if (ch === '}') {
+              depth--;
+              if (depth === 0) return codeStr.substring(startIndex, j + 1);
+            }
+          }
+        }
+        return "";
+      };
+
+      // --- MATCH TYPES ---
+      // A. JS Function (async, normal, arrow, generator)
+      const fnMatch = snippet.match(/(?:async\s+)?function\s*\*?\s*([a-zA-Z0-9_$]+)|(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s*)?(?:function|\([^)]*\)\s*=>)/);
+      if (fnMatch) {
+        const fnName = fnMatch[1] || fnMatch[2];
+        if (fnName) {
+          const escFn = fnName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const targetRegex = new RegExp(`(?:async\\s+)?function\\s*\\*?\\s*${escFn}\\b|(?:const|let|var)\\s+${escFn}\\s*=\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>)`);
+          const m = targetRegex.exec(fullCode);
+          if (m) {
+            const block = extractBalancedFunction(fullCode, m.index);
+            if (block) return block;
+          }
+        }
+      }
+
+      // B. CSS Rules
       const cssMatch = snippet.match(/^([.#a-zA-Z0-9_\-\s,>:+()]+)\s*\{/);
-      if (cssMatch && cssMatch[1]) {
+      if (cssMatch && cssMatch[1] && !cssMatch[1].trim().startsWith('@')) {
         const selector = cssMatch[1].trim();
         const escSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const cssRegex = new RegExp(`${escSelector}\\s*\\{[\\s\\S]*?\\}`, 'm');
-        const found = fullCode.match(cssRegex);
-        if (found) return found[0];
+        const cMatch = new RegExp(`${escSelector}\\s*\\{`).exec(fullCode);
+        if (cMatch) {
+          const block = extractBalancedCss(fullCode, cMatch.index);
+          if (block) return block;
+        }
       }
 
-      // JavaScript Function Match
-      const funcMatch = snippet.match(/function\s+([a-zA-Z0-9_$]+)\s*\(/);
-      if (funcMatch && funcMatch[1]) {
-        const funcName = funcMatch[1];
-        const funcRegex = new RegExp(`function\\s+${funcName}\\s*\\([\\s\\S]*?\\}\\n`, 'm');
-        const found = fullCode.match(funcRegex);
-        if (found) return found[0];
-      }
-
-      // HTML ID Match
-      const idMatch = snippet.match(/id=["']([a-zA-Z0-9_\-]+)["']/);
+      // C. HTML Element ID
+      const idMatch = snippet.match(/\bid=["']([^"']+)["']/);
       if (idMatch && idMatch[1]) {
-        const elId = idMatch[1];
+        const elId = idMatch[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const tagMatch = snippet.match(/^<([a-zA-Z0-9\-]+)/);
-        const tagName = tagMatch ? tagMatch[1] : '[a-zA-Z0-9\\-]+';
-        const elRegex = new RegExp(`<${tagName}[^>]*id=["']${elId}["'][\\s\\S]*?<\\/${tagName}>`, 'm');
-        const found = fullCode.match(elRegex);
+        const tag = tagMatch ? tagMatch[1] : '[a-zA-Z0-9\\-]+';
+        const htmlRegex = new RegExp(`<${tag}[^>]*\\bid=["']${elId}["'][\\s\\S]*?<\\/${tag}>`, 'm');
+        const found = fullCode.match(htmlRegex);
         if (found) return found[0];
       }
 
-      // First Line Fuzzy Fallback
-      const firstLine = snippet.split('\n')[0].trim();
-      if (firstLine.length > 10 && fullCode.includes(firstLine)) {
-        return firstLine;
+      // D. First Line Fuzzy Fallback
+      const lines = snippet.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length > 0 && lines[0].length > 12) {
+        if (fullCode.includes(lines[0])) return lines[0];
       }
 
       return "";
@@ -5725,34 +5806,42 @@ CRITICAL OPERATIONAL RULES:
         }
       };
 
+            // 🎯 DYNAMIC 3-WAY TAB SWITCHER ENGINE (ACTIVE HIGHLIGHT ONLY)
       const switchPatchTab = (tabType) => {
-        const tabs = [tabBatch, tabTarget, tabLine];
-        const panels = [panelBatch, panelTarget, panelLine];
+        const tabConfigs = [
+          { btn: tabBatch, panel: panelBatch, key: 'batch' },
+          { btn: tabTarget, panel: panelTarget, key: 'target' },
+          { btn: tabLine, panel: panelLine, key: 'line' }
+        ];
 
-        tabs.forEach(t => {
-          t?.classList.remove('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
-          t?.classList.add('text-[var(--text-muted)]', 'font-medium');
+        tabConfigs.forEach(item => {
+          if (!item.btn || !item.panel) return;
+          const isActive = (item.key === tabType);
+
+          if (isActive) {
+            // Sirf Active Button Glow karega
+            item.btn.className = 'flex-1 py-1.5 text-center font-bold text-[11px] rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs transition-all';
+            item.panel.classList.remove('hidden');
+          } else {
+            // Inactive Buttons par se border aur background completely clean
+            item.btn.className = 'flex-1 py-1.5 text-center font-medium text-[11px] rounded-lg text-[var(--text-muted)] hover:text-white border border-transparent transition-all';
+            item.panel.classList.add('hidden');
+          }
         });
-        panels.forEach(p => p?.classList.add('hidden'));
-
-        if (tabType === 'batch') {
-          tabBatch?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
-          tabBatch?.classList.remove('text-[var(--text-muted)]', 'font-medium');
-          panelBatch?.classList.remove('hidden');
-        } else if (tabType === 'target') {
-          tabTarget?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
-          tabTarget?.classList.remove('text-[var(--text-muted)]', 'font-medium');
-          panelTarget?.classList.remove('hidden');
-        } else if (tabType === 'line') {
-          tabLine?.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
-          tabLine?.classList.remove('text-[var(--text-muted)]', 'font-medium');
-          panelLine?.classList.remove('hidden');
-        }
       };
 
-      tabBatch?.addEventListener('click', () => switchPatchTab('batch'));
+                  tabBatch?.addEventListener('click', () => switchPatchTab('batch'));
       tabTarget?.addEventListener('click', () => switchPatchTab('target'));
       tabLine?.addEventListener('click', () => switchPatchTab('line'));
+
+      document.getElementById('inputTargetNew')?.addEventListener('input', () => {
+        const nVal = document.getElementById('inputTargetNew')?.value.trim();
+        const oInput = document.getElementById('inputTargetOld');
+        if (nVal && oInput && !oInput.value.trim()) {
+          const autoOld = autoDetectOldCodeMatch(nVal);
+          if (autoOld) oInput.value = autoOld;
+        }
+      });
 
       const updateBatchStackUI = () => {
         if (!textarea) return;
@@ -5833,24 +5922,31 @@ CRITICAL OPERATIONAL RULES:
         triggerToast("Batch Safely Injected Before Closing Tag! ✨");
       });
 
-      // 2. 1-Tap Target Swap
+        // 2. 1-Tap Target Swap (Smart Anchor Normalized Engine)
       document.getElementById('btnExecuteTargetReplace')?.addEventListener('click', async () => {
         const oldInput = document.getElementById('inputTargetOld');
         const newInput = document.getElementById('inputTargetNew');
         let oldText = oldInput ? oldInput.value.trim() : '';
-        const newText = newInput ? newInput.value.trim() : '';
+        const newText = newInput ? newInput.value : '';
 
-        if (!newText || !textarea) return;
-        const currentContent = textarea.value;
-
-        if (!oldText && typeof autoDetectOldCodeMatch === 'function') {
-          oldText = autoDetectOldCodeMatch(newText);
+        if (!newText.trim() || !textarea) {
+          triggerToast("Replacement code empty!");
+          return;
         }
 
+        const currentContent = textarea.value;
+
+        // Smart Auto-Detect if Box 1 was empty
+        if (!oldText && typeof autoDetectOldCodeMatch === 'function') {
+          oldText = autoDetectOldCodeMatch(newText);
+          if (oldInput && oldText) oldInput.value = oldText;
+        }
+
+               // Tier 1: Exact Direct Match (Literal Splicing - No $ bug)
         if (oldText && currentContent.includes(oldText)) {
           recordHistory();
           const matchIndex = currentContent.indexOf(oldText);
-          textarea.value = currentContent.replace(oldText, newText);
+          textarea.value = currentContent.substring(0, matchIndex) + newText + currentContent.substring(matchIndex + oldText.length);
 
           if (oldInput) oldInput.value = '';
           if (newInput) newInput.value = '';
@@ -5873,43 +5969,56 @@ CRITICAL OPERATIONAL RULES:
           return;
         }
 
-        // Fuzzy Whitespace Fallback
+        // Tier 2: Smart Normalized Matching (Ignores CRLF, Indentation & Blank Lines Differences)
         if (oldText) {
-          const oldLines = oldText.split('\n').map(l => l.trim()).filter(Boolean);
-          const docLines = currentContent.split('\n');
-          let matchStartIndex = -1;
+          const cleanOld = oldText.replace(/\r\n/g, '\n').trim();
+          const oldLines = cleanOld.split('\n').map(l => l.trim()).filter(Boolean);
+          const docLines = currentContent.replace(/\r\n/g, '\n').split('\n');
 
-          for (let i = 0; i <= docLines.length - oldLines.length; i++) {
-            let matched = true;
-            for (let j = 0; j < oldLines.length; j++) {
-              if (docLines[i + j].trim() !== oldLines[j]) {
-                matched = false;
+          let matchStartLine = -1;
+          let matchEndLine = -1;
+
+          for (let i = 0; i < docLines.length; i++) {
+            if (docLines[i].trim() === oldLines[0]) {
+              let matchedCount = 0;
+              let scanIdx = i;
+
+              while (scanIdx < docLines.length && matchedCount < oldLines.length) {
+                if (docLines[scanIdx].trim() === oldLines[matchedCount]) {
+                  matchedCount++;
+                } else if (docLines[scanIdx].trim() !== '') {
+                  // Non-empty mismatch break
+                  break;
+                }
+                scanIdx++;
+              }
+
+              if (matchedCount === oldLines.length) {
+                matchStartLine = i;
+                matchEndLine = scanIdx;
                 break;
               }
             }
-            if (matched) {
-              matchStartIndex = i;
-              break;
-            }
           }
 
-          if (matchStartIndex !== -1) {
+          if (matchStartLine !== -1 && matchEndLine !== -1) {
             recordHistory();
-            docLines.splice(matchStartIndex, oldLines.length, newText);
+            const replacementLines = newText.replace(/\r\n/g, '\n').split('\n');
+            docLines.splice(matchStartLine, matchEndLine - matchStartLine, ...replacementLines);
             textarea.value = docLines.join('\n');
 
             if (oldInput) oldInput.value = '';
             if (newInput) newInput.value = '';
 
             let charPos = 0;
-            for (let k = 0; k < matchStartIndex; k++) {
+            for (let k = 0; k < matchStartLine; k++) {
               charPos += docLines[k].length + 1;
             }
 
             textarea.focus();
             textarea.setSelectionRange(charPos, charPos + newText.length);
             const lineHeight = (userSettings && userSettings.fontSize) ? (userSettings.fontSize * 1.55) : 20.15;
-            textarea.scrollTop = Math.max(0, (matchStartIndex - 4) * lineHeight);
+            textarea.scrollTop = Math.max(0, (matchStartLine - 4) * lineHeight);
             if (gutter) gutter.scrollTop = textarea.scrollTop;
 
             updateLineNumbers();
@@ -5919,12 +6028,12 @@ CRITICAL OPERATIONAL RULES:
 
             window.StudioBrain?.analyze(textarea.value);
             safelyCloseStudio();
-            triggerToast("Code Block Swapped (Fuzzy Matched)! ✨");
+            triggerToast("Code Block Swapped (Smart Matched)! ✨");
             return;
           }
         }
 
-        triggerToast("Target code not found. Check exact lines or spacing.");
+        triggerToast("Target code not found. Check exact snippet.");
       });
 
       // 3. Line Range Patch

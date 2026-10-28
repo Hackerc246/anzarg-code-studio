@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 8.8 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 8.9 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '8.8',
+      version: '8.9',
       edition: 'Developer Master Edition'
     };
 
@@ -3283,12 +3283,15 @@
       syntaxCode.className = `language-${lang}`;
       syntaxCode.textContent = code + (code.endsWith('\n') ? ' ' : '');
 
-      clearTimeout(syntaxHighlightTimer);
-      const debounceDelay = totalLines > 2500 ? 180 : 35;
+        // 🛡️ 60FPS HARDWARE GUARD: Large Files (>3000 lines) par typing stutter 100% block
+  clearTimeout(syntaxHighlightTimer);
+  const debounceDelay = totalLines > 3000 ? 600 : (totalLines > 1000 ? 250 : 40);
 
-      syntaxHighlightTimer = setTimeout(() => {
-        if (window.Prism) Prism.highlightElement(syntaxCode);
-      }, debounceDelay);
+  syntaxHighlightTimer = setTimeout(() => {
+    if (window.Prism && totalLines <= 12000) {
+      Prism.highlightElement(syntaxCode);
+    }
+  }, debounceDelay);
 
             // Background diagnostic timer disabled for zero mobile CPU load
     }
@@ -3354,33 +3357,34 @@
       }
     }
 
-    function scheduleAutoSave() {
-      clearTimeout(autoDebounceTimer);
-      autoDebounceTimer = setTimeout(async () => {
-        if (textarea && activeFileId) {
-          const cur = fileTabs.find(t => t.id === activeFileId);
-          if (cur) {
-            cur.content = textarea.value;
-            cur.cursorPos = textarea.selectionStart;
-            cur.scrollTop = textarea.scrollTop;
-          }
-        }
-        const serializedTabs = fileTabs.map(t => ({
-          id: t.id,
-          name: t.name,
-          content: t.content,
-          isModified: t.isModified,
-          isNewFile: t.isNewFile,
-          filePath: t.filePath || `/storage/emulated/0/${t.name}`,
-          folderName: t.folderName || 'Internal Storage',
-          cursorPos: t.cursorPos || 0,
-          scrollTop: t.scrollTop || 0
-        }));
-        await storeSave('workspace_tabs', serializedTabs);
-        await storeSave('workspace_active_id', activeFileId);
-        await storeSave('workspace_settings', userSettings);
-      }, 400);
+    // 🛡️ STORAGE THROTTLE GUARD: 1500ms Idle Delay (Zero Typing Stutter & Saves Battery)
+function scheduleAutoSave() {
+  clearTimeout(autoDebounceTimer);
+  autoDebounceTimer = setTimeout(async () => {
+    if (textarea && activeFileId) {
+      const cur = fileTabs.find(t => t.id === activeFileId);
+      if (cur) {
+        cur.content = textarea.value;
+        cur.cursorPos = textarea.selectionStart;
+        cur.scrollTop = textarea.scrollTop;
+      }
     }
+    const serializedTabs = fileTabs.map(t => ({
+      id: t.id,
+      name: t.name,
+      content: t.content,
+      isModified: t.isModified,
+      isNewFile: t.isNewFile,
+      filePath: t.filePath || `/storage/emulated/0/Download/${t.name}`,
+      folderName: t.folderName || 'Internal Storage',
+      cursorPos: t.cursorPos || 0,
+      scrollTop: t.scrollTop || 0
+    }));
+    await storeSave('workspace_tabs', serializedTabs);
+    await storeSave('workspace_active_id', activeFileId);
+    await storeSave('workspace_settings', userSettings);
+  }, 1500);
+}
 
     // =========================================================================
     // CODE ERROR CHECKER ENGINE
@@ -5834,13 +5838,19 @@ CRITICAL OPERATIONAL RULES:
       tabTarget?.addEventListener('click', () => switchPatchTab('target'));
       tabLine?.addEventListener('click', () => switchPatchTab('line'));
 
+            // 🛡️ HARDWARE GUARD: Sirf Paste ya 400ms rukne par hi scan chalega (Zero Keystroke Lag)
+      let autoDetectDebounceTimer = null;
       document.getElementById('inputTargetNew')?.addEventListener('input', () => {
-        const nVal = document.getElementById('inputTargetNew')?.value.trim();
-        const oInput = document.getElementById('inputTargetOld');
-        if (nVal && oInput && !oInput.value.trim()) {
-          const autoOld = autoDetectOldCodeMatch(nVal);
-          if (autoOld) oInput.value = autoOld;
-        }
+        clearTimeout(autoDetectDebounceTimer);
+        autoDetectDebounceTimer = setTimeout(() => {
+          const nVal = document.getElementById('inputTargetNew')?.value.trim();
+          const oInput = document.getElementById('inputTargetOld');
+          // Guard: Sirf tabhi scan kare jab Box 2 me kam se kam 15 characters ho aur Box 1 khali ho
+          if (nVal && nVal.length > 15 && oInput && !oInput.value.trim()) {
+            const autoOld = autoDetectOldCodeMatch(nVal);
+            if (autoOld) oInput.value = autoOld;
+          }
+        }, 350);
       });
 
       const updateBatchStackUI = () => {
@@ -5917,7 +5927,7 @@ CRITICAL OPERATIONAL RULES:
         updateCursorIndicator();
         markActiveModified();
 
-        window.StudioBrain?.analyze(textarea.value);
+        //window.StudioBrain?.analyze(textarea.value);
         safelyCloseStudio();
         triggerToast("Batch Safely Injected Before Closing Tag! ✨");
       });
@@ -5963,7 +5973,7 @@ CRITICAL OPERATIONAL RULES:
           updateCursorIndicator();
           markActiveModified();
 
-          window.StudioBrain?.analyze(textarea.value);
+          //window.StudioBrain?.analyze(textarea.value);
           safelyCloseStudio();
           triggerToast("Code Block Swapped Successfully! ✨");
           return;
@@ -6067,7 +6077,7 @@ CRITICAL OPERATIONAL RULES:
         updateCursorIndicator();
         markActiveModified();
 
-        window.StudioBrain?.analyze(textarea.value);
+        //window.StudioBrain?.analyze(textarea.value);
         safelyCloseStudio();
         triggerToast(`Lines ${startLine} to ${endLine} Patched! ✨`);
       });

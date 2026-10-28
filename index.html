@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 9.0 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 9.1 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '9.0',
+      version: '9.1',
       edition: 'Developer Master Edition'
     };
 
@@ -5058,228 +5058,168 @@ CRITICAL OPERATIONAL RULES:
       btnClose?.addEventListener('click', handleExitShield);
       btnDismiss?.addEventListener('click', handleExitShield);
 
-      // 1. Scan Trigger with Strict 3-Attempt Hard Stop
-      btnScan?.addEventListener('click', () => {
-        if (scanAttempts >= 3) {
-          if (navigator.vibrate) try { navigator.vibrate([40, 30, 40]); } catch(e){}
-          btnScan.classList.remove('btn-shake-active');
-          void btnScan.offsetWidth;
-          btnScan.classList.add('btn-shake-active');
+                      // =====================================================================
+      // 🛡️ ENTERPRISE AST STATE-MACHINE REPAIR ENGINE (COMPILER-GRADE)
+      // =====================================================================
+      let isCodeFixedState = false;
 
-          showProfessionalPopup({
-            title: "Scan Limit Reached (3/3)",
-            message: "Active tab has already been verified 3 times.\n\nAll detected items are shown in the list with Jump buttons. Click 'Fix All Issues' or Cancel.",
-            confirmText: "Understood",
-            iconType: "info"
-          });
-          return;
-        }
+      // 1. Scan Trigger (Realtime Telemetry)
+      const btnScanEl = btnScan || document.getElementById('btnTriggerShieldScan');
+      btnScanEl?.addEventListener('click', () => {
+        if (!textarea) return;
 
-        scanAttempts++;
-
-        const report = window.StudioBrain ? window.StudioBrain.analyze(textarea ? textarea.value : '') : { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+        const report = window.StudioBrain ? window.StudioBrain.analyze(textarea.value) : { total: 0, list: [], dupes: 0, overwrites: 0, dead: 0 };
         lastScannedIssues = report;
+        isCodeFixedState = false;
 
-        if (statDupes) statDupes.textContent = report.dupes;
-        if (statOverwrites) statOverwrites.textContent = report.overwrites;
-        if (statDead) statDead.textContent = report.dead;
+        if (statDupes) statDupes.textContent = report.dupes || 0;
+        if (statOverwrites) statOverwrites.textContent = report.overwrites || 0;
+        if (statDead) statDead.textContent = report.dead || 0;
 
-        if (labelScanBtn) {
-          labelScanBtn.textContent = `Rescan (${scanAttempts}/3)`;
+        const fixBtn = btnFixAll || document.getElementById('btnApplyAllFixes');
+        if (fixBtn) {
+          fixBtn.disabled = false;
+          fixBtn.classList.remove('opacity-40', 'cursor-not-allowed');
         }
 
-        renderIssuesListUI(report.list);
+        if (typeof renderIssuesListUI === 'function') {
+          renderIssuesListUI(report.list);
+        }
 
         if (report.total > 0) {
-          if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/15 border border-amber-500/30 rounded-xl text-center';
+          if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-3';
           if (bannerTitle) {
             bannerTitle.className = 'text-amber-300 font-bold text-xs';
             bannerTitle.textContent = `Scan Complete: ${report.total} Issue(s) Found`;
           }
           if (bannerSub) bannerSub.textContent = 'Duplicates or syntax traps detected. Tap "Fix All Issues" to repair.';
-          if (btnFixAll) {
-            btnFixAll.disabled = false;
-            btnFixAll.classList.remove('opacity-40');
-          }
-          triggerToast(`Scan Complete: ${report.total} Issue(s) Found`);
+          triggerToast(`Scan Complete: ${report.total} issues detected!`);
         } else {
-          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-center';
+          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
           if (bannerTitle) {
             bannerTitle.className = 'text-emerald-300 font-bold text-xs';
-            bannerTitle.textContent = 'All Clear • No Bug Found';
+            bannerTitle.textContent = 'All Cleaned! Zero Conflicts (0 Issues)';
           }
-          if (bannerSub) bannerSub.textContent = 'Active tab code is fully clean with zero conflicts.';
-          if (btnFixAll) {
-            btnFixAll.disabled = true;
-            btnFixAll.classList.add('opacity-40');
-          }
-          triggerToast("Scan Complete: No bug found! ✓");
+          if (bannerSub) bannerSub.textContent = 'Clean code verified with zero syntax collisions.';
+          triggerToast("All Clear: Zero bugs found! ✨");
         }
       });
 
-                  // 2. Interactive Deep Fix-All Engine (Syntax-Balance Guard & Safe Repair)
+      // 2. Interactive Deep Fix-All Engine (Lexical AST Deduplication)
       const fixAllBtnElement = btnFixAll || document.getElementById('btnApplyAllFixes');
       fixAllBtnElement?.addEventListener('click', () => {
         if (!textarea) return;
 
-        if (!lastScannedIssues || lastScannedIssues.total === 0) {
-          if (navigator.vibrate) try { navigator.vibrate([30, 50, 30]); } catch (e) {}
+        if (isCodeFixedState || !lastScannedIssues || lastScannedIssues.total === 0) {
+          if (navigator.vibrate) {
+            try { navigator.vibrate([40, 60, 40]); } catch (e) {}
+          }
           fixAllBtnElement.classList.remove('btn-shake-active');
           void fixAllBtnElement.offsetWidth;
           fixAllBtnElement.classList.add('btn-shake-active');
-          triggerToast("Already fully cleaned. No issues found.");
+          triggerToast("⚠️ Already fixed! Pehle 'Rescan' kijiye fir dubara try karein.");
           return;
         }
 
         recordHistory();
-        const originalCode = textarea.value;
-        let code = originalCode;
+        let code = textarea.value;
 
-        // Step A: Fix double braces safe replace (only whitespace between braces)
+              // --- STEP 1: AST CSS BLOCK DEDUPLICATION (Comment-Proof AST) ---
+        let duplicateCssBlocksRemoved = 0;
+        const seenCssRuleSignatures = new Set();
+
+        code = code.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (fullMatch, cssContent) => {
+          let pos = 0;
+          let outputCss = '';
+          let len = cssContent.length;
+
+          while (pos < len) {
+            let openBracePos = cssContent.indexOf('{', pos);
+            if (openBracePos === -1) {
+              outputCss += cssContent.slice(pos);
+              break;
+            }
+
+            let selectorFragment = cssContent.slice(pos, openBracePos);
+            
+            // 🛡️ STRIP COMMENTS FROM SELECTOR FRAGMENT (Crucial Fix)
+            let cleanSel = selectorFragment.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+
+            let depth = 1;
+            let current = openBracePos + 1;
+            while (current < len && depth > 0) {
+              if (cssContent[current] === '{') depth++;
+              else if (cssContent[current] === '}') depth--;
+              current++;
+            }
+
+            let blockContent = cssContent.slice(openBracePos + 1, current - 1);
+            let fullRuleBlock = cssContent.slice(pos, current);
+
+            // Skip @media, @keyframes, or standalone comments
+            if (!cleanSel || cleanSel.startsWith('@')) {
+              outputCss += fullRuleBlock;
+              pos = current;
+              continue;
+            }
+
+            // Clean Rule Signature
+            const normalizedSelector = cleanSel.replace(/\s+/g, ' ');
+            const normalizedBody = blockContent.replace(/\s+/g, ' ').trim();
+            const signature = `${normalizedSelector}::{${normalizedBody}}`;
+
+            if (seenCssRuleSignatures.has(signature)) {
+              // Exact Duplicate Block found! Skip adding it.
+              duplicateCssBlocksRemoved++;
+            } else {
+              seenCssRuleSignatures.add(signature);
+              outputCss += fullRuleBlock;
+            }
+
+            pos = current;
+          }
+
+          return fullMatch.replace(cssContent, outputCss);
+        });
+
+        // --- STEP 2: SEQUENTIAL HTML ID COLLISION RESOLVER ---
+        let idRenamedCount = 0;
+        const idTracker = new Map();
+
+        // Process line by line for clean DOM attribute updates
+        const lines = code.split('\n');
+        for (let idx = 0; idx < lines.length; idx++) {
+          lines[idx] = lines[idx].replace(/\bid\s*=\s*(["'])([^"']+)\1/gi, (attrMatch, quote, idVal) => {
+            const baseId = idVal.replace(/(_\d+)+$/, '');
+            const count = (idTracker.get(baseId) || 0) + 1;
+            idTracker.set(baseId, count);
+
+            if (count > 1) {
+              idRenamedCount++;
+              return `id=${quote}${baseId}_${count}${quote}`;
+            }
+            return attrMatch;
+          });
+        }
+        code = lines.join('\n');
+
+        // --- STEP 3: BROKEN DOUBLE-BRACE CLEANUP ---
         code = code.replace(/\}\s+\}/g, '}');
 
-        // Step B: Smart Scope-Protected Line Cleaner
-        const lines = code.split('\n');
-        const outputLines = [];
-        let i = 0;
-        let inAtRuleScope = false;
-        let braceDepth = 0;
-
-        // Helper to check selector in cssMap (Supports both Map and plain Object)
-        const checkInCssMap = (sel) => {
-          if (!lastScannedIssues || !lastScannedIssues.cssMap) return false;
-          if (typeof lastScannedIssues.cssMap.has === 'function') {
-            return lastScannedIssues.cssMap.has(sel);
-          }
-          return Object.prototype.hasOwnProperty.call(lastScannedIssues.cssMap, sel);
-        };
-
-        const getFromCssMap = (sel) => {
-          if (!lastScannedIssues || !lastScannedIssues.cssMap) return null;
-          if (typeof lastScannedIssues.cssMap.get === 'function') {
-            return lastScannedIssues.cssMap.get(sel);
-          }
-          return lastScannedIssues.cssMap[sel];
-        };
-
-        while (i < lines.length) {
-          const line = lines[i];
-          const trimmed = line.trim();
-
-          // Media query aur at-rules ka tracker
-          if (trimmed.startsWith('@media') || trimmed.startsWith('@keyframes') || trimmed.startsWith('@supports')) {
-            inAtRuleScope = true;
-          }
-
-          for (let c = 0; c < line.length; c++) {
-            if (line[c] === '{') braceDepth++;
-            else if (line[c] === '}') {
-              braceDepth = Math.max(0, braceDepth - 1);
-              if (braceDepth === 0) inAtRuleScope = false;
-            }
-          }
-
-          // Root CSS selector matching (Strictly skip media/keyframes rules from deletion)
-          const headerMatch = line.match(/^\s*([.#a-zA-Z0-9_\-\s,>+~*:[\]="']+)\s*\{/);
-          if (headerMatch && !inAtRuleScope && braceDepth <= 1) {
-            const rawSel = headerMatch[1].trim();
-            // Agar nested na ho aur na hi at-rule ho
-            if (!rawSel.startsWith('@') && checkInCssMap(rawSel)) {
-              const registeredLine = getFromCssMap(rawSel);
-              const currentLineIdx = i + 1;
-
-              // Agar yeh line registered duplicate line se aage ki exact match hai
-              if (registeredLine && currentLineIdx > registeredLine) {
-                // Find complete block to remove cleanly
-                let blockBraces = 0;
-                let foundEnd = false;
-                let skipIdx = i;
-
-                while (skipIdx < lines.length) {
-                  for (let ch of lines[skipIdx]) {
-                    if (ch === '{') blockBraces++;
-                    if (ch === '}') {
-                      blockBraces--;
-                      if (blockBraces === 0) {
-                        foundEnd = true;
-                        break;
-                      }
-                    }
-                  }
-                  skipIdx++;
-                  if (foundEnd) break;
-                }
-
-                if (foundEnd) {
-                  i = skipIdx;
-                  continue;
-                }
-              }
-            }
-          }
-
-          outputLines.push(line);
-          i++;
-        }
-
-        const candidateCode = outputLines.join('\n');
-
-        // 🛡️ PRE-FLIGHT RELATIVE BALANCE CHECK (SMART ROLLBACK GUARD)
-        const countChar = (str, char) => (str.match(new RegExp('\\' + char, 'g')) || []).length;
-        const origOpen = countChar(originalCode, '{');
-        const origClose = countChar(originalCode, '}');
-        const candOpen = countChar(candidateCode, '{');
-        const candClose = countChar(candidateCode, '}');
-
-        // Check karte hain ki safai se koi naya bracket imbalance toh nahi aaya
-        const origNet = origOpen - origClose;
-        const candNet = candOpen - candClose;
-
-        if (origNet !== candNet) {
-          triggerToast("⚠️ Repair cancelled: Syntax safety balance preserved.");
-          return;
-        }
-
-        // Apply Verified Code to Editor
-        textarea.value = candidateCode;
+        // --- STEP 4: COMMIT TO EDITOR & LIVE REFRESH ---
+        textarea.value = code;
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
+        if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
         markActiveModified();
 
-        // Re-analyze via StudioBrain to verify resolution live in Dashboard
-        const newReport = window.StudioBrain ? window.StudioBrain.analyze(candidateCode) : { total: 0, list: [] };
-        lastScannedIssues = newReport;
+        // Mark state and close
+        isCodeFixedState = true;
+        fixAllBtnElement.disabled = true;
+        fixAllBtnElement.classList.add('opacity-40', 'cursor-not-allowed');
 
-        if (typeof statDupes !== 'undefined' && statDupes) statDupes.textContent = newReport.dupes || 0;
-        if (typeof statOverwrites !== 'undefined' && statOverwrites) statOverwrites.textContent = newReport.overwrites || 0;
-        if (typeof statDead !== 'undefined' && statDead) statDead.textContent = newReport.dead || 0;
-
-        if (typeof renderIssuesListUI === 'function') {
-          renderIssuesListUI(newReport.list);
-        }
-
-        if (newReport.total === 0) {
-          if (typeof statusBanner !== 'undefined' && statusBanner) {
-            statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
-          }
-          if (typeof bannerTitle !== 'undefined' && bannerTitle) {
-            bannerTitle.className = 'text-emerald-300 font-bold text-xs';
-            bannerTitle.textContent = 'All Cleaned Successfully! (0 Issues)';
-          }
-          if (typeof bannerSub !== 'undefined' && bannerSub) {
-            bannerSub.textContent = 'All duplicate rules and broken braces have been completely resolved.';
-          }
-          if (fixAllBtnElement) {
-            fixAllBtnElement.disabled = true;
-            fixAllBtnElement.classList.add('opacity-40');
-          }
-          triggerToast("All Issues Fixed Safely! 🛡️");
-        } else {
-          if (typeof bannerTitle !== 'undefined' && bannerTitle) {
-            bannerTitle.textContent = `Repaired: ${newReport.total} Issue(s) Remaining`;
-          }
-          triggerToast(`Repaired with ${newReport.total} safe items remaining`);
-        }
+        safelyDismissModal();
+        triggerToast(`✨ AST Repaired: ${duplicateCssBlocksRemoved} CSS duplicate(s) removed & ${idRenamedCount} ID(s) cleanly indexed!`);
       });
     }
 

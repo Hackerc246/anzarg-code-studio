@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 9.1 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 9.2 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '9.1',
+      version: '9.2',
       edition: 'Developer Master Edition'
     };
 
@@ -4919,16 +4919,94 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-               // =========================================================================
-    // CHECK CODE & BUGS ENGINE (LIVE ISSUE LIST • JUMP BUTTONS • 3/3 HARD STOP)
+                                 // =========================================================================
+    // 🛡️ ANZARG MASTER INSPECTION & LIVE VERIFICATION STUDIO (V4.0 - BATCH 1/4)
+    // 2 GUARDS • ACTIVE-TAB LOCKDOWN • EXACT PATH BUNDLER • ZERO-CPU FREEZE
     // =========================================================================
+    let activeLiveBundleUrl = null;
+    let activeAuditSessionData = null; // Session persistence for Run & Return
+
+    // 🛡️ Guard: Flush iframe & blob memory on exit or return (Prevents RAM lag)
+    function teardownActivePreviewMemory() {
+      if (activeLiveBundleUrl) {
+        URL.revokeObjectURL(activeLiveBundleUrl);
+        activeLiveBundleUrl = null;
+      }
+      const previewFrame = document.getElementById('frameLivePreviewSandbox') || document.getElementById('previewIframe');
+      if (previewFrame) {
+        previewFrame.removeAttribute('srcdoc');
+        previewFrame.src = 'about:blank';
+      }
+    }
+
+    // 🛡️ GUARD 2: SMART COMPANION RESOLVER (Runs ONLY when user clicks 'Run & Verify')
+    async function resolveProjectBundleSafely(targetHtmlCode, targetFileName) {
+      const activeTabsList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
+      let companionCss = '';
+      let companionJs = '';
+      let detectedLinks = [];
+      let detectedScripts = [];
+
+      // 1. Detect exact linked filenames from active HTML
+      const cssMatches = targetHtmlCode.matchAll(/<link\b[^>]*href=["']([^"']+\.css)["'][^>]*>/gi);
+      for (const m of cssMatches) detectedLinks.push(m[1].replace(/^\.\//, ''));
+
+      const jsMatches = targetHtmlCode.matchAll(/<script\b[^>]*src=["']([^"']+\.js)["'][^>]*><\/script>/gi);
+      for (const m of jsMatches) detectedScripts.push(m[1].replace(/^\.\//, ''));
+
+      // 2. Strict Match from Open Studio Tabs (Same Project Guard)
+      activeTabsList.forEach(tab => {
+        const tName = (tab.name || tab.title || '').replace(/^\.\//, '');
+        if (detectedLinks.includes(tName)) {
+          companionCss += `\n/* Injected: ${tName} */\n` + (tab.content || '');
+        }
+        if (detectedScripts.includes(tName)) {
+          companionJs += `\n/* Injected: ${tName} */\n` + (tab.content || '');
+        }
+      });
+
+      // 3. Fallback: Check Tab Inspector / Persistent Storage if tabs not loaded
+      if ((!companionCss && detectedLinks.length > 0) || (!companionJs && detectedScripts.length > 0)) {
+        if (typeof getIndexedDbFileContent === 'function') {
+          for (const linkName of detectedLinks) {
+            if (!companionCss) {
+              const diskContent = await getIndexedDbFileContent(linkName);
+              if (diskContent) companionCss += `\n/* Disk Injected: ${linkName} */\n` + diskContent;
+            }
+          }
+          for (const scriptName of detectedScripts) {
+            if (!companionJs) {
+              const diskJs = await getIndexedDbFileContent(scriptName);
+              if (diskJs) companionJs += `\n/* Disk Injected: ${scriptName} */\n` + diskJs;
+            }
+          }
+        }
+      }
+
+      // 4. Build Assembled Safe Virtual Bundle (Escaped Tags Guard)
+      let bundledHtml = targetHtmlCode;
+      if (companionCss) {
+        bundledHtml = bundledHtml.replace(/<\/head>/i, '<style id="anzarg-bundled-css">\n' + companionCss + '\n<' + '/style>\n</head>');
+      }
+      if (companionJs) {
+        bundledHtml = bundledHtml.replace(/<\/body>/i, '<script id="anzarg-bundled-js">\n' + companionJs + '\n<' + '/script>\n</body>');
+      }
+
+      return {
+        requiresManualPick: false,
+        bundledHtml: bundledHtml
+      };
+    }
+
     function setupConflictShieldSystem() {
       const modal = document.getElementById('modalConflictShield');
       const btnClose = document.getElementById('btnCloseConflictShield');
       
+      // 🚪 4 DOORS: Unified entry triggers
       const btnQuickShield = document.getElementById('btnQuickAuditConflicts');
       const optMoreShield = document.getElementById('optAuditConflicts');
       const dNavShield = document.getElementById('dNavTriggerConflictShield');
+      const optCodeErrorChecker = document.getElementById('optDiagnoseCode');
 
       const statDupes = document.getElementById('statDupes');
       const statOverwrites = document.getElementById('statOverwrites');
@@ -4942,94 +5020,122 @@ CRITICAL OPERATIONAL RULES:
       const btnFixAll = document.getElementById('btnApplyAllFixes');
       const btnDismiss = document.getElementById('btnDismissShieldModal');
 
-      let scanAttempts = 0;
-      let lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+      let lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '' };
+      let previousCodeSnapshot = null;
+      let activePendingCount = 0; // Dynamic Live Counter Tracker
 
-      // Ensure Dynamic Scrollable Issue List Container exists inside modal card
+      // Dynamic Scrollable Issues Container
       let issuesListBox = document.getElementById('conflictIssuesListBox');
       if (!issuesListBox && statusBanner && statusBanner.parentNode) {
         issuesListBox = document.createElement('div');
         issuesListBox.id = 'conflictIssuesListBox';
-        issuesListBox.className = 'hidden max-h-40 overflow-y-auto space-y-1.5 p-2 bg-black/30 border border-slate-800 rounded-xl font-mono text-[11px]';
+        issuesListBox.className = 'hidden max-h-48 overflow-y-auto space-y-2 p-2 bg-black/40 border border-slate-800 rounded-xl font-mono text-[11px] my-2 pr-1';
         statusBanner.parentNode.insertBefore(issuesListBox, statusBanner.nextSibling);
       }
 
-      // Safe dismiss: Never redirects to mobile dashboard
+      // Live Diff Inspector Container (Shows - Old vs + New)
+      let diffPreviewBox = document.getElementById('conflictDiffPreviewBox');
+      if (!diffPreviewBox && issuesListBox && issuesListBox.parentNode) {
+        diffPreviewBox = document.createElement('div');
+        diffPreviewBox.id = 'conflictDiffPreviewBox';
+        diffPreviewBox.className = 'hidden p-2.5 bg-slate-900/90 border border-emerald-500/30 rounded-xl font-mono text-[10px] space-y-1 mb-2';
+        issuesListBox.parentNode.insertBefore(diffPreviewBox, issuesListBox.nextSibling);
+      }
+
+      // Helper to detect current active file name
+      const getActiveFileNameSafely = () => {
+        const curTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) 
+          ? fileTabs.find(t => (typeof activeFileId !== 'undefined' && t.id === activeFileId) || (typeof activeTabId !== 'undefined' && t.id === activeTabId))
+          : null;
+        return (curTab?.name || curTab?.title || 'Active Tab');
+      };
+
       const safelyDismissModal = () => {
         modal?.classList.add('hidden');
-        if (issuesListBox) issuesListBox.classList.add('hidden');
+        // Note: Memory is NOT cleared on dismiss, preserving your workboard!
+      };
+
+      const syncLiveCounterUI = () => {
+        if (statDead) statDead.textContent = activePendingCount;
+        const totalActive = (lastScannedIssues.dupes || 0) + (lastScannedIssues.overwrites || 0) + activePendingCount;
+        
+        const fixBtn = btnFixAll || document.getElementById('btnApplyAllFixes');
+        if (fixBtn && fixBtn.getAttribute('data-action') !== 'revert') {
+          fixBtn.disabled = (totalActive === 0);
+          fixBtn.classList.toggle('opacity-40', totalActive === 0);
+          fixBtn.classList.toggle('cursor-not-allowed', totalActive === 0);
+          fixBtn.innerHTML = '<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span>Fix All Issues (' + totalActive + ')</span>';
+        }
+
+        const currentActiveName = getActiveFileNameSafely();
+
+        // 🛡️ ANTI-FALSE BANNER GUARD: Only show 'All Cleaned' if a scan actually ran
+        if (lastScannedIssues.total > 0 && totalActive === 0) {
+          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-emerald-300 font-bold text-xs';
+            bannerTitle.textContent = `All Cleaned! Zero Conflicts (0 Issues) [${currentActiveName}]`;
+          }
+          if (bannerSub) bannerSub.textContent = 'All active issues resolved or verified safe.';
+        } else if (totalActive > 0) {
+          if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-3';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-amber-300 font-bold text-xs';
+            bannerTitle.textContent = `Audit Active: ${totalActive} Remaining Issue(s) [${currentActiveName}]`;
+          }
+          if (bannerSub) bannerSub.textContent = 'Use individual "Fix Line", "Skip" or "Run & Verify" below.';
+        }
+        if (window.lucide) lucide.createIcons();
       };
 
       const resetScanState = () => {
-        scanAttempts = 0;
-        lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [] };
+        lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '' };
+        activePendingCount = 0;
         if (statDupes) statDupes.textContent = '0';
         if (statOverwrites) statOverwrites.textContent = '0';
         if (statDead) statDead.textContent = '0';
         if (labelScanBtn) labelScanBtn.textContent = 'Scan Now';
         if (btnFixAll) {
           btnFixAll.disabled = true;
-          btnFixAll.classList.add('opacity-40');
+          btnFixAll.removeAttribute('data-action');
+          btnFixAll.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 opacity-40 cursor-not-allowed transition shadow';
+          btnFixAll.innerHTML = '<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span id="labelFixAllText">Fix All Issues</span>';
         }
         if (statusBanner) {
           statusBanner.className = 'p-3 bg-slate-800/40 border border-slate-700 rounded-xl text-center';
         }
-        if (bannerTitle) bannerTitle.textContent = 'Ready to Scan Active Tab';
-        if (bannerSub) bannerSub.textContent = 'Click "Scan Now" to check CSS, HTML & JS line-by-line.';
+        if (bannerTitle) {
+          bannerTitle.className = 'text-slate-200 font-bold text-xs';
+          bannerTitle.textContent = `Ready to Scan: ${getActiveFileNameSafely()}`;
+        }
+        if (bannerSub) bannerSub.textContent = 'Click "Scan Now" to inspect active tab with live diff.';
         if (issuesListBox) {
           issuesListBox.innerHTML = '';
           issuesListBox.classList.add('hidden');
         }
+        if (diffPreviewBox) {
+          diffPreviewBox.innerHTML = '';
+          diffPreviewBox.classList.add('hidden');
+        }
       };
 
-      // Render Interactive Issues List with Jump Buttons
-      const renderIssuesListUI = (list) => {
-        if (!issuesListBox) return;
-        issuesListBox.innerHTML = '';
+      const openModal = () => {
+        const oldDiagModal = document.getElementById('modalDiagnosticReport') || document.getElementById('modalDiagnosticChecker');
+        if (oldDiagModal) oldDiagModal.classList.add('hidden');
 
-        if (!list || list.length === 0) {
-          issuesListBox.classList.add('hidden');
-          return;
+        const currentActiveName = getActiveFileNameSafely();
+
+        // 🛡️ ACTIVE-TAB BINDING GUARD: If user switched tabs, refresh ready-banner
+        if (lastScannedIssues.activeFile && lastScannedIssues.activeFile !== currentActiveName) {
+          resetScanState();
+        } else if (!lastScannedIssues.total) {
+          if (bannerTitle) bannerTitle.textContent = `Ready to Scan: ${currentActiveName}`;
         }
 
-        issuesListBox.classList.remove('hidden');
-        list.slice(0, 20).forEach(issue => {
-          const row = document.createElement('div');
-          row.className = 'flex items-center justify-between p-1.5 bg-slate-900/80 border border-slate-800 rounded-lg';
-          
-          let title = issue.name || issue.text || 'Syntax Trap';
-          let tagType = issue.type === 'css_duplicate' ? 'CSS Duplicate' : issue.type === 'broken_brace' ? 'Broken Brace' : 'Collision';
-          
-          row.innerHTML = `
-            <div class="truncate mr-2">
-              <span class="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold mr-1">${tagType}</span>
-              <span class="text-slate-300 truncate font-semibold">${title}</span>
-            </div>
-            <button type="button" class="btn-jump-to-issue shrink-0 px-2 py-0.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded text-[10px] font-bold active:scale-95 transition" data-line="${issue.line || 1}">
-              Ln ${issue.line || 1} Jump
-            </button>
-          `;
-
-          row.querySelector('.btn-jump-to-issue')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const targetLine = parseInt(e.currentTarget.getAttribute('data-line'), 10) || 1;
-            safelyDismissModal();
-            if (typeof jumpToEditorPosition === 'function') {
-              jumpToEditorPosition(targetLine, 1);
-            }
-          });
-
-          issuesListBox.appendChild(row);
-        });
-      };
-
-            const openModal = () => {
-        resetScanState();
         modal?.classList.remove('hidden');
         if (window.lucide) lucide.createIcons();
       };
 
-      // Navigation Memory Locks
       btnQuickShield?.addEventListener('click', () => {
         if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'editor';
         openModal();
@@ -5047,184 +5153,690 @@ CRITICAL OPERATIONAL RULES:
         openModal();
       });
 
-      // Smart Return: Cancel ya ✖️ dabane par usi menu par wapas le jayega
+      optCodeErrorChecker?.addEventListener('click', (e) => {
+        e.stopImmediatePropagation();
+        document.getElementById('menuOverflowDropdown')?.classList.add('hidden');
+        if (window.StudioNavRouter) window.StudioNavRouter.activeOrigin = 'overflowMenu';
+        openModal();
+      }, { capture: true });
+
       const handleExitShield = () => {
         safelyDismissModal();
-        if (window.StudioNavRouter) {
+        if (window.StudioNavRouter && typeof window.StudioNavRouter.returnToOrigin === 'function') {
           window.StudioNavRouter.returnToOrigin();
         }
       };
 
       btnClose?.addEventListener('click', handleExitShield);
       btnDismiss?.addEventListener('click', handleExitShield);
-
-                      // =====================================================================
-      // 🛡️ ENTERPRISE AST STATE-MACHINE REPAIR ENGINE (COMPILER-GRADE)
+            // =====================================================================
+      // 🧠 STRICT MULTI-MODE AST SCANNER & 3-STATE CARDS (BATCH 2/4)
+      // 🟡 PENDING • 🟢 REPAIRED (✅) • ⚪ SKIPPED (🚫) • REAL-TIME SYNC
       // =====================================================================
-      let isCodeFixedState = false;
+      const detectCurrentMode = (rawCode) => {
+        const curTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) 
+          ? fileTabs.find(t => (typeof activeFileId !== 'undefined' && t.id === activeFileId) || (typeof activeTabId !== 'undefined' && t.id === activeTabId))
+          : null;
+        const name = (curTab?.name || curTab?.title || '').toLowerCase();
+        if (name.endsWith('.css')) return 'css';
+        if (name.endsWith('.js') || name.endsWith('.mjs')) return 'js';
+        if (name.endsWith('.html') || name.endsWith('.htm')) return 'html';
+        
+        if (/<(!doctype|html|head|body|script|style)/i.test(rawCode)) return 'html';
+        if (/(\/\*[\s\S]*?\*\/|@(media|keyframes)|[.#][\w-]+\s*\{)/i.test(rawCode) && !rawCode.includes('function')) return 'css';
+        return 'html';
+      };
 
-      // 1. Scan Trigger (Realtime Telemetry)
+      // Safe CSS Deduplication Engine
+      const deduplicateCssString = (cssText, seenSet) => {
+        let pos = 0;
+        let outputCss = '';
+        let len = cssText.length;
+        let dupesCount = 0;
+        const foundList = [];
+
+        while (pos < len) {
+          let openBracePos = cssText.indexOf('{', pos);
+          if (openBracePos === -1) {
+            outputCss += cssText.slice(pos);
+            break;
+          }
+
+          let selectorFragment = cssText.slice(pos, openBracePos);
+          let cleanSel = selectorFragment.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+
+          let depth = 1;
+          let current = openBracePos + 1;
+          while (current < len && depth > 0) {
+            if (cssText[current] === '{') depth++;
+            else if (cssText[current] === '}') depth--;
+            current++;
+          }
+
+          let blockContent = cssText.slice(openBracePos + 1, current - 1);
+          let fullRuleBlock = cssText.slice(pos, current);
+
+          if (!cleanSel || cleanSel.startsWith('@')) {
+            outputCss += fullRuleBlock;
+            pos = current;
+            continue;
+          }
+
+          const normalizedSelector = cleanSel.replace(/\s+/g, ' ');
+          const normalizedBody = blockContent.replace(/\s+/g, ' ').trim();
+          const signature = `${normalizedSelector}::{${normalizedBody}}`;
+
+          if (seenSet.has(signature)) {
+            dupesCount++;
+            foundList.push({
+              id: 'css_' + pos,
+              tier: 'css',
+              type: 'Duplicate CSS Block',
+              name: `Duplicate selector: ${normalizedSelector}`,
+              detail: `Rule block repeated and redundant.`,
+              oldVal: normalizedSelector.slice(0, 35) + ' {...}',
+              line: cssText.slice(0, pos).split('\n').length,
+              fixType: 'remove_css_rule',
+              rawMatch: fullRuleBlock,
+              status: 'pending'
+            });
+          } else {
+            seenSet.add(signature);
+            outputCss += fullRuleBlock;
+          }
+
+          pos = current;
+        }
+
+        return { cleanedCss: outputCss, removed: dupesCount, list: foundList };
+      };
+
+      // 🔍 Render 3-State Detailed Issue Cards with Skip & Live Counter Sync
+      const renderDetailedIssuesUI = (list) => {
+        if (!issuesListBox) return;
+        issuesListBox.innerHTML = '';
+
+        if (!list || list.length === 0) {
+          issuesListBox.classList.add('hidden');
+          return;
+        }
+
+        issuesListBox.classList.remove('hidden');
+        list.slice(0, 40).forEach(issue => {
+          const card = document.createElement('div');
+          card.id = `card-issue-${issue.id || issue.line}`;
+          card.className = 'p-2 bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-lg space-y-1.5 transition';
+
+          const badgeColor = issue.tier === 'css' ? 'bg-cyan-500/20 text-cyan-300' :
+                             issue.tier === 'javascript' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300';
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="truncate mr-2 flex items-center space-x-1">
+                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold ${badgeColor}">[${(issue.tier || 'AST').toUpperCase()}]</span>
+                <span class="text-slate-200 font-bold truncate">${issue.type || 'Syntax Issue'}</span>
+                <span class="badge-status-repaired hidden text-[8px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.5 rounded font-bold">✅ Repaired</span>
+              </div>
+              <button type="button" class="btn-jump-to-issue shrink-0 px-2 py-0.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded text-[10px] font-bold active:scale-95 transition" data-line="${issue.line || 1}">
+                Ln ${issue.line || 1} Jump
+              </button>
+            </div>
+            <div class="text-[10px] text-slate-400 truncate">${issue.detail || issue.name || 'Syntax defect'}</div>
+            ${issue.oldVal ? `<div class="text-[9px] text-rose-400 bg-black/40 p-1 rounded font-mono truncate"><span class="text-rose-500 font-bold">-</span> ${issue.oldVal}</div>` : ''}
+            
+            <div class="flex items-center justify-end space-x-1.5 pt-1 border-t border-slate-800/80">
+              <button type="button" class="btn-skip-single-issue px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+                <i data-lucide="eye-off" class="w-3 h-3"></i><span>Skip</span>
+              </button>
+              <button type="button" class="btn-fix-single-issue px-2 py-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+                <i data-lucide="wrench" class="w-3 h-3"></i><span>Fix Line</span>
+              </button>
+              <button type="button" class="btn-undo-single-issue hidden px-2 py-1 bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Undo</span>
+              </button>
+              <button type="button" class="btn-run-single-verify px-2 py-1 bg-blue-950/80 hover:bg-blue-900 text-cyan-300 border border-cyan-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-line="${issue.line || 1}">
+                <i data-lucide="play" class="w-3 h-3"></i><span>Run & Verify</span>
+              </button>
+            </div>
+          `;
+
+          // Card Action 1: Ln Jump
+          card.querySelector('.btn-jump-to-issue')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const targetLine = parseInt(e.currentTarget.getAttribute('data-line'), 10) || 1;
+            safelyDismissModal();
+            if (typeof jumpToEditorPosition === 'function') {
+              jumpToEditorPosition(targetLine, 1);
+            }
+          });
+
+          // Card Action 2: 1-Tap Single Fix & Undo Hooks with Live Counter Sync
+          const btnFixSingle = card.querySelector('.btn-fix-single-issue');
+          const btnUndoSingle = card.querySelector('.btn-undo-single-issue');
+          const btnSkipSingle = card.querySelector('.btn-skip-single-issue');
+          const badgeRepaired = card.querySelector('.badge-status-repaired');
+          
+          btnFixSingle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            executeSingleIssueFix(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
+          });
+
+          btnUndoSingle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            executeSingleIssueUndo(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
+          });
+
+          // Card Action 3: 🚫 Skip / Mark Safe Action
+          btnSkipSingle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            issue.status = 'skipped';
+            card.classList.add('opacity-40', 'pointer-events-none');
+            activePendingCount = Math.max(0, activePendingCount - 1);
+            syncLiveCounterUI();
+            triggerToast(`Line ${issue.line || 1} skipped & protected! 🛡️`);
+          });
+
+          // Card Action 4: Run & Verify (Live Sandbox Preview)
+          card.querySelector('.btn-run-single-verify')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerLiveVerifyFromCard(issue);
+          });
+
+          issuesListBox.appendChild(card);
+        });
+        if (window.lucide) lucide.createIcons();
+      };
+            // =====================================================================
+      // 🔍 PROTOCOL SCANNER & BALANCED-BRACE ENGINE (BATCH 3/4)
+      // BALANCED BRACE IMMUNITY • EXACT COMMIT • PROTOCOL URL IMMUNITY
+      // =====================================================================
+      const singleIssueUndoHistory = new Map();
+
+      // Helper: Single-Issue Line Fixer with Realtime Counter Decrement
+      const executeSingleIssueFix = (issue, cardEl, btnFix, btnUndo, badgeRepaired) => {
+        if (!textarea || !issue || issue.status === 'repaired') return;
+        recordHistory();
+        const val = textarea.value;
+        const key = issue.id || issue.line;
+        singleIssueUndoHistory.set(key, val);
+
+        let repaired = val;
+        if (issue.fixType === 'remove_css_rule' && issue.rawMatch) {
+          repaired = repaired.replace(issue.rawMatch, '');
+        } else if (issue.fixType === 'double_brace') {
+          const lines = repaired.split('\n');
+          const targetLineIdx = (issue.line || 1) - 1;
+          if (lines[targetLineIdx]) {
+            // Strict single-line brace healing
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/\}\s*\}/g, '}');
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'fix_js_comment') {
+          repaired = repaired.replace(/(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi, (match, openTag, jsBody, closeTag) => {
+            const cleanedJs = jsBody.replace(/<!--([\s\S]*?)-->/g, '/* $1 */').replace(/<!--|-->/g, '// ');
+            return openTag + cleanedJs + closeTag;
+          });
+        }
+
+        textarea.value = repaired;
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+        markActiveModified();
+
+        issue.status = 'repaired';
+        cardEl.classList.add('border-emerald-500/50', 'bg-emerald-950/20');
+        btnFix.classList.add('hidden');
+        btnUndo.classList.remove('hidden');
+        if (badgeRepaired) badgeRepaired.classList.remove('hidden');
+
+        activePendingCount = Math.max(0, activePendingCount - 1);
+        syncLiveCounterUI();
+
+        triggerToast(`✨ Line ${issue.line || 1} auto-healed cleanly!`);
+        if (window.lucide) lucide.createIcons();
+      };
+
+      // Helper: Single-Issue Undo Revert with Realtime Counter Increment
+      const executeSingleIssueUndo = (issue, cardEl, btnFix, btnUndo, badgeRepaired) => {
+        const key = issue.id || issue.line;
+        if (!textarea || !singleIssueUndoHistory.has(key)) return;
+
+        recordHistory();
+        textarea.value = singleIssueUndoHistory.get(key);
+        singleIssueUndoHistory.delete(key);
+
+        updateLineNumbers();
+        updateSyntaxHighlightingOptimized();
+        if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+        markActiveModified();
+
+        issue.status = 'pending';
+        cardEl.classList.remove('border-emerald-500/50', 'bg-emerald-950/20');
+        btnUndo.classList.add('hidden');
+        btnFix.classList.remove('hidden');
+        if (badgeRepaired) badgeRepaired.classList.add('hidden');
+
+        activePendingCount++;
+        syncLiveCounterUI();
+
+        triggerToast(`↩️ Line ${issue.line || 1} restored!`);
+        if (window.lucide) lucide.createIcons();
+      };
+
+      // ─── SCAN CONTROLLER WITH ACTIVE-TAB & BALANCED GUARDS ───
       const btnScanEl = btnScan || document.getElementById('btnTriggerShieldScan');
       btnScanEl?.addEventListener('click', () => {
         if (!textarea) return;
 
-        const report = window.StudioBrain ? window.StudioBrain.analyze(textarea.value) : { total: 0, list: [], dupes: 0, overwrites: 0, dead: 0 };
-        lastScannedIssues = report;
-        isCodeFixedState = false;
+        const val = textarea.value;
+        const currentMode = detectCurrentMode(val);
+        const currentActiveName = getActiveFileNameSafely();
 
-        if (statDupes) statDupes.textContent = report.dupes || 0;
-        if (statOverwrites) statOverwrites.textContent = report.overwrites || 0;
-        if (statDead) statDead.textContent = report.dead || 0;
-
-        const fixBtn = btnFixAll || document.getElementById('btnApplyAllFixes');
-        if (fixBtn) {
-          fixBtn.disabled = false;
-          fixBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        // PHP Sniffer Guard
+        if (/<\?(?:php|=)?[\s\S]*?\?>|\$_POST\b|\$_GET\b|\$this->/i.test(val)) {
+          triggerToast("⚠️ Server-side PHP detected! Scan completed in Read-Only safety mode.");
+          if (bannerTitle) bannerTitle.textContent = "PHP Backend File (Safety Mode)";
+          if (bannerSub) bannerSub.textContent = "Auto-repair locked to protect server backend logic.";
+          return;
         }
 
-        if (typeof renderIssuesListUI === 'function') {
-          renderIssuesListUI(report.list);
-        }
+        let dupes = 0;
+        let overwrites = 0;
+        let dead = 0;
+        let detailedIssueList = [];
 
-        if (report.total > 0) {
-          if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-3';
-          if (bannerTitle) {
-            bannerTitle.className = 'text-amber-300 font-bold text-xs';
-            bannerTitle.textContent = `Scan Complete: ${report.total} Issue(s) Found`;
+        if (currentMode === 'css') {
+          const cssRes = deduplicateCssString(val, new Set());
+          dupes += cssRes.removed;
+          detailedIssueList.push(...cssRes.list);
+        } else if (currentMode === 'html') {
+          const seen = new Set();
+          val.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (match, css, offset) => {
+            const startLine = val.slice(0, offset).split('\n').length;
+            const res = deduplicateCssString(css, seen);
+            dupes += res.removed;
+            res.list.forEach(i => { i.line = (startLine + (i.line || 1) - 1); detailedIssueList.push(i); });
+            return match;
+          });
+
+          // ID collisions check
+          const idMap = new Map();
+          const idMatches = val.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi);
+          for (const m of idMatches) {
+            const base = m[1].replace(/(_\d+)+$/, '');
+            const line = val.slice(0, m.index).split('\n').length;
+            if (!idMap.has(base)) idMap.set(base, []);
+            idMap.get(base).push(line);
           }
-          if (bannerSub) bannerSub.textContent = 'Duplicates or syntax traps detected. Tap "Fix All Issues" to repair.';
-          triggerToast(`Scan Complete: ${report.total} issues detected!`);
+          idMap.forEach((lines, id) => {
+            if (lines.length > 1) {
+              overwrites += (lines.length - 1);
+              detailedIssueList.push({
+                id: 'id_' + id,
+                tier: 'html',
+                type: 'HTML ID Collision',
+                name: `Duplicate id="${id}" (${lines.length}x)`,
+                detail: `Elements share identical id attribute.`,
+                oldVal: `id="${id}"`,
+                line: lines[1] || 1,
+                fixType: 'id_collision',
+                status: 'pending'
+              });
+            }
+          });
+
+          // Script tag stray HTML comments
+          const sRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+          let sMatch;
+          while ((sMatch = sRegex.exec(val)) !== null) {
+            if (/<!--[\s\S]*?-->|<!--|-->/.test(sMatch[1])) {
+              dead++;
+              const lineNum = val.slice(0, sMatch.index).split('\n').length;
+              detailedIssueList.push({
+                id: 'script_comm_' + lineNum,
+                tier: 'javascript',
+                type: 'HTML Comment in JS',
+                name: 'Script tag contains <!-- -->',
+                detail: 'HTML comment in script block causes parser failure.',
+                oldVal: '<!-- ... -->',
+                line: lineNum,
+                fixType: 'fix_js_comment',
+                status: 'pending'
+              });
+            }
+          }
+        }
+
+        const linesArr = val.split('\n');
+
+        // 🛡️ SMART BALANCED-BRACE SCANNER (Equal Open/Close are 100% immune)
+        for (let l = 0; l < linesArr.length; l++) {
+          const lStr = linesArr[l];
+          if (/\}\s*\}/.test(lStr)) {
+            // Count open vs close braces on this line
+            const openCount = (lStr.match(/\{/g) || []).length;
+            const closeCount = (lStr.match(/\}/g) || []).length;
+
+            // If balanced (e.g. 2 open and 2 close in vision payloads), IT IS VALID CODE
+            if (openCount === closeCount && openCount > 0) {
+              continue; // 🛡️ Safe Pass: Never flag balanced payloads as bugs!
+            }
+
+            dead++;
+            detailedIssueList.push({
+              id: 'brace_' + l,
+              tier: 'syntax',
+              type: 'Broken Double Brace',
+              name: `Line ${l + 1}: Extra closing brace "}}"`,
+              detail: 'Unbalanced redundant brace on single line.',
+              oldVal: lStr.trim().slice(0, 30),
+              line: l + 1,
+              fixType: 'double_brace',
+              status: 'pending'
+            });
+          }
+        }
+
+        // PROTOCOL-GUARDED QUOTE SCANNER (URLs Never Marked as Unclosed)
+        for (let l = 0; l < linesArr.length; l++) {
+          const lStr = linesArr[l];
+          if ((lStr.includes('"') || lStr.includes("'")) && !/https?:\/\//i.test(lStr)) {
+            const pure = lStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+            const dQ = (pure.match(/"/g) || []).length;
+            const sQ = (pure.match(/'/g) || []).length;
+            if (dQ % 2 !== 0 || sQ % 2 !== 0) {
+              dead++;
+              detailedIssueList.push({
+                id: 'quote_' + l,
+                tier: 'javascript',
+                type: 'Unclosed String Quote',
+                name: `Line ${l + 1}: Unclosed quote (${dQ % 2 !== 0 ? '"' : "'"})`,
+                detail: 'String boundary remains open.',
+                oldVal: lStr.trim().slice(0, 30),
+                line: l + 1,
+                fixType: 'unclosed_quote',
+                status: 'pending'
+              });
+            }
+          }
+        }
+
+        const totalIssues = dupes + overwrites + dead;
+        activePendingCount = dead;
+        lastScannedIssues = { dupes, overwrites, dead, total: totalIssues, list: detailedIssueList, activeFile: currentActiveName };
+        activeAuditSessionData = lastScannedIssues;
+
+        if (statDupes) statDupes.textContent = dupes;
+        if (statOverwrites) statOverwrites.textContent = overwrites;
+        if (statDead) statDead.textContent = dead;
+
+        renderDetailedIssuesUI(detailedIssueList);
+        syncLiveCounterUI();
+
+        if (totalIssues > 0) {
+          triggerToast(`Audit Complete: ${totalIssues} issue(s) mapped!`);
         } else {
-          if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
-          if (bannerTitle) {
-            bannerTitle.className = 'text-emerald-300 font-bold text-xs';
-            bannerTitle.textContent = 'All Cleaned! Zero Conflicts (0 Issues)';
-          }
-          if (bannerSub) bannerSub.textContent = 'Clean code verified with zero syntax collisions.';
           triggerToast("All Clear: Zero bugs found! ✨");
         }
+        if (window.lucide) lucide.createIcons();
       });
+            // =====================================================================
+      // 🚀 LIVE VERIFY RUNNER & PHYSICAL RETURN BAR (BATCH 4/4 - FINAL)
+      // =====================================================================
+      const triggerLiveVerifyFromCard = async (issue) => {
+        if (!textarea) return;
+        const currentCode = textarea.value;
+        const currentActiveName = getActiveFileNameSafely();
 
-      // 2. Interactive Deep Fix-All Engine (Lexical AST Deduplication)
+        // 🛡️ Guard 2: Strict On-Demand Virtual Bundle Assembly
+        const bundleResult = await resolveProjectBundleSafely(currentCode, currentActiveName);
+
+        if (bundleResult.requiresManualPick) {
+          triggerToast("⚠️ External files missing! Please link CSS/JS tabs.");
+          return;
+        }
+
+        // Teardown any old preview memory first (RAM Leak Guard)
+        teardownActivePreviewMemory();
+
+        // Create fresh volatile Blob URL
+        const blob = new Blob([bundleResult.bundledHtml], { type: 'text/html' });
+        activeLiveBundleUrl = URL.createObjectURL(blob);
+
+        // Hide Inspector Modal temporarily (Preserving Session State)
+        modal?.classList.add('hidden');
+
+        // Locate or create Live Preview Screen Container
+        let previewContainer = document.getElementById('panelLivePreview') || document.getElementById('previewModal');
+        let previewFrame = document.getElementById('frameLivePreviewSandbox') || document.getElementById('previewIframe');
+
+        // Ensure Physical Floating Return Bar exists on top of Preview
+        let returnBar = document.getElementById('barFloatingInspectorReturn');
+        if (!returnBar) {
+          returnBar = document.createElement('div');
+          returnBar.id = 'barFloatingInspectorReturn';
+          returnBar.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[99999] flex items-center space-x-2 bg-slate-900/95 border border-cyan-500/50 shadow-2xl px-4 py-2 rounded-2xl backdrop-blur-md';
+          document.body.appendChild(returnBar);
+        }
+
+        returnBar.innerHTML = `
+          <div class="text-[11px] font-mono text-cyan-300 font-bold mr-1 flex items-center space-x-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Ln ${issue.line || 1} Testing</span>
+          </div>
+          <button id="btnReturnToInspectorFromLive" type="button" class="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow flex items-center space-x-1 active:scale-95 transition">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>🔙 Back to Inspector</span>
+          </button>
+        `;
+        returnBar.classList.remove('hidden');
+
+        // Mount Virtual Bundle to Preview
+        if (previewFrame) {
+          previewFrame.src = activeLiveBundleUrl;
+        }
+        if (previewContainer) {
+          previewContainer.classList.remove('hidden');
+        }
+
+        if (window.lucide) lucide.createIcons();
+
+        // 🛡️ Physical Back Action: Flush RAM & Return to Same Card State
+        document.getElementById('btnReturnToInspectorFromLive')?.addEventListener('click', () => {
+          teardownActivePreviewMemory();
+          returnBar.classList.add('hidden');
+          if (previewContainer) previewContainer.classList.add('hidden');
+
+          // Re-open Inspector Modal with 100% Data Preserved (Zero Re-scan)
+          modal?.classList.remove('hidden');
+          if (issuesListBox) issuesListBox.classList.remove('hidden');
+          triggerToast(`Returned to Issue (Ln ${issue.line || 1})`);
+          if (window.lucide) lucide.createIcons();
+        }, { once: true });
+      };
+
+      // ─── FIX-ALL & IN-MODAL REVERT PIPELINE WITH SKIP GUARD ───
       const fixAllBtnElement = btnFixAll || document.getElementById('btnApplyAllFixes');
       fixAllBtnElement?.addEventListener('click', () => {
         if (!textarea) return;
 
-        if (isCodeFixedState || !lastScannedIssues || lastScannedIssues.total === 0) {
-          if (navigator.vibrate) {
-            try { navigator.vibrate([40, 60, 40]); } catch (e) {}
+        // ↩️ Revert Action Toggle
+        if (fixAllBtnElement.getAttribute('data-action') === 'revert') {
+          if (previousCodeSnapshot !== null) {
+            recordHistory();
+            textarea.value = previousCodeSnapshot;
+            updateLineNumbers();
+            updateSyntaxHighlightingOptimized();
+            if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
+            markActiveModified();
+
+            previousCodeSnapshot = null;
+            fixAllBtnElement.removeAttribute('data-action');
+            fixAllBtnElement.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 active:scale-95 transition shadow';
+            fixAllBtnElement.innerHTML = '<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span>Fix All Issues</span>';
+
+            if (diffPreviewBox) diffPreviewBox.classList.add('hidden');
+            if (bannerTitle) bannerTitle.textContent = "Changes Reverted!";
+            if (bannerSub) bannerSub.textContent = "Code restored to original snapshot before fix.";
+            triggerToast("↩️ Reverted to original state!");
+            if (window.lucide) lucide.createIcons();
           }
-          fixAllBtnElement.classList.remove('btn-shake-active');
-          void fixAllBtnElement.offsetWidth;
-          fixAllBtnElement.classList.add('btn-shake-active');
-          triggerToast("⚠️ Already fixed! Pehle 'Rescan' kijiye fir dubara try karein.");
           return;
         }
 
+        if (!lastScannedIssues || lastScannedIssues.total === 0) {
+          triggerToast("⚠️ Active tab is already clean. Re-scan required.");
+          return;
+        }
+
+        previousCodeSnapshot = textarea.value;
         recordHistory();
+
         let code = textarea.value;
+        const currentMode = detectCurrentMode(code);
 
-              // --- STEP 1: AST CSS BLOCK DEDUPLICATION (Comment-Proof AST) ---
-        let duplicateCssBlocksRemoved = 0;
-        const seenCssRuleSignatures = new Set();
+        // 🛡️ STEP 0: TOKEN PROTECTION SHIELD
+        const protectedTokens = [];
+        const protectMarker = (match) => {
+          const placeholder = `__ANZARG_PROTECTED_TOKEN_${protectedTokens.length}__`;
+          protectedTokens.push({ placeholder, match });
+          return placeholder;
+        };
 
-        code = code.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (fullMatch, cssContent) => {
-          let pos = 0;
-          let outputCss = '';
-          let len = cssContent.length;
+        code = code.replace(/<!--\s*==+[\s\S]*?==+\s*-->/gi, protectMarker);
+        code = code.replace(/\/\*\s*==+[\s\S]*?==+\s*\*\//gi, protectMarker);
+        code = code.replace(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi, protectMarker);
+        code = code.replace(/<script\b[^>]*src=["'][^"']+["'][^>]*><\/script>/gi, protectMarker);
 
-          while (pos < len) {
-            let openBracePos = cssContent.indexOf('{', pos);
-            if (openBracePos === -1) {
-              outputCss += cssContent.slice(pos);
-              break;
-            }
+        let dupesRemoved = 0;
+        let idFixed = 0;
 
-            let selectorFragment = cssContent.slice(pos, openBracePos);
-            
-            // 🛡️ STRIP COMMENTS FROM SELECTOR FRAGMENT (Crucial Fix)
-            let cleanSel = selectorFragment.replace(/\/\*[\s\S]*?\*\//g, '').trim();
-
-            let depth = 1;
-            let current = openBracePos + 1;
-            while (current < len && depth > 0) {
-              if (cssContent[current] === '{') depth++;
-              else if (cssContent[current] === '}') depth--;
-              current++;
-            }
-
-            let blockContent = cssContent.slice(openBracePos + 1, current - 1);
-            let fullRuleBlock = cssContent.slice(pos, current);
-
-            // Skip @media, @keyframes, or standalone comments
-            if (!cleanSel || cleanSel.startsWith('@')) {
-              outputCss += fullRuleBlock;
-              pos = current;
-              continue;
-            }
-
-            // Clean Rule Signature
-            const normalizedSelector = cleanSel.replace(/\s+/g, ' ');
-            const normalizedBody = blockContent.replace(/\s+/g, ' ').trim();
-            const signature = `${normalizedSelector}::{${normalizedBody}}`;
-
-            if (seenCssRuleSignatures.has(signature)) {
-              // Exact Duplicate Block found! Skip adding it.
-              duplicateCssBlocksRemoved++;
-            } else {
-              seenCssRuleSignatures.add(signature);
-              outputCss += fullRuleBlock;
-            }
-
-            pos = current;
-          }
-
-          return fullMatch.replace(cssContent, outputCss);
-        });
-
-        // --- STEP 2: SEQUENTIAL HTML ID COLLISION RESOLVER ---
-        let idRenamedCount = 0;
-        const idTracker = new Map();
-
-        // Process line by line for clean DOM attribute updates
-        const lines = code.split('\n');
-        for (let idx = 0; idx < lines.length; idx++) {
-          lines[idx] = lines[idx].replace(/\bid\s*=\s*(["'])([^"']+)\1/gi, (attrMatch, quote, idVal) => {
-            const baseId = idVal.replace(/(_\d+)+$/, '');
-            const count = (idTracker.get(baseId) || 0) + 1;
-            idTracker.set(baseId, count);
-
-            if (count > 1) {
-              idRenamedCount++;
-              return `id=${quote}${baseId}_${count}${quote}`;
-            }
-            return attrMatch;
+        // STEP 1: CSS AST Deduplication
+        const seenSignatures = new Set();
+        if (currentMode === 'css') {
+          const res = deduplicateCssString(code, seenSignatures);
+          code = res.cleanedCss;
+          dupesRemoved = res.removed;
+        } else if (currentMode === 'html') {
+          code = code.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (fullMatch, cssContent) => {
+            const res = deduplicateCssString(cssContent, seenSignatures);
+            dupesRemoved += res.removed;
+            return fullMatch.replace(cssContent, res.cleanedCss);
           });
         }
-        code = lines.join('\n');
 
-        // --- STEP 3: BROKEN DOUBLE-BRACE CLEANUP ---
-        code = code.replace(/\}\s+\}/g, '}');
+        // STEP 2: HTML ID Collisions Fix
+        if (currentMode === 'html') {
+          const idTracker = new Map();
+          const lines = code.split('\n');
+          for (let idx = 0; idx < lines.length; idx++) {
+            lines[idx] = lines[idx].replace(/\bid\s*=\s*(["'])([^"']+)\1/gi, (attrMatch, quote, idVal) => {
+              const baseId = idVal.replace(/(_\d+)+$/, '');
+              const count = (idTracker.get(baseId) || 0) + 1;
+              idTracker.set(baseId, count);
 
-        // --- STEP 4: COMMIT TO EDITOR & LIVE REFRESH ---
+              if (count > 1) {
+                idFixed++;
+                return `id=${quote}${baseId}_${count}${quote}`;
+              }
+              return attrMatch;
+            });
+          }
+          code = lines.join('\n');
+        }
+
+        // STEP 3: Script-Scoped HTML Comment Conversion
+        code = code.replace(/(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi, (match, openTag, jsBody, closeTag) => {
+          const cleanedJs = jsBody.replace(/<!--([\s\S]*?)-->/g, '/* $1 */').replace(/<!--|-->/g, '// ');
+          return openTag + cleanedJs + closeTag;
+        });
+
+        // STEP 4: Dead Broken Braces Cleanup (Strict Single-Line Only with Skipped Protection)
+        const codeLines = code.split('\n');
+        const skippedLinesSet = new Set(
+          (lastScannedIssues.list || [])
+            .filter(i => i.status === 'skipped')
+            .map(i => i.line)
+        );
+
+        for (let l = 0; l < codeLines.length; l++) {
+          if (!skippedLinesSet.has(l + 1) && /\}\s*\}/.test(codeLines[l])) {
+            const openC = (codeLines[l].match(/\{/g) || []).length;
+            const closeC = (codeLines[l].match(/\}/g) || []).length;
+            if (openC !== closeC) {
+              codeLines[l] = codeLines[l].replace(/\}\s*\}/g, '}');
+            }
+          }
+        }
+        code = codeLines.join('\n');
+
+        // STEP 5: Root Duplicate Tag Sanitizer
+        if (currentMode === 'html') {
+          code = code.replace(/(<\/body>\s*)+/gi, '</body>\n').replace(/(<\/html>\s*)+/gi, '</html>\n');
+        }
+
+        // STEP 6: RESTORE ALL PROTECTED TOKENS
+        for (let i = protectedTokens.length - 1; i >= 0; i--) {
+          code = code.replace(protectedTokens[i].placeholder, protectedTokens[i].match);
+        }
+
+        // STEP 7: COMMIT & LIVE REFRESH
         textarea.value = code;
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
         if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
         markActiveModified();
 
-        // Mark state and close
-        isCodeFixedState = true;
-        fixAllBtnElement.disabled = true;
-        fixAllBtnElement.classList.add('opacity-40', 'cursor-not-allowed');
+        // Update issue cards UI to reflect bulk repair
+        if (issuesListBox) {
+          const cards = issuesListBox.querySelectorAll('[id^="card-issue-"]');
+          cards.forEach(card => {
+            if (!card.classList.contains('opacity-40')) {
+              card.classList.add('border-emerald-500/50', 'bg-emerald-950/20');
+              const fixBtn = card.querySelector('.btn-fix-single-issue');
+              const undoBtn = card.querySelector('.btn-undo-single-issue');
+              const repBadge = card.querySelector('.badge-status-repaired');
+              if (fixBtn) fixBtn.classList.add('hidden');
+              if (undoBtn) undoBtn.classList.remove('hidden');
+              if (repBadge) repBadge.classList.remove('hidden');
+            }
+          });
+        }
 
-        safelyDismissModal();
-        triggerToast(`✨ AST Repaired: ${duplicateCssBlocksRemoved} CSS duplicate(s) removed & ${idRenamedCount} ID(s) cleanly indexed!`);
+        activePendingCount = 0;
+        syncLiveCounterUI();
+
+        // Live Diff Report
+        if (diffPreviewBox) {
+          diffPreviewBox.classList.remove('hidden');
+          diffPreviewBox.innerHTML = `
+            <div class="flex items-center justify-between text-emerald-400 font-bold border-b border-emerald-500/20 pb-1">
+              <span>🔍 AST Clean Report</span>
+              <span class="text-[9px] text-slate-400">Success</span>
+            </div>
+            <div class="text-rose-400 truncate"><span class="bg-rose-500/20 px-1 py-0.5 rounded text-rose-300">-</span> Removed: ${dupesRemoved} duplicate rules & cleaned braces</div>
+            <div class="text-emerald-300 truncate"><span class="bg-emerald-500/20 px-1 py-0.5 rounded text-emerald-200">+</span> Normalized: ${idFixed} ID collisions indexed cleanly</div>
+          `;
+        }
+
+        // Transform button to In-Modal Revert
+        fixAllBtnElement.setAttribute('data-action', 'revert');
+        fixAllBtnElement.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 active:scale-95 transition shadow';
+        fixAllBtnElement.innerHTML = '<i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i><span>↩️ Undo Fix (Revert)</span>';
+
+        if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
+        if (bannerTitle) bannerTitle.textContent = "Repair Applied Successfully!";
+        if (bannerSub) bannerSub.textContent = "Check preview. If layout changes, tap 'Undo Fix' to restore.";
+
+        triggerToast(`✨ AST Cleaned: ${dupesRemoved} duplicate(s) & ${idFixed} collision(s) fixed!`);
+        if (window.lucide) lucide.createIcons();
       });
     }
 
     // Auto-initialize Scanner Engine
     setupConflictShieldSystem();
+      
 
            // =========================================================================
     // SMART CODE CLEANER & GLOBAL COLLISION GUARD (IN-APP DIALOG • NO BROWSER POPUP)

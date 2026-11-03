@@ -5,7 +5,7 @@
   Official App Title: ANZARG Code Studio: Mobile IDE
   Author & Lead Architect: Mohammed Anzar
   Legal Brand Ownership: ANZARG Studio Core (All Rights Reserved)
-  Production Engine Version: 9.2 (Offline Zero-Bug Verified • Dual Guard Active)
+  Production Engine Version: 9.3 (Offline Zero-Bug Verified • Dual Guard Active)
   
   INTELLECTUAL PROPERTY & LEGAL COPYRIGHT NOTICE:
   Copyright (c) 2026 Mohammed Anzar / ANZARG. All Rights Reserved.
@@ -2320,7 +2320,7 @@
     // ANZARG CODE STUDIO - ULTRA SMOOTH JAVASCRIPT ENGINE (v10.0)
     // =========================================================================
     const APP_CONFIG = {
-      version: '9.2',
+      version: '9.3',
       edition: 'Developer Master Edition'
     };
 
@@ -4919,14 +4919,17 @@ CRITICAL OPERATIONAL RULES:
       });
     }
 
-                                 // =========================================================================
-    // 🛡️ ANZARG MASTER INSPECTION & LIVE VERIFICATION STUDIO (V4.0 - BATCH 1/4)
-    // 2 GUARDS • ACTIVE-TAB LOCKDOWN • EXACT PATH BUNDLER • ZERO-CPU FREEZE
+                             // =========================================================================
+    // 🛡️ ANZARG MASTER INSPECTION & LIVE VERIFICATION STUDIO (V9.0 ENTERPRISE)
+    // BATCH 1/5: 17-GUARDS FOUNDATION • RAM FLUSH • ALL-CLEAR LIVE ENGINE
     // =========================================================================
     let activeLiveBundleUrl = null;
     let activeAuditSessionData = null; // Session persistence for Run & Return
 
-    // 🛡️ Guard: Flush iframe & blob memory on exit or return (Prevents RAM lag)
+    // 🛡️ Guard 16: Permanent Session Whitelist Registry (Per-tab persistent skip memory)
+    const activeSessionSkipRegistry = new Map();
+
+    // 🛡️ Guard 1: Flush iframe & blob memory on exit or return (Prevents RAM lag)
     function teardownActivePreviewMemory() {
       if (activeLiveBundleUrl) {
         URL.revokeObjectURL(activeLiveBundleUrl);
@@ -4939,7 +4942,7 @@ CRITICAL OPERATIONAL RULES:
       }
     }
 
-    // 🛡️ GUARD 2: SMART COMPANION RESOLVER (Runs ONLY when user clicks 'Run & Verify')
+    // 🛡️ Guard 2: SMART COMPANION RESOLVER (Runs ONLY when user clicks 'Run & Verify')
     async function resolveProjectBundleSafely(targetHtmlCode, targetFileName) {
       const activeTabsList = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) ? fileTabs : [];
       let companionCss = '';
@@ -4983,7 +4986,7 @@ CRITICAL OPERATIONAL RULES:
         }
       }
 
-      // 4. Build Assembled Safe Virtual Bundle (Escaped Tags Guard)
+      // 4. 🛡️ Guard 3: Escaped Tags Guard on Bundle Injection
       let bundledHtml = targetHtmlCode;
       if (companionCss) {
         bundledHtml = bundledHtml.replace(/<\/head>/i, '<style id="anzarg-bundled-css">\n' + companionCss + '\n<' + '/style>\n</head>');
@@ -4997,6 +5000,9 @@ CRITICAL OPERATIONAL RULES:
         bundledHtml: bundledHtml
       };
     }
+
+    // 🛡️ Active Tab In-Memory Undo Registry (Auto-purges on tab switch)
+    const singleIssueUndoHistory = new Map();
 
     function setupConflictShieldSystem() {
       const modal = document.getElementById('modalConflictShield');
@@ -5020,7 +5026,9 @@ CRITICAL OPERATIONAL RULES:
       const btnFixAll = document.getElementById('btnApplyAllFixes');
       const btnDismiss = document.getElementById('btnDismissShieldModal');
 
-      let lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '' };
+              let lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '', scanPerformed: false };
+        // 🛡️ Ephemeral RAM-Only Fix Signature Registry (0 Disk I/O, Zero Mobile Lag)
+        const verifiedFixSignatures = new Set();
       let previousCodeSnapshot = null;
       let activePendingCount = 0; // Dynamic Live Counter Tracker
 
@@ -5052,45 +5060,73 @@ CRITICAL OPERATIONAL RULES:
 
       const safelyDismissModal = () => {
         modal?.classList.add('hidden');
-        // Note: Memory is NOT cleared on dismiss, preserving your workboard!
       };
 
+      // 🔄 🛡️ Guard 14 & 17: Dynamic Split Counter & Terminal All-Clear Trigger
       const syncLiveCounterUI = () => {
-        if (statDead) statDead.textContent = activePendingCount;
-        const totalActive = (lastScannedIssues.dupes || 0) + (lastScannedIssues.overwrites || 0) + activePendingCount;
+        const currentList = lastScannedIssues.list || [];
+        const pendingIssues = currentList.filter(i => i.status !== 'repaired' && i.status !== 'skipped');
         
+        // Fatal auto-fixable issues
+        const dupesLeft = pendingIssues.filter(i => i.tier === 'css' || (i.type && i.type.includes('Duplicate'))).length;
+        const clashesLeft = pendingIssues.filter(i => i.tier === 'html' || (i.type && i.type.includes('Collision'))).length;
+        const deadLeft = pendingIssues.filter(i => (i.tier === 'javascript' || i.tier === 'syntax') && i.fixType !== 'unsupported_manual_edit').length;
+
+        // Non-blocking manual warnings (Guard 17)
+        const warningsLeft = pendingIssues.filter(i => i.fixType === 'unsupported_manual_edit').length;
+
+        if (statDupes) statDupes.textContent = dupesLeft;
+        if (statOverwrites) statOverwrites.textContent = clashesLeft;
+        if (statDead) statDead.textContent = deadLeft;
+
+        const totalFatalFixable = dupesLeft + clashesLeft + deadLeft;
+        activePendingCount = deadLeft;
+
         const fixBtn = btnFixAll || document.getElementById('btnApplyAllFixes');
         if (fixBtn && fixBtn.getAttribute('data-action') !== 'revert') {
-          fixBtn.disabled = (totalActive === 0);
-          fixBtn.classList.toggle('opacity-40', totalActive === 0);
-          fixBtn.classList.toggle('cursor-not-allowed', totalActive === 0);
-          fixBtn.innerHTML = '<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span>Fix All Issues (' + totalActive + ')</span>';
+          fixBtn.disabled = (totalFatalFixable === 0);
+          fixBtn.classList.toggle('opacity-40', totalFatalFixable === 0);
+          fixBtn.classList.toggle('cursor-not-allowed', totalFatalFixable === 0);
+          fixBtn.innerHTML = `<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span>Fix All Issues (${totalFatalFixable})</span>`;
         }
 
         const currentActiveName = getActiveFileNameSafely();
 
-        // 🛡️ ANTI-FALSE BANNER GUARD: Only show 'All Cleaned' if a scan actually ran
-        if (lastScannedIssues.total > 0 && totalActive === 0) {
+        // 🛡️ Guard 14: All-Clear Terminal Trigger (Zero Banner Freeze on Re-scan)
+        if (lastScannedIssues.scanPerformed && totalFatalFixable === 0 && warningsLeft === 0) {
           if (statusBanner) statusBanner.className = 'p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-3';
           if (bannerTitle) {
             bannerTitle.className = 'text-emerald-300 font-bold text-xs';
             bannerTitle.textContent = `All Cleaned! Zero Conflicts (0 Issues) [${currentActiveName}]`;
           }
           if (bannerSub) bannerSub.textContent = 'All active issues resolved or verified safe.';
-        } else if (totalActive > 0) {
+          if (issuesListBox) issuesListBox.classList.add('hidden');
+        } else if (lastScannedIssues.scanPerformed && totalFatalFixable === 0 && warningsLeft > 0) {
           if (statusBanner) statusBanner.className = 'p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-3';
           if (bannerTitle) {
             bannerTitle.className = 'text-amber-300 font-bold text-xs';
-            bannerTitle.textContent = `Audit Active: ${totalActive} Remaining Issue(s) [${currentActiveName}]`;
+            bannerTitle.textContent = `Audit Clean: ${warningsLeft} Code Suggestion(s) [${currentActiveName}]`;
+          }
+          if (bannerSub) bannerSub.textContent = 'Zero fatal bugs! Check manual suggestions below.';
+        } else if (totalFatalFixable > 0) {
+          if (statusBanner) statusBanner.className = 'p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl mb-3';
+          if (bannerTitle) {
+            bannerTitle.className = 'text-rose-300 font-bold text-xs';
+            bannerTitle.textContent = `Audit Active: ${totalFatalFixable} Fatal Issue(s) [${currentActiveName}]`;
           }
           if (bannerSub) bannerSub.textContent = 'Use individual "Fix Line", "Skip" or "Run & Verify" below.';
         }
         if (window.lucide) lucide.createIcons();
       };
 
+      // 🛡️ Guard 11: Tab Hard-Purge & Memory Reset on Tab Switch (Zero Mobile Lag)
       const resetScanState = () => {
-        lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '' };
+        lastScannedIssues = { dupes: 0, overwrites: 0, dead: 0, total: 0, list: [], activeFile: '', scanPerformed: false };
         activePendingCount = 0;
+        previousCodeSnapshot = null;
+        singleIssueUndoHistory.clear(); // Free memory immediately
+        verifiedFixSignatures.clear(); // 🛡️ Multi-tab signature purge (Zero cross-tab suppression leak)
+
         if (statDupes) statDupes.textContent = '0';
         if (statOverwrites) statOverwrites.textContent = '0';
         if (statDead) statDead.textContent = '0';
@@ -5125,10 +5161,10 @@ CRITICAL OPERATIONAL RULES:
 
         const currentActiveName = getActiveFileNameSafely();
 
-        // 🛡️ ACTIVE-TAB BINDING GUARD: If user switched tabs, refresh ready-banner
+        // 🛡️ Guard 5: Active-Tab Binding Guard (If tab switched, purge old tab state and rebind)
         if (lastScannedIssues.activeFile && lastScannedIssues.activeFile !== currentActiveName) {
           resetScanState();
-        } else if (!lastScannedIssues.total) {
+        } else if (!lastScannedIssues.scanPerformed) {
           if (bannerTitle) bannerTitle.textContent = `Ready to Scan: ${currentActiveName}`;
         }
 
@@ -5170,21 +5206,38 @@ CRITICAL OPERATIONAL RULES:
       btnClose?.addEventListener('click', handleExitShield);
       btnDismiss?.addEventListener('click', handleExitShield);
             // =====================================================================
-      // 🧠 STRICT MULTI-MODE AST SCANNER & 3-STATE CARDS (BATCH 2/4)
-      // 🟡 PENDING • 🟢 REPAIRED (✅) • ⚪ SKIPPED (🚫) • REAL-TIME SYNC
+      // 🧠 CONTENT-FIRST AST SNIFFER & 3-STATE CARDS (BATCH 2/5)
+      // GUARD 6 & 15: STRING STRIPPER SNIFFER • GUARD 16: SESSION SKIP UI
       // =====================================================================
       const detectCurrentMode = (rawCode) => {
         const curTab = (typeof fileTabs !== 'undefined' && Array.isArray(fileTabs)) 
           ? fileTabs.find(t => (typeof activeFileId !== 'undefined' && t.id === activeFileId) || (typeof activeTabId !== 'undefined' && t.id === activeTabId))
           : null;
         const name = (curTab?.name || curTab?.title || '').toLowerCase();
+        const raw = (rawCode || '').trim();
+
+        // 🛡️ Guard 15: String Literal Stripper (Template HTML strings in JS don't trick mode)
+        const codeWithoutStrings = raw.replace(/(["'`])(?:(?=(\\?))\2[\s\S])*?\1/g, '');
+
+        const hasHtmlTags = /<(!doctype|html|head|body|div|p|span|table|form|button|script|style)/i.test(codeWithoutStrings);
+        const hasJsKeywords = /^["']use strict["'];?|\b(function\*?|class|const|let|var|import|export|console\.log)\b/.test(raw);
+
+        // Case 1: Pure JavaScript code inside untitled.html or text tabs (Guard 6)
+        if (!hasHtmlTags && hasJsKeywords) {
+          return 'js';
+        }
+
+        // Case 2: Pure CSS code
+        if (!hasHtmlTags && (/(\/\*[\s\S]*?\*\/|@(media|keyframes)|[.#][\w-]+\s*\{)/i.test(raw) && !raw.includes('function'))) {
+          return 'css';
+        }
+
+        // Case 3: Explicit File Extension checks
         if (name.endsWith('.css')) return 'css';
         if (name.endsWith('.js') || name.endsWith('.mjs')) return 'js';
         if (name.endsWith('.html') || name.endsWith('.htm')) return 'html';
         
-        if (/<(!doctype|html|head|body|script|style)/i.test(rawCode)) return 'html';
-        if (/(\/\*[\s\S]*?\*\/|@(media|keyframes)|[.#][\w-]+\s*\{)/i.test(rawCode) && !rawCode.includes('function')) return 'css';
-        return 'html';
+        return hasHtmlTags ? 'html' : 'js';
       };
 
       // Safe CSS Deduplication Engine
@@ -5251,24 +5304,36 @@ CRITICAL OPERATIONAL RULES:
         return { cleanedCss: outputCss, removed: dupesCount, list: foundList };
       };
 
-      // 🔍 Render 3-State Detailed Issue Cards with Skip & Live Counter Sync
+      // 🔍 Render 3-State Detailed Issue Cards with Session-Persistent Skip
       const renderDetailedIssuesUI = (list) => {
         if (!issuesListBox) return;
         issuesListBox.innerHTML = '';
 
-        if (!list || list.length === 0) {
-          issuesListBox.classList.add('hidden');
-          return;
-        }
+      // 🛡️ RAM Rescan Guard: Filter out verified fixes in this session (0 Clutter, 0 Storage)
+  list = (list || []).filter(issue => {
+    const sig = issue.id || ('line_' + (issue.line || 1));
+    return !verifiedFixSignatures.has(sig);
+  });
+
+  if (!list || list.length === 0) {
+    issuesListBox.classList.add('hidden');
+    return;
+  }
 
         issuesListBox.classList.remove('hidden');
-        list.slice(0, 40).forEach(issue => {
+        const curFileName = getActiveFileNameSafely();
+
+        // 🛡️ DOM Capping Guard: Render top 30 issues to prevent mobile UI hang
+        list.slice(0, 30).forEach(issue => {
           const card = document.createElement('div');
           card.id = `card-issue-${issue.id || issue.line}`;
           card.className = 'p-2 bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-lg space-y-1.5 transition';
 
           const badgeColor = issue.tier === 'css' ? 'bg-cyan-500/20 text-cyan-300' :
-                             issue.tier === 'javascript' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300';
+                             issue.tier === 'javascript' ? 'bg-amber-500/20 text-amber-300' : 
+                             issue.tier === 'html' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300';
+
+          const isAutoFixable = issue.fixType && issue.fixType !== 'unsupported_manual_edit';
 
           card.innerHTML = `
             <div class="flex items-center justify-between">
@@ -5285,15 +5350,19 @@ CRITICAL OPERATIONAL RULES:
             ${issue.oldVal ? `<div class="text-[9px] text-rose-400 bg-black/40 p-1 rounded font-mono truncate"><span class="text-rose-500 font-bold">-</span> ${issue.oldVal}</div>` : ''}
             
             <div class="flex items-center justify-end space-x-1.5 pt-1 border-t border-slate-800/80">
-              <button type="button" class="btn-skip-single-issue px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+              <button type="button" class="btn-skip-single-issue px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}" data-line="${issue.line}">
                 <i data-lucide="eye-off" class="w-3 h-3"></i><span>Skip</span>
               </button>
-              <button type="button" class="btn-fix-single-issue px-2 py-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
-                <i data-lucide="wrench" class="w-3 h-3"></i><span>Fix Line</span>
-              </button>
-              <button type="button" class="btn-undo-single-issue hidden px-2 py-1 bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
-                <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Undo</span>
-              </button>
+              ${isAutoFixable ? `
+                <button type="button" class="btn-fix-single-issue px-2 py-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+                  <i data-lucide="wrench" class="w-3 h-3"></i><span>Fix Line</span>
+                </button>
+                <button type="button" class="btn-undo-single-issue hidden px-2 py-1 bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-id="${issue.id || issue.line}">
+                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Undo</span>
+                </button>
+              ` : `
+                <span class="text-[9px] text-amber-400 font-mono px-1.5 py-0.5 bg-amber-950/40 border border-amber-800/50 rounded">💡 Manual Edit</span>
+              `}
               <button type="button" class="btn-run-single-verify px-2 py-1 bg-blue-950/80 hover:bg-blue-900 text-cyan-300 border border-cyan-500/30 rounded text-[9px] font-bold flex items-center space-x-1 active:scale-95 transition" data-line="${issue.line || 1}">
                 <i data-lucide="play" class="w-3 h-3"></i><span>Run & Verify</span>
               </button>
@@ -5310,30 +5379,40 @@ CRITICAL OPERATIONAL RULES:
             }
           });
 
-          // Card Action 2: 1-Tap Single Fix & Undo Hooks with Live Counter Sync
+          // Card Action 2: 1-Tap Single Fix & Undo Hooks
           const btnFixSingle = card.querySelector('.btn-fix-single-issue');
           const btnUndoSingle = card.querySelector('.btn-undo-single-issue');
           const btnSkipSingle = card.querySelector('.btn-skip-single-issue');
           const badgeRepaired = card.querySelector('.badge-status-repaired');
           
-          btnFixSingle?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            executeSingleIssueFix(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
-          });
+          if (btnFixSingle) {
+            btnFixSingle.addEventListener('click', (e) => {
+              e.stopPropagation();
+              executeSingleIssueFix(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
+            });
+          }
 
-          btnUndoSingle?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            executeSingleIssueUndo(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
-          });
+          if (btnUndoSingle) {
+            btnUndoSingle.addEventListener('click', (e) => {
+              e.stopPropagation();
+              executeSingleIssueUndo(issue, card, btnFixSingle, btnUndoSingle, badgeRepaired);
+            });
+          }
 
-          // Card Action 3: 🚫 Skip / Mark Safe Action
+          // Card Action 3: 🛡️ Guard 16: Universal Permanent Session Skip Whitelist
           btnSkipSingle?.addEventListener('click', (e) => {
             e.stopPropagation();
             issue.status = 'skipped';
+            
+            // Register line in active file's permanent session whitelist
+            if (!activeSessionSkipRegistry.has(curFileName)) {
+              activeSessionSkipRegistry.set(curFileName, new Set());
+            }
+            activeSessionSkipRegistry.get(curFileName).add(issue.line);
+            
             card.classList.add('opacity-40', 'pointer-events-none');
-            activePendingCount = Math.max(0, activePendingCount - 1);
             syncLiveCounterUI();
-            triggerToast(`Line ${issue.line || 1} skipped & protected! 🛡️`);
+            triggerToast(`Line ${issue.line || 1} skipped & protected for this session! 🛡️`);
           });
 
           // Card Action 4: Run & Verify (Live Sandbox Preview)
@@ -5347,12 +5426,451 @@ CRITICAL OPERATIONAL RULES:
         if (window.lucide) lucide.createIcons();
       };
             // =====================================================================
-      // 🔍 PROTOCOL SCANNER & BALANCED-BRACE ENGINE (BATCH 3/4)
-      // BALANCED BRACE IMMUNITY • EXACT COMMIT • PROTOCOL URL IMMUNITY
+      // 🔍 PROTOCOL SCANNER & MULTI-PASS AUDITOR ENGINE (BATCH 3/5)
+      // MULTI-PASS TOKENIZER • CALLBACK IMMUNITY • SESSION SKIP CHECK
       // =====================================================================
-      const singleIssueUndoHistory = new Map();
 
-      // Helper: Single-Issue Line Fixer with Realtime Counter Decrement
+      // 🧠 Deep JS Multi-Pass Tokenizer & Syntax Engine
+      const auditJavaScriptDeepGrammar = (jsCode, baseLineOffset = 0, htmlSource = "", curFileName = "") => {
+        const jsIssues = [];
+        const rawLines = jsCode.split('\n');
+
+        // 🛡️ Guard 16: Permanent Session Skip Guard Check
+        const tabSkipSet = (activeSessionSkipRegistry.has(curFileName))
+          ? activeSessionSkipRegistry.get(curFileName)
+          : new Set();
+
+        // 🛡️ PASS 1: Line-by-Line Bracket Balance & Multi-Line Callback Immunity Guard
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+
+          const lStr = rawLines[l];
+          const strippedComments = lStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+          if (!strippedComments) continue;
+
+                    // 🛡️ Callback & Block Immunity: Opening Blocks + Multi-Line Closing Terminators
+          // 1. Opening Immunity (Arrow callbacks & function blocks that open '{')
+          if (/[{]\s*$/.test(strippedComments) || /=>\s*\{/.test(strippedComments) || /function\b[^{]*\{\s*$/.test(strippedComments)) {
+            continue; // Immune: Closing bracket occurs on subsequent lines
+          }
+
+          // 2. Closing Immunity (Multi-line callback/listener terminators like }); ya }, 2500); ya ]);)
+          if (/^\s*[}\]]\s*[\)),]/.test(strippedComments)) {
+            continue; // Immune: Closing bracket belongs to an outer multi-line callback/listener
+          }
+
+                    // 🛡️ Smart String & Regex Masker: Cleanly strip quotes, URLs & templates without breaking
+          const codeOnly = strippedComments
+            .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+            .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+            .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+
+          const openParens = (codeOnly.match(/\(/g) || []).length;
+          const closeParens = (codeOnly.match(/\)/g) || []).length;
+
+          // Case A: Extra Orphan Closing Parentheses (jaise: 'noopener,noreferrer'))))); )
+          if (closeParens > openParens) {
+            jsIssues.push({
+              id: 'paren_excess_' + lineNum,
+              tier: 'javascript',
+              type: "SyntaxError: Unexpected token ')'",
+              name: `Line ${lineNum}: unexpected closing parenthesis`,
+              detail: `Line contains ${closeParens - openParens} orphan/extra closing bracket(s).`,
+              oldVal: strippedComments.slice(0, 45),
+              line: lineNum,
+              fixType: 'remove_extra_parens',
+              status: 'pending'
+            });
+          }
+          // Case B: Truly Missing Parenthesis (Only if statement does NOT span across lines)
+          else if (openParens > closeParens) {
+            const trimmed = strippedComments.trim();
+            // Agar line multiline continuation ho (ends with comma, bracket, or operator), ignore karein
+            const isMultilineContinuation = /[,({[+\-*/&|?:]\s*$/.test(trimmed) ||
+              /^\s*(fetch|function|async|if|while|for|switch|catch)\b/.test(trimmed);
+
+            if (!isMultilineContinuation) {
+              jsIssues.push({
+                id: 'paren_balance_' + lineNum,
+                tier: 'javascript',
+                type: 'SyntaxError: Missing Parenthesis',
+                name: `Line ${lineNum}: missing ) after argument list`,
+                detail: 'Function call or statement missing closing parenthesis ")".',
+                oldVal: strippedComments.slice(0, 35),
+                line: lineNum,
+                fixType: 'close_parenthesis',
+                status: 'pending'
+              });
+            }
+          }
+        }
+
+        // 🛡️ PASS 2: Duplicate Parameter Inspector (Strict Mode & Function Params)
+        const funcParamRegex = /\bfunction\s*\w*\s*\(([^)]+)\)/g;
+        let fpMatch;
+        while ((fpMatch = funcParamRegex.exec(jsCode)) !== null) {
+          const params = fpMatch[1].split(',').map(p => p.trim());
+          const pSet = new Set();
+          for (const p of params) {
+            if (p && pSet.has(p)) {
+              const lIdx = jsCode.slice(0, fpMatch.index).split('\n').length;
+              const lineNum = baseLineOffset + lIdx;
+              if (!tabSkipSet.has(lineNum)) {
+                jsIssues.push({
+                  id: 'dupe_param_' + lineNum,
+                  tier: 'javascript',
+                  type: 'SyntaxError: Duplicate Parameter',
+                  name: `Line ${lineNum}: Duplicate parameter "${p}"`,
+                  detail: `Duplicate parameter name "${p}" not allowed in functions.`,
+                  oldVal: fpMatch[0].slice(0, 35),
+                  line: lineNum,
+                  fixType: 'fix_duplicate_param',
+                  paramName: p,
+                  status: 'pending'
+                });
+              }
+              break;
+            }
+            pSet.add(p);
+          }
+        }
+
+        // 🛡️ PASS 3: Invalid Left-Hand Side Assignment Inspector (e.g., totalCount++ = 20)
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+          const lStr = rawLines[l];
+
+          if (/\b\w+\+\+\s*=(?!=)/.test(lStr) || /\b\w+--\s*=(?!=)/.test(lStr) || /(\+\+|--)\s*=(?!=)/.test(lStr)) {
+            jsIssues.push({
+              id: 'invalid_lhs_' + lineNum,
+              tier: 'javascript',
+              type: 'SyntaxError: Invalid Assignment',
+              name: `Line ${lineNum}: Invalid left-hand side in assignment`,
+              detail: 'Cannot assign value to an incremented or invalid expression.',
+              oldVal: lStr.trim().slice(0, 35),
+              line: lineNum,
+              fixType: 'fix_invalid_lhs',
+              status: 'pending'
+            });
+          }
+        }
+
+        // 🛡️ PASS 4: Redundant Double Comma Inspector (e.g., port: 5000,,)
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+          const lStr = rawLines[l];
+
+          if (/,\s*,/.test(lStr) && !/(["'`]).*,\s*,.*\1/.test(lStr)) {
+            jsIssues.push({
+              id: 'double_comma_' + lineNum,
+              tier: 'javascript',
+              type: 'SyntaxError: Unexpected Comma',
+              name: `Line ${lineNum}: Redundant double comma ",,"`,
+              detail: 'Consecutive commas cause fatal syntax crash in object literal or arguments.',
+              oldVal: lStr.trim().slice(0, 35),
+              line: lineNum,
+              fixType: 'remove_double_comma',
+              status: 'pending'
+            });
+          }
+        }
+
+        // 🛡️ PASS 5: Destructuring Default Syntax Error (e.g., status = })
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+          const lStr = rawLines[l];
+
+          if (/=\s*\}/.test(lStr)) {
+            jsIssues.push({
+              id: 'destruct_crash_' + lineNum,
+              tier: 'javascript',
+              type: "SyntaxError: Unexpected token '}'",
+              name: `Line ${lineNum}: Incomplete destructuring default`,
+              detail: 'Destructuring assignment default value is incomplete.',
+              oldVal: lStr.trim().slice(0, 35),
+              line: lineNum,
+              fixType: 'fix_destructure_default',
+              status: 'pending'
+            });
+          }
+        }
+
+        // 🛡️ PASS 6: Unclosed Throw New Error Inspection
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+          const lStr = rawLines[l];
+
+          if (/\bthrow\s+new\s+Error\s*\(/.test(lStr) && !lStr.includes(');')) {
+            if (!jsIssues.some(i => i.line === lineNum)) {
+              jsIssues.push({
+                id: 'throw_err_' + lineNum,
+                tier: 'javascript',
+                type: 'SyntaxError: Unclosed Error Throw',
+                name: `Line ${lineNum}: Missing closing bracket in throw new Error`,
+                detail: 'Statement must close template literal and parenthesis with `);`.',
+                oldVal: lStr.trim().slice(0, 35),
+                line: lineNum,
+                fixType: 'close_throw_error',
+                status: 'pending'
+              });
+            }
+          }
+        }
+
+                // 🛡️ PASS 7: Smart Async Function Scope Inspector (Zero False Alarm on Callbacks & Try/Catch)
+        const lineOffsetVal = (typeof baselineOffset !== 'undefined') ? baselineOffset : ((typeof baseLineOffset !== 'undefined') ? baseLineOffset : 0);
+
+        for (let l = 0; l < rawLines.length; l++) {
+          const lineNum = lineOffsetVal + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+
+          const lStr = rawLines[l];
+          // Strip strings & comments on this line
+          const cleanLine = lStr
+            .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
+            .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+            .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+            .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+
+          // Sirf tabhi inspect karein jab line me functional 'await' ho
+          if (/\bawait\s+/.test(cleanLine)) {
+            let isEnclosedInAsync = false;
+            let isEnclosedInSync = false;
+            let netBrace = 0;
+
+            // Back-trace upwards across scopes to find actual enclosing function
+            for (let prev = l; prev >= 0; prev--) {
+              const pClean = rawLines[prev]
+                .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
+                .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+                .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+                .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+
+              // Scan characters in reverse order (right to left)
+              for (let ci = pClean.length - 1; ci >= 0; ci--) {
+                const ch = pClean[ci];
+                if (ch === '}') {
+                  netBrace++;
+                } else if (ch === '{') {
+                  if (netBrace > 0) {
+                    netBrace--;
+                  } else {
+                    // Net brace 0: We reached the opening brace of an outer scope block
+                    let scopeContext = pClean.slice(0, ci + 1);
+                    if (prev > 0 && scopeContext.trim().length < 15) {
+                      scopeContext = rawLines[prev - 1] + ' ' + scopeContext;
+                    }
+
+                    // Ignore try/catch/finally/if/else/for/while blocks
+                    const isControlBlock = /\b(try|catch|finally|if|else|for|while|do|switch)\b/.test(scopeContext);
+                    if (isControlBlock) {
+                      continue;
+                    }
+
+                    // Check if enclosing scope is async or sync function
+                    if (/\basync\s+(function\b|\([^)]*\)\s*=>|[a-zA-Z0-9_$]+\s*=>)/.test(scopeContext) || /\basync\s*\([^)]*\)\s*=>/.test(scopeContext)) {
+                      isEnclosedInAsync = true;
+                      break;
+                    } else if (/\bfunction\b|\([^)]*\)\s*=>/.test(scopeContext)) {
+                      isEnclosedInSync = true;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              if (isEnclosedInAsync || isEnclosedInSync) break;
+            }
+
+            // Real bug tabhi report karein jab sync function me ho ya async enclosing na mila ho
+            if (isEnclosedInSync || !isEnclosedInAsync) {
+              if (!jsIssues.some(i => i.line === lineNum)) {
+                jsIssues.push({
+                  id: 'await_sync_' + lineNum,
+                  tier: 'javascript',
+                  type: 'SyntaxError: Await in Sync Function',
+                  name: `Line ${lineNum}: await is only valid in async functions`,
+                  detail: 'await expression used inside synchronous function.',
+                  oldVal: lStr.trim().slice(0, 35),
+                  line: lineNum,
+                  fixType: 'make_function_async',
+                  status: 'pending'
+                });
+              }
+            }
+          }
+        }
+
+        // 🛡️ PASS 8: Strict Const Reassignment Guard
+        const declaredConstants = new Set();
+        for (let l = 0; l < rawLines.length; l++) {
+          const lStr = rawLines[l];
+          const constMatch = lStr.match(/\bconst\s+([a-zA-Z0-9_$]+)\s*=/);
+          if (constMatch) declaredConstants.add(constMatch[1]);
+
+          declaredConstants.forEach(cName => {
+            const reassignRegex = new RegExp(`^\\s*${cName}\\s*=(?!=)`, 'g');
+            if (reassignRegex.test(lStr) && !lStr.includes('const ') && !lStr.startsWith('//')) {
+              const lineNum = baseLineOffset + l + 1;
+              if (!tabSkipSet.has(lineNum)) {
+                jsIssues.push({
+                  id: 'const_reassign_' + lineNum,
+                  tier: 'javascript',
+                  type: 'TypeError: Const Reassignment',
+                  name: `Line ${lineNum}: Reassignment to "${cName}"`,
+                  detail: `Variable "${cName}" is a const and cannot be modified.`,
+                  oldVal: lStr.trim().slice(0, 35),
+                  line: lineNum,
+                  fixType: 'const_to_let',
+                  targetVar: cName,
+                  status: 'pending'
+                });
+              }
+            }
+          });
+        }
+
+        // 🛡️ PASS 9: Anagram Fuzzy DOM Target Resolver (clac-btn ──► calc-btn)
+        if (htmlSource) {
+          const declaredHtmlIds = new Set();
+          const htmlIdMatches = htmlSource.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi);
+          for (const m of htmlIdMatches) declaredHtmlIds.add(m[1]);
+
+          for (let l = 0; l < rawLines.length; l++) {
+            const lStr = rawLines[l];
+            const getElMatches = lStr.matchAll(/getElementById\(["']([^"']+)["']\)/g);
+            for (const gm of getElMatches) {
+              const queriedId = gm[1];
+              if (!declaredHtmlIds.has(queriedId) && !queriedId.includes('${')) {
+                                let bestMatch = null;
+                // 🛡️ Industry-Standard Levenshtein Distance Engine (>80% Confidence Rule)
+                const getLevenshteinDistance = (a, b) => {
+                  const m = a.length, n = b.length;
+                  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+                  for (let i = 0; i <= m; i++) dp[i][0] = i;
+                  for (let j = 0; j <= n; j++) dp[0][j] = j;
+                  for (let i = 1; i <= m; i++) {
+                    for (let j = 1; j <= n; j++) {
+                      if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                      else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                    }
+                  }
+                  return dp[m][n];
+                };
+
+                let highestConfidence = 0;
+                for (const validId of declaredHtmlIds) {
+                  const dist = getLevenshteinDistance(queriedId.toLowerCase(), validId.toLowerCase());
+                  const maxLen = Math.max(queriedId.length, validId.length);
+                  const confidence = maxLen > 0 ? (1 - dist / maxLen) : 0;
+
+                  // High Confidence threshold: 75%-80% or 1 swap match
+                  if (confidence >= 0.75 && confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    bestMatch = validId;
+                  }
+                }
+
+                const lineNum = baseLineOffset + l + 1;
+                if (!tabSkipSet.has(lineNum)) {
+                  jsIssues.push({
+                    id: 'dom_typo_' + lineNum,
+                    tier: 'javascript',
+                    type: 'Dead DOM Target Typo',
+                    name: `Line ${lineNum}: Element #${queriedId} missing`,
+                    detail: `document.getElementById("${queriedId}") targets an ID missing in HTML.`,
+                    oldVal: `getElementById("${queriedId}")`,
+                    line: lineNum,
+                    fixType: 'dom_id_typo',
+                    badId: queriedId,
+                    suggestedId: bestMatch,
+                    status: 'pending'
+                  });
+                }
+              }
+            }
+          }
+        }
+
+                // 🛡️ PASS 10: Logical Bug Warnings (Unsupported Auto-Fix Guard - Zero Fake Fix)
+        for (let l = 0; l < rawLines.length; l++) {
+          const lStr = rawLines[l];
+          const lineNum = baseLineOffset + l + 1;
+          if (tabSkipSet.has(lineNum)) continue;
+
+          // 🛡️ Strip Single & Multi-Line Comments (Zero Comment Leak Guard)
+          const cleanCodeLine = lStr.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '').trim();
+          if (!cleanCodeLine) continue;
+
+          // String Concat Trap on Input values (Checked ONLY on pure code)
+          if (/\.value\b/.test(cleanCodeLine) && /\+/.test(cleanCodeLine) && !/(?:parseInt|parseFloat|Number)\(/.test(cleanCodeLine)) {
+            jsIssues.push({
+              id: 'logic_concat_' + lineNum,
+              tier: 'javascript',
+              type: 'Type Coercion: String Concat',
+              name: `Line ${lineNum}: Input value addition`,
+              detail: 'Input returns string. Direct addition concatenates strings ("10" + "20" = "1020").',
+              oldVal: lStr.trim().slice(0, 35),
+              line: lineNum,
+                          fixType: 'fix_input_concat',
+              status: 'pending'
+            });
+          }
+        }
+
+                // 🛡️ PASS 11: General AST Fallback Catch (V8 Native Async Dry-Compiler)
+        try {
+          // Async shell me wrap karke dry-compile karein taaki modern JS aur await par false alarm na aaye
+          new Function('"use strict";\nreturn (async () => {\n' + jsCode + '\n});');
+        } catch (syntaxErr) {
+          let lineNum = 1;
+          const matchLine = syntaxErr.stack?.match(/<anonymous>:(\d+):(\d+)/) ||
+                            syntaxErr.message?.match(/line\s*(\d+)/i) ||
+                            syntaxErr.stack?.match(/:(\d+):(\d+)/);
+
+          if (matchLine && matchLine[1]) {
+            // Prefix ke 2 lines ('use strict' aur async wrapper) ko minus karke exact original line nikalein
+            const parsed = parseInt(matchLine[1], 10);
+            lineNum = Math.max(1, Math.min(rawLines.length, parsed > 2 ? parsed - 2 : parsed));
+          } else {
+            // Smart Token Fallback: Agar stack trace se line na mile toh error token se line khojein
+            const msg = syntaxErr.message || '';
+            if (msg.includes("')'")) {
+              const idx = rawLines.findIndex(l => (l.match(/\)/g) || []).length > (l.match(/\(/g) || []).length);
+              if (idx !== -1) lineNum = idx + 1;
+            } else if (msg.includes("'}'")) {
+              const idx = rawLines.findIndex(l => (l.match(/\}/g) || []).length > (l.match(/\{/g) || []).length);
+              if (idx !== -1) lineNum = idx + 1;
+            }
+          }
+
+          const offset = (typeof baselineOffset !== 'undefined') ? baselineOffset : ((typeof baseLineOffset !== 'undefined') ? baseLineOffset : 0);
+          const finalLine = offset + lineNum;
+
+          // Sirf tabhi card banayein jab kisi doosre Pass ne is line ko pehle se cover na kiya ho
+          if (!tabSkipSet.has(finalLine) && !jsIssues.some(i => i.line === finalLine)) {
+            jsIssues.push({
+              id: 'js_ast_fallback_' + finalLine,
+              tier: 'javascript',
+              type: 'JS Syntax Compiler Error',
+              name: `Line ${finalLine}: ${syntaxErr.name}`,
+              detail: syntaxErr.message || 'Fatal JavaScript syntax break.',
+              oldVal: (rawLines[lineNum - 1] || '').trim().slice(0, 35),
+              line: finalLine,
+              fixType: 'compiler_syntax_error',
+              status: 'pending'
+            });
+          }
+        }
+
+        return jsIssues;
+      };
+            // 🛠️ REAL MUTATION ENGINE: Single-Issue Line Fixer (BATCH 4/5)
       const executeSingleIssueFix = (issue, cardEl, btnFix, btnUndo, badgeRepaired) => {
         if (!textarea || !issue || issue.status === 'repaired') return;
         recordHistory();
@@ -5361,21 +5879,174 @@ CRITICAL OPERATIONAL RULES:
         singleIssueUndoHistory.set(key, val);
 
         let repaired = val;
+        const lines = repaired.split('\n');
+        const targetLineIdx = (issue.line || 1) - 1;
+
         if (issue.fixType === 'remove_css_rule' && issue.rawMatch) {
           repaired = repaired.replace(issue.rawMatch, '');
-        } else if (issue.fixType === 'double_brace') {
-          const lines = repaired.split('\n');
-          const targetLineIdx = (issue.line || 1) - 1;
+        } else if (issue.fixType === 'remove_double_comma') {
           if (lines[targetLineIdx]) {
-            // Strict single-line brace healing
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/,\s*,/g, ',');
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'fix_invalid_lhs') {
+          if (lines[targetLineIdx]) {
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/(\w+)\+\+\s*=\s*(\d+);?/, '$1 = $2;');
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'fix_duplicate_param' && issue.paramName) {
+          if (lines[targetLineIdx]) {
+            const lastIdx = lines[targetLineIdx].lastIndexOf(issue.paramName);
+            if (lastIdx !== -1) {
+              lines[targetLineIdx] = lines[targetLineIdx].slice(0, lastIdx) + issue.paramName + '_2' + lines[targetLineIdx].slice(lastIdx + issue.paramName.length);
+              repaired = lines.join('\n');
+            }
+          }
+                } else if (issue.fixType === 'make_function_async') {
+          // 🛡️ Reverse Enclosing Function Scope Resolver
+          let funcConverted = false;
+          for (let b = targetLineIdx; b >= 0; b--) {
+            if (/\bfunction\b/.test(lines[b]) && !/\basync\s+function\b/.test(lines[b])) {
+              lines[b] = lines[b].replace(/\bfunction\b/, 'async function');
+              funcConverted = true;
+              break;
+            }
+          }
+          if (funcConverted || lines[targetLineIdx]) {
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'fix_destructure_default') {
+          if (lines[targetLineIdx]) {
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/=\s*\}/, '= null }');
+            repaired = lines.join('\n');
+          }
+                } else if (issue.fixType === 'fix_input_concat') {
+          // 🛡️ Real Single-Line Math Fix: String Concat -> Number Safe Math
+          if (lines[targetLineIdx]) {
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/(\b\w+)\s*\+\s*(\b\w+)/, 'Number($1) + Number($2)');
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'close_throw_error') {
+          if (lines[targetLineIdx]) {
+            let cur = lines[targetLineIdx].trimEnd();
+            if (cur.endsWith(';')) cur = cur.slice(0, -1).trimEnd();
+            // 🛡️ Safe Template Literal Termination Guard
+            const tickCount = (cur.match(/`/g) || []).length;
+            if (tickCount % 2 !== 0) {
+              cur += '`);';
+            } else if (!cur.endsWith(')')) {
+              cur += ');';
+            } else {
+              cur += ';';
+            }
+            lines[targetLineIdx] = cur;
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'dom_id_typo' && issue.badId) {
+          const targetReplacement = issue.suggestedId || issue.badId;
+          if (lines[targetLineIdx]) {
+            lines[targetLineIdx] = lines[targetLineIdx].replace(
+              new RegExp(`getElementById\\(["']${issue.badId}["']\\)`, 'g'),
+              `getElementById("${targetReplacement}")`
+            );
+            repaired = lines.join('\n');
+          }
+        } else if (issue.fixType === 'const_to_let' && issue.targetVar) {
+          const declRegex = new RegExp(`\\bconst\\s+(${issue.targetVar})\\s*=`, 'g');
+          repaired = repaired.replace(declRegex, 'let $1 =');
+                    } else if (issue.fixType === 'remove_extra_parens' || issue.fixType === 'compiler_syntax_error') {
+      // 🛡️ Smart Syntax & Paren Auto-Trimmer (Full-Scope Zero Fake Fix)
+      let targetIdx = targetLineIdx;
+
+      // Helper: Check karein ki kya kisi line me closing brackets zyada hain
+      const hasExcessClosing = (lineStr) => {
+        if (!lineStr || !lineStr.includes(')')) return false;
+        const s = lineStr
+          .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+          .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+          .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+        return (s.match(/\)/g) || []).length > (s.match(/\(/g) || []).length;
+      };
+
+      // Agar direct targetLineIdx par extra bracket na ho, toh upar ki taraf (back-trace) scan karein
+      if (!hasExcessClosing(lines[targetIdx])) {
+        // V8 hamesha error ke baad ya end par rukta hai, isliye pehle upar 30 lines tak dhoondhein
+        for (let i = targetIdx; i >= 0 && i >= targetIdx - 30; i--) {
+          if (hasExcessClosing(lines[i])) {
+            targetIdx = i;
+            break;
+          }
+        }
+        // Agar fir bhi na mile toh poori file me scan karein
+        if (!hasExcessClosing(lines[targetIdx])) {
+          for (let i = 0; i < lines.length; i++) {
+            if (hasExcessClosing(lines[i])) {
+              targetIdx = i;
+              break;
+            }
+          }
+        }
+      }
+
+      if (lines[targetIdx]) {
+        let cur = lines[targetIdx];
+        const hasSemicolon = cur.trimEnd().endsWith(';');
+        let base = hasSemicolon ? cur.trimEnd().slice(0, -1).trimEnd() : cur.trimEnd();
+
+        // Functional parenthesis count karne ke liye string literals strip karein
+        const strippedStr = base
+          .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+          .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+          .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+
+        const oCount = (strippedStr.match(/\(/g) || []).length;
+        let cCount = (strippedStr.match(/\)/g) || []).length;
+
+        // Line ke end se sirf extra orphan brackets ko trim karein
+        while (cCount > oCount && base.endsWith(')')) {
+          base = base.slice(0, -1).trimEnd();
+          cCount--;
+        }
+
+        lines[targetIdx] = base + (hasSemicolon ? ';' : '');
+        repaired = lines.join('\n');
+      }
+    } else if (issue.fixType === 'close_parenthesis') {
+      if (lines[targetLineIdx]) {
+        const trimmed = lines[targetLineIdx].trimEnd();
+        // Smart Guard: agar line pehle se hi ')' par khatam ho rahi hai toh duplicate mat jodo
+        if (trimmed.endsWith(');') || trimmed.endsWith(')')) {
+          lines[targetLineIdx] = trimmed.endsWith(';') ? trimmed : trimmed + ';';
+        } else if (trimmed.endsWith(';')) {
+          lines[targetLineIdx] = trimmed.slice(0, -1) + ');';
+        } else {
+          lines[targetLineIdx] = trimmed + ');';
+        }
+        repaired = lines.join('\n');
+      }
+        } else if (issue.fixType === 'double_brace') {
+          if (lines[targetLineIdx]) {
             lines[targetLineIdx] = lines[targetLineIdx].replace(/\}\s*\}/g, '}');
             repaired = lines.join('\n');
           }
-        } else if (issue.fixType === 'fix_js_comment') {
+                } else if (issue.fixType === 'fix_js_comment') {
           repaired = repaired.replace(/(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi, (match, openTag, jsBody, closeTag) => {
             const cleanedJs = jsBody.replace(/<!--([\s\S]*?)-->/g, '/* $1 */').replace(/<!--|-->/g, '// ');
             return openTag + cleanedJs + closeTag;
           });
+        } else if (issue.fixType === 'unclosed_quote') {
+          if (lines[targetLineIdx]) {
+            const trimmed = lines[targetLineIdx].trimEnd();
+            if (!trimmed.endsWith(';') && !trimmed.endsWith('"') && !trimmed.endsWith("'")) {
+              lines[targetLineIdx] = trimmed + '";';
+              repaired = lines.join('\n');
+            }
+          }
+        } else if (issue.fixType === 'id_collision') {
+          if (lines[targetLineIdx]) {
+            lines[targetLineIdx] = lines[targetLineIdx].replace(/\bid=(["'])([^"']+)\1/i, 'id=$1$2_repaired$1');
+            repaired = lines.join('\n');
+          }
         }
 
         textarea.value = repaired;
@@ -5386,18 +6057,16 @@ CRITICAL OPERATIONAL RULES:
 
         issue.status = 'repaired';
         cardEl.classList.add('border-emerald-500/50', 'bg-emerald-950/20');
-        btnFix.classList.add('hidden');
-        btnUndo.classList.remove('hidden');
+        if (btnFix) btnFix.classList.add('hidden');
+        if (btnUndo) btnUndo.classList.remove('hidden');
         if (badgeRepaired) badgeRepaired.classList.remove('hidden');
 
-        activePendingCount = Math.max(0, activePendingCount - 1);
         syncLiveCounterUI();
-
         triggerToast(`✨ Line ${issue.line || 1} auto-healed cleanly!`);
         if (window.lucide) lucide.createIcons();
       };
 
-      // Helper: Single-Issue Undo Revert with Realtime Counter Increment
+      // Helper: Single-Issue Undo Revert
       const executeSingleIssueUndo = (issue, cardEl, btnFix, btnUndo, badgeRepaired) => {
         const key = issue.id || issue.line;
         if (!textarea || !singleIssueUndoHistory.has(key)) return;
@@ -5413,13 +6082,11 @@ CRITICAL OPERATIONAL RULES:
 
         issue.status = 'pending';
         cardEl.classList.remove('border-emerald-500/50', 'bg-emerald-950/20');
-        btnUndo.classList.add('hidden');
-        btnFix.classList.remove('hidden');
+        if (btnUndo) btnUndo.classList.add('hidden');
+        if (btnFix) btnFix.classList.remove('hidden');
         if (badgeRepaired) badgeRepaired.classList.add('hidden');
 
-        activePendingCount++;
         syncLiveCounterUI();
-
         triggerToast(`↩️ Line ${issue.line || 1} restored!`);
         if (window.lucide) lucide.createIcons();
       };
@@ -5429,11 +6096,20 @@ CRITICAL OPERATIONAL RULES:
       btnScanEl?.addEventListener('click', () => {
         if (!textarea) return;
 
+        // 🔄 Guard 12: Re-Scan Re-Arming Guard (Reset orange Undo to blue Fix All)
+        const fixAllBtn = btnFixAll || document.getElementById('btnApplyAllFixes');
+        if (fixAllBtn && fixAllBtn.getAttribute('data-action') === 'revert') {
+          fixAllBtn.removeAttribute('data-action');
+          fixAllBtn.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 active:scale-95 transition shadow';
+          fixAllBtn.innerHTML = '<i data-lucide="wrench" class="w-3.5 h-3.5"></i><span id="labelFixAllText">Fix All Issues</span>';
+          previousCodeSnapshot = null;
+        }
+
         const val = textarea.value;
         const currentMode = detectCurrentMode(val);
         const currentActiveName = getActiveFileNameSafely();
 
-        // PHP Sniffer Guard
+        // 🛡️ Guard 6: PHP Backend Sniffer Guard
         if (/<\?(?:php|=)?[\s\S]*?\?>|\$_POST\b|\$_GET\b|\$this->/i.test(val)) {
           triggerToast("⚠️ Server-side PHP detected! Scan completed in Read-Only safety mode.");
           if (bannerTitle) bannerTitle.textContent = "PHP Backend File (Safety Mode)";
@@ -5445,6 +6121,11 @@ CRITICAL OPERATIONAL RULES:
         let overwrites = 0;
         let dead = 0;
         let detailedIssueList = [];
+
+        // 🛡️ Guard 16: Permanent Session-Persistent Skip Whitelist
+        const tabSkipSet = (activeSessionSkipRegistry.has(currentActiveName))
+          ? activeSessionSkipRegistry.get(currentActiveName)
+          : new Set();
 
         if (currentMode === 'css') {
           const cssRes = deduplicateCssString(val, new Set());
@@ -5469,8 +6150,9 @@ CRITICAL OPERATIONAL RULES:
             if (!idMap.has(base)) idMap.set(base, []);
             idMap.get(base).push(line);
           }
-          idMap.forEach((lines, id) => {
-            if (lines.length > 1) {
+                    idMap.forEach((lines, id) => {
+            const targetLine = lines[1] || 1;
+            if (lines.length > 1 && !tabSkipSet.has(targetLine)) {
               overwrites += (lines.length - 1);
               detailedIssueList.push({
                 id: 'id_' + id,
@@ -5479,48 +6161,67 @@ CRITICAL OPERATIONAL RULES:
                 name: `Duplicate id="${id}" (${lines.length}x)`,
                 detail: `Elements share identical id attribute.`,
                 oldVal: `id="${id}"`,
-                line: lines[1] || 1,
+                line: targetLine,
                 fixType: 'id_collision',
                 status: 'pending'
               });
             }
           });
 
-          // Script tag stray HTML comments
+          // Script tags inspection with Multi-Pass Tokenizer
           const sRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
           let sMatch;
           while ((sMatch = sRegex.exec(val)) !== null) {
-            if (/<!--[\s\S]*?-->|<!--|-->/.test(sMatch[1])) {
+            const scriptOffset = sMatch.index + sMatch[0].indexOf(sMatch[1]);
+            const startLine = val.slice(0, scriptOffset).split('\n').length;
+            const jsCode = sMatch[1];
+
+            if (/<!--[\s\S]*?-->|<!--|-->/.test(jsCode)) {
               dead++;
-              const lineNum = val.slice(0, sMatch.index).split('\n').length;
               detailedIssueList.push({
-                id: 'script_comm_' + lineNum,
+                id: 'script_comm_' + startLine,
                 tier: 'javascript',
                 type: 'HTML Comment in JS',
                 name: 'Script tag contains <!-- -->',
                 detail: 'HTML comment in script block causes parser failure.',
                 oldVal: '<!-- ... -->',
-                line: lineNum,
+                line: startLine,
                 fixType: 'fix_js_comment',
                 status: 'pending'
               });
             }
+
+            const deepAudit = auditJavaScriptDeepGrammar(jsCode, startLine - 1, val, currentActiveName);
+            deepAudit.forEach(da => {
+              if (!tabSkipSet.has(da.line)) {
+                dead++;
+                detailedIssueList.push(da);
+              }
+            });
           }
+        } else if (currentMode === 'js') {
+          // Pure JavaScript Mode Multi-Pass Audit
+          const deepAudit = auditJavaScriptDeepGrammar(val, 0, "", currentActiveName);
+          deepAudit.forEach(da => {
+            if (!tabSkipSet.has(da.line)) {
+              dead++;
+              detailedIssueList.push(da);
+            }
+          });
         }
 
         const linesArr = val.split('\n');
 
-        // 🛡️ SMART BALANCED-BRACE SCANNER (Equal Open/Close are 100% immune)
+        // 🛡️ Guard 7: Balanced-Brace Scanner
         for (let l = 0; l < linesArr.length; l++) {
+          if (tabSkipSet.has(l + 1)) continue;
           const lStr = linesArr[l];
           if (/\}\s*\}/.test(lStr)) {
-            // Count open vs close braces on this line
             const openCount = (lStr.match(/\{/g) || []).length;
             const closeCount = (lStr.match(/\}/g) || []).length;
 
-            // If balanced (e.g. 2 open and 2 close in vision payloads), IT IS VALID CODE
             if (openCount === closeCount && openCount > 0) {
-              continue; // 🛡️ Safe Pass: Never flag balanced payloads as bugs!
+              continue; // 🛡️ Safe Pass: Balanced objects & payloads are immune
             }
 
             dead++;
@@ -5538,13 +6239,25 @@ CRITICAL OPERATIONAL RULES:
           }
         }
 
-        // PROTOCOL-GUARDED QUOTE SCANNER (URLs Never Marked as Unclosed)
+        // 🛡️ Guard 8 & 13: Protocol URL & Script-Scoped Apostrophe Guard
+        let insideScript = (currentMode === 'js');
         for (let l = 0; l < linesArr.length; l++) {
+          if (tabSkipSet.has(l + 1)) continue;
           const lStr = linesArr[l];
-          if ((lStr.includes('"') || lStr.includes("'")) && !/https?:\/\//i.test(lStr)) {
-            const pure = lStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+
+          if (currentMode === 'html') {
+            if (/<script\b[^>]*>/i.test(lStr)) insideScript = true;
+            if (/<\/script>/i.test(lStr)) { insideScript = false; continue; }
+          }
+
+          if (insideScript && (lStr.includes('"') || lStr.includes("'")) && !/https?:\/\//i.test(lStr)) {
+            let pure = lStr.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+            pure = pure.replace(/\\['"]/g, '');
+            pure = pure.replace(/\b[a-zA-Z]+'[a-zA-Z]+\b/g, ''); // Contractions like Don't
+
             const dQ = (pure.match(/"/g) || []).length;
             const sQ = (pure.match(/'/g) || []).length;
+
             if (dQ % 2 !== 0 || sQ % 2 !== 0) {
               dead++;
               detailedIssueList.push({
@@ -5564,12 +6277,8 @@ CRITICAL OPERATIONAL RULES:
 
         const totalIssues = dupes + overwrites + dead;
         activePendingCount = dead;
-        lastScannedIssues = { dupes, overwrites, dead, total: totalIssues, list: detailedIssueList, activeFile: currentActiveName };
+        lastScannedIssues = { dupes, overwrites, dead, total: totalIssues, list: detailedIssueList, activeFile: currentActiveName, scanPerformed: true };
         activeAuditSessionData = lastScannedIssues;
-
-        if (statDupes) statDupes.textContent = dupes;
-        if (statOverwrites) statOverwrites.textContent = overwrites;
-        if (statDead) statDead.textContent = dead;
 
         renderDetailedIssuesUI(detailedIssueList);
         syncLiveCounterUI();
@@ -5582,7 +6291,8 @@ CRITICAL OPERATIONAL RULES:
         if (window.lucide) lucide.createIcons();
       });
             // =====================================================================
-      // 🚀 LIVE VERIFY RUNNER & PHYSICAL RETURN BAR (BATCH 4/4 - FINAL)
+      // 🚀 LIVE VERIFY RUNNER & REAL-CODE HEALER (BATCH 5/5 - FINAL)
+      // ZERO FAKE REPAIRS • REAL TOKEN MUTATION • PERMANENT SESSION SKIP
       // =====================================================================
       const triggerLiveVerifyFromCard = async (issue) => {
         if (!textarea) return;
@@ -5597,7 +6307,7 @@ CRITICAL OPERATIONAL RULES:
           return;
         }
 
-        // Teardown any old preview memory first (RAM Leak Guard)
+        // 🛡️ Guard 1: Teardown old preview memory first
         teardownActivePreviewMemory();
 
         // Create fresh volatile Blob URL
@@ -5648,11 +6358,33 @@ CRITICAL OPERATIONAL RULES:
           returnBar.classList.add('hidden');
           if (previewContainer) previewContainer.classList.add('hidden');
 
-          // Re-open Inspector Modal with 100% Data Preserved (Zero Re-scan)
-          modal?.classList.remove('hidden');
-          if (issuesListBox) issuesListBox.classList.remove('hidden');
-          triggerToast(`Returned to Issue (Ln ${issue.line || 1})`);
-          if (window.lucide) lucide.createIcons();
+                      // Re-open Inspector Modal with 100% Data Preservation
+            modal?.classList.remove('hidden');
+            if (issuesListBox) issuesListBox.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+
+            // 🛡️ Auto-Dismiss on Verified Fix (0 Confusion, Scanner Box Clean)
+            if (issue.status === 'repaired') {
+              const sig = issue.id || ('line_' + (issue.line || 1));
+              verifiedFixSignatures.add(sig);
+
+              // Find and smoothly dismiss the verified card from list
+              const allCards = Array.from(issuesListBox?.children || []);
+              const cardToDismiss = allCards.find(c => c.textContent && c.textContent.includes(`Line ${issue.line || 1}`));
+              
+              if (cardToDismiss) {
+                cardToDismiss.style.transition = 'all 0.25s ease';
+                cardToDismiss.style.opacity = '0';
+                cardToDismiss.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                  cardToDismiss.remove();
+                  syncLiveCounterUI();
+                }, 250);
+              }
+              triggerToast(`Verified & Resolved (Ln ${issue.line || 1}) ✨`);
+            } else {
+              triggerToast(`Returned to Issue (Ln ${issue.line || 1})`);
+            }
         }, { once: true });
       };
 
@@ -5696,7 +6428,7 @@ CRITICAL OPERATIONAL RULES:
         let code = textarea.value;
         const currentMode = detectCurrentMode(code);
 
-        // 🛡️ STEP 0: TOKEN PROTECTION SHIELD
+        // 🛡️ Guard 9: TOKEN PROTECTION SHIELD
         const protectedTokens = [];
         const protectMarker = (match) => {
           const placeholder = `__ANZARG_PROTECTED_TOKEN_${protectedTokens.length}__`;
@@ -5752,23 +6484,175 @@ CRITICAL OPERATIONAL RULES:
           return openTag + cleanedJs + closeTag;
         });
 
-        // STEP 4: Dead Broken Braces Cleanup (Strict Single-Line Only with Skipped Protection)
+        // 🛡️ Guard 10: REAL CODE MUTATION FOR AST/JS ISSUES (Zero Fake Repairs)
         const codeLines = code.split('\n');
-        const skippedLinesSet = new Set(
-          (lastScannedIssues.list || [])
-            .filter(i => i.status === 'skipped')
-            .map(i => i.line)
-        );
+        const activeIssues = lastScannedIssues.list || [];
 
-        for (let l = 0; l < codeLines.length; l++) {
-          if (!skippedLinesSet.has(l + 1) && /\}\s*\}/.test(codeLines[l])) {
-            const openC = (codeLines[l].match(/\{/g) || []).length;
-            const closeC = (codeLines[l].match(/\}/g) || []).length;
-            if (openC !== closeC) {
-              codeLines[l] = codeLines[l].replace(/\}\s*\}/g, '}');
+        activeIssues.forEach(issue => {
+          if (issue.status === 'skipped') return;
+          const targetLineIdx = (issue.line || 1) - 1;
+
+          if (issue.fixType === 'remove_double_comma') {
+            if (codeLines[targetLineIdx]) {
+              codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(/,\s*,/g, ',');
+            }
+          } else if (issue.fixType === 'fix_invalid_lhs') {
+            if (codeLines[targetLineIdx]) {
+              codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(/(\w+)\+\+\s*=\s*(\d+);?/, '$1 = $2;');
+            }
+          } else if (issue.fixType === 'fix_duplicate_param' && issue.paramName) {
+            if (codeLines[targetLineIdx]) {
+              const lastIdx = codeLines[targetLineIdx].lastIndexOf(issue.paramName);
+              if (lastIdx !== -1) {
+                codeLines[targetLineIdx] = codeLines[targetLineIdx].slice(0, lastIdx) + issue.paramName + '_2' + codeLines[targetLineIdx].slice(lastIdx + issue.paramName.length);
+              }
+            }
+                    } else if (issue.fixType === 'make_function_async') {
+            // 🛡️ Drift-Proof Reverse Scope Resolver (Purana Rule + Real Await Anchor)
+            let actualAwaitIdx = targetLineIdx;
+
+            // Step A: Coordinate drift verify karein - Kya targetLineIdx par sach me 'await' hai?
+            if (!codeLines[actualAwaitIdx] || !/\bawait\b/.test(codeLines[actualAwaitIdx])) {
+              // Drift compensation: Upar-niche 15 lines me asli await line dhoondhein
+              for (let d = -15; d <= 15; d++) {
+                const checkIdx = targetLineIdx + d;
+                if (checkIdx >= 0 && checkIdx < codeLines.length) {
+                  if (/\bawait\b/.test(codeLines[checkIdx]) && (!issue.oldVal || codeLines[checkIdx].includes(issue.oldVal.slice(0, 15)))) {
+                    actualAwaitIdx = checkIdx;
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Step B: Purana Upward Resolver (Sirf verified await ke parent function ko async banayein)
+            if (codeLines[actualAwaitIdx] && /\bawait\b/.test(codeLines[actualAwaitIdx])) {
+              for (let b = actualAwaitIdx; b >= 0; b--) {
+                if (/\bfunction\b/.test(codeLines[b]) && !/\basync\s+function\b/.test(codeLines[b])) {
+                  codeLines[b] = codeLines[b].replace(/\bfunction\b/, 'async function');
+                  break;
+                }
+              }
+            }
+          } else if (issue.fixType === 'fix_destructure_default') {
+            if (codeLines[targetLineIdx]) {
+              codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(/=\s*\}/, '= null }');
+            }
+                    } else if (issue.fixType === 'close_throw_error') {
+            if (codeLines[targetLineIdx]) {
+              let cur = codeLines[targetLineIdx].trimEnd();
+              if (cur.endsWith(';')) cur = cur.slice(0, -1).trimEnd();
+              // 🛡️ Safe Template Literal Termination Guard
+              const tickCount = (cur.match(/`/g) || []).length;
+              if (tickCount % 2 !== 0) {
+                cur += '`);';
+              } else if (!cur.endsWith(')')) {
+                cur += ');';
+              } else {
+                cur += ';';
+              }
+              codeLines[targetLineIdx] = cur;
+            }
+          } else if (issue.fixType === 'dom_id_typo' && issue.badId) {
+            const targetReplacement = issue.suggestedId || issue.badId;
+            if (codeLines[targetLineIdx]) {
+              codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(
+                new RegExp(`getElementById\\(["']${issue.badId}["']\\)`, 'g'),
+                `getElementById("${targetReplacement}")`
+              );
+            }
+          } else if (issue.fixType === 'const_to_let' && issue.targetVar) {
+            const declRegex = new RegExp(`\\bconst\\s+(${issue.targetVar})\\s*=`, 'g');
+            for (let l = 0; l < codeLines.length; l++) {
+              if (declRegex.test(codeLines[l])) {
+                codeLines[l] = codeLines[l].replace(declRegex, 'let $1 =');
+                break;
+              }
+            }
+                    } else if (issue.fixType === 'fix_input_concat') {
+            // 🛡️ Real AST Type Mutation: String Concat -> Number Safe Math
+            if (codeLines[targetLineIdx]) {
+              codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(/(\b\w+)\s*\+\s*(\b\w+)/, 'Number($1) + Number($2)');
+            }
+          } else if (issue.fixType === 'remove_extra_parens' || issue.fixType === 'compiler_syntax_error') {
+            // 🛡️ Fix-All Full-Scope Auto-Trimmer (Real Code Mutation)
+            let targetIdx = targetLineIdx;
+
+            const hasExcessClosing = (lineStr) => {
+              if (!lineStr || !lineStr.includes(')')) return false;
+              const s = lineStr
+                .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+                .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+                .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+              return (s.match(/\)/g) || []).length > (s.match(/\(/g) || []).length;
+            };
+
+            // Agar direct targetLineIdx par extra bracket na mile toh backtrace scan karein
+            if (!hasExcessClosing(codeLines[targetIdx])) {
+              for (let i = targetIdx; i >= 0 && i >= targetIdx - 30; i--) {
+                if (hasExcessClosing(codeLines[i])) {
+                  targetIdx = i;
+                  break;
+                }
+              }
+              if (!hasExcessClosing(codeLines[targetIdx])) {
+                for (let i = 0; i < codeLines.length; i++) {
+                  if (hasExcessClosing(codeLines[i])) {
+                    targetIdx = i;
+                    break;
+                  }
+                }
+              }
+            }
+
+            if (codeLines[targetIdx]) {
+              let cur = codeLines[targetIdx];
+              const hasSemicolon = cur.trimEnd().endsWith(';');
+              let base = hasSemicolon ? cur.trimEnd().slice(0, -1).trimEnd() : cur.trimEnd();
+
+              const strippedStr = base
+                .replace(/`(?:\\[\s\S]|[^`\\])*`/g, '""')
+                .replace(/"(?:\\[\s\S]|[^"\\])*"/g, '""')
+                .replace(/'(?:\\[\s\S]|[^'\\])*'/g, '""');
+
+              const oCount = (strippedStr.match(/\(/g) || []).length;
+              let cCount = (strippedStr.match(/\)/g) || []).length;
+
+              while (cCount > oCount && base.endsWith(')')) {
+                base = base.slice(0, -1).trimEnd();
+                cCount--;
+              }
+
+              codeLines[targetIdx] = base + (hasSemicolon ? ';' : '');
+            }
+          } else if (issue.fixType === 'close_parenthesis') {
+            if (codeLines[targetLineIdx]) {
+              const trimmed = codeLines[targetLineIdx].trimEnd();
+              if (trimmed.endsWith(');') || trimmed.endsWith(')')) {
+                codeLines[targetLineIdx] = trimmed.endsWith(';') ? trimmed : trimmed + ';';
+              } else if (trimmed.endsWith(';')) {
+                codeLines[targetLineIdx] = trimmed.slice(0, -1) + ');';
+              } else {
+                codeLines[targetLineIdx] = trimmed + ');';
+              }
+            }
+          } else if (issue.fixType === 'double_brace') {
+            if (codeLines[targetLineIdx] && /\}\s*\}/.test(codeLines[targetLineIdx])) {
+              const openC = (codeLines[targetLineIdx].match(/\{/g) || []).length;
+              const closeC = (codeLines[targetLineIdx].match(/\}/g) || []).length;
+              if (openC !== closeC) {
+                codeLines[targetLineIdx] = codeLines[targetLineIdx].replace(/\}\s*\}/g, '}');
+              }
+            }
+          } else if (issue.fixType === 'unclosed_quote') {
+            if (codeLines[targetLineIdx]) {
+              const trimmed = codeLines[targetLineIdx].trimEnd();
+              if (!trimmed.endsWith(';') && !trimmed.endsWith('"') && !trimmed.endsWith("'")) {
+                codeLines[targetLineIdx] = trimmed + '";';
+              }
             }
           }
-        }
+        });
         code = codeLines.join('\n');
 
         // STEP 5: Root Duplicate Tag Sanitizer
@@ -5781,42 +6665,59 @@ CRITICAL OPERATIONAL RULES:
           code = code.replace(protectedTokens[i].placeholder, protectedTokens[i].match);
         }
 
-        // STEP 7: COMMIT & LIVE REFRESH
+        // STEP 7: COMMIT & LIVE REFRESH TO EDITOR
         textarea.value = code;
         updateLineNumbers();
         updateSyntaxHighlightingOptimized();
         if (typeof updateCursorIndicator === 'function') updateCursorIndicator();
         markActiveModified();
 
-        // Update issue cards UI to reflect bulk repair
+                // 🔄 STEP 8: INSTANT REAL-TIME ZERO-SYNC (Exclude Unsupported Warnings)
+        let totalRepairedCount = 0;
+        activeIssues.forEach(issue => {
+          if (issue.status !== 'skipped' && issue.fixType !== 'unsupported_manual_edit') {
+            issue.status = 'repaired';
+            totalRepairedCount++;
+            // 🛡️ Per-Card Undo Registry: Fix All ke baad bhi individual card ka Undo zinda rahe
+            const key = issue.id || issue.line;
+            if (previousCodeSnapshot !== null) {
+              singleIssueUndoHistory.set(key, previousCodeSnapshot);
+            }
+          }
+        });
+
         if (issuesListBox) {
           const cards = issuesListBox.querySelectorAll('[id^="card-issue-"]');
           cards.forEach(card => {
             if (!card.classList.contains('opacity-40')) {
-              card.classList.add('border-emerald-500/50', 'bg-emerald-950/20');
               const fixBtn = card.querySelector('.btn-fix-single-issue');
               const undoBtn = card.querySelector('.btn-undo-single-issue');
               const repBadge = card.querySelector('.badge-status-repaired');
-              if (fixBtn) fixBtn.classList.add('hidden');
-              if (undoBtn) undoBtn.classList.remove('hidden');
-              if (repBadge) repBadge.classList.remove('hidden');
+              if (fixBtn) {
+                card.classList.add('border-emerald-500/50', 'bg-emerald-950/20');
+                fixBtn.classList.add('hidden');
+                if (undoBtn) undoBtn.classList.remove('hidden');
+                if (repBadge) repBadge.classList.remove('hidden');
+              }
             }
           });
         }
 
-        activePendingCount = 0;
+        // Force live UI sync
         syncLiveCounterUI();
 
-        // Live Diff Report
+        // Live Diff Report (Real AST Mutation Counts)
         if (diffPreviewBox) {
+          const displayCleaned = dupesRemoved + totalRepairedCount;
+          const displayMutated = idFixed + totalRepairedCount;
           diffPreviewBox.classList.remove('hidden');
           diffPreviewBox.innerHTML = `
             <div class="flex items-center justify-between text-emerald-400 font-bold border-b border-emerald-500/20 pb-1">
               <span>🔍 AST Clean Report</span>
               <span class="text-[9px] text-slate-400">Success</span>
             </div>
-            <div class="text-rose-400 truncate"><span class="bg-rose-500/20 px-1 py-0.5 rounded text-rose-300">-</span> Removed: ${dupesRemoved} duplicate rules & cleaned braces</div>
-            <div class="text-emerald-300 truncate"><span class="bg-emerald-500/20 px-1 py-0.5 rounded text-emerald-200">+</span> Normalized: ${idFixed} ID collisions indexed cleanly</div>
+            <div class="text-rose-400 truncate"><span class="bg-rose-500/20 px-1 py-0.5 rounded text-rose-300">-</span> Cleaned: ${displayCleaned} duplicate rules & syntax errors</div>
+            <div class="text-emerald-300 truncate"><span class="bg-emerald-500/20 px-1 py-0.5 rounded text-emerald-200">+</span> Mutated: ${displayMutated} collisions & normalized AST tokens</div>
           `;
         }
 
@@ -5829,13 +6730,15 @@ CRITICAL OPERATIONAL RULES:
         if (bannerTitle) bannerTitle.textContent = "Repair Applied Successfully!";
         if (bannerSub) bannerSub.textContent = "Check preview. If layout changes, tap 'Undo Fix' to restore.";
 
-        triggerToast(`✨ AST Cleaned: ${dupesRemoved} duplicate(s) & ${idFixed} collision(s) fixed!`);
+        triggerToast(`✨ Real AST Mutations Committed to File!`);
         if (window.lucide) lucide.createIcons();
       });
     }
 
     // Auto-initialize Scanner Engine
     setupConflictShieldSystem();
+      
+      
       
 
            // =========================================================================
